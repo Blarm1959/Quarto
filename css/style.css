@@ -1,0 +1,10 @@
+.board{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+aspect-ratio:1/1;
+max-width:600px;
+margin:auto;
+border:2px solid #666;
+}
+.board>div{border:1px solid #aaa;}
+#status{display:flex;justify-content:space-between;font-size:1.2rem;}
