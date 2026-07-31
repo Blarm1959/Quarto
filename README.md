@@ -2,44 +2,27 @@
 
 A responsive Progressive Web App implementation of the Quarto board game.
 
-## Current version: 0.0.2
+## Current version: 0.0.3
 
-This version establishes the finished-looking application shell:
+This version adds the first interaction to the finished-looking interface:
 
-- Responsive square 4x4 board.
+- Black square board with 16 white squares.
 - All 16 Quarto pieces generated from JavaScript data.
-- Piece attributes use Tall/Short, Round/Square, Light/Dark and Solid/Hole.
-- Player, timer, current-piece, status and available-piece panels.
-- Default blue/red piece theme.
-- Plain HTML, CSS and JavaScript with no framework or build process.
-- Printable board, rules and combined print pack stored in `docs/print`.
+- Click any available piece to select it for the opponent.
+- The selected piece enlarges in the Current Piece panel.
+- Selection can be changed before placement is implemented.
+- New Game resets the interface.
+- How to Play dialog included.
+- Favicon and PWA icons included, removing the browser favicon 404.
+- Printable board, rules and combined print pack remain in `docs/print`.
 
-Gameplay controls are deliberately not active yet. Selection, placement, turn handling and win detection follow in later versions.
+Piece placement, turn changes and win detection follow in later versions.
 
 ## Run locally
 
-Install once:
-
 ```powershell
 npm install
-```
-
-Start the local server:
-
-```powershell
 npm start
 ```
 
 Open `http://127.0.0.1:8080`.
-
-## Repository structure
-
-- `index.html` - application shell.
-- `css/style.css` - responsive visual design.
-- `js/board.js` - creates the 4x4 board.
-- `js/pieces.js` - piece data and SVG renderer.
-- `js/rules.js` - rule constants.
-- `js/storage.js` - local settings storage.
-- `js/app.js` - application startup coordinator.
-- `docs/print` - printable PDFs.
-- `tools/generate_printables.py` - recreates the printable PDFs.

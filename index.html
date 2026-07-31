@@ -3,9 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#173b67">
+  <meta name="theme-color" content="#111111">
   <meta name="description" content="A clean, responsive Quarto board game Progressive Web App.">
   <title>Quarto</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/quarto-192.png">
+  <link rel="apple-touch-icon" href="icons/quarto-192.png">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -16,7 +19,7 @@
         <p class="eyebrow">Classic strategy game</p>
         <h1>Quarto</h1>
       </div>
-      <button class="icon-button" type="button" aria-label="Open settings" title="Settings">
+      <button id="settings-button" class="icon-button" type="button" aria-label="Open settings" title="Settings">
         <span aria-hidden="true">⚙</span>
       </button>
     </header>
@@ -47,13 +50,13 @@
             <h2>Current piece</h2>
             <span class="panel-kicker">For Player 2</span>
           </div>
-          <div id="current-piece" class="current-piece" aria-label="Current piece">
+          <div id="current-piece" class="current-piece" aria-label="Current piece" aria-live="polite">
             <div class="empty-piece-message">
               <span class="empty-piece-icon" aria-hidden="true">?</span>
-              <span>Choose a piece</span>
+              <span>No piece selected</span>
             </div>
           </div>
-          <p class="panel-help">The starting player chooses a piece for their opponent to place.</p>
+          <p class="panel-help">Player 1 chooses a piece for Player 2 to place.</p>
         </aside>
 
         <section class="board-section" aria-label="Quarto board">
@@ -76,12 +79,25 @@
       </section>
 
       <section class="action-bar" aria-label="Game controls">
-        <button class="button button--primary" type="button">New game</button>
-        <button class="button button--secondary" type="button">How to play</button>
-        <p class="version">Version 0.0.2 - interface preview</p>
+        <button id="new-game-button" class="button button--primary" type="button">New game</button>
+        <button id="how-to-play-button" class="button button--secondary" type="button">How to play</button>
+        <p class="version">Version 0.0.3 - piece selection</p>
       </section>
     </main>
   </div>
+
+  <dialog id="how-to-play-dialog" class="rules-dialog">
+    <form method="dialog">
+      <div class="dialog-heading">
+        <h2>How to play</h2>
+        <button class="dialog-close" value="close" aria-label="Close">×</button>
+      </div>
+      <p>Choose a piece for your opponent. They place it on any empty square, then choose the next piece for you.</p>
+      <p>Make a row, column or diagonal of four pieces sharing at least one attribute: tall, short, round, square, light, dark, solid or hole.</p>
+      <p class="dialog-note">Piece placement and win detection are added in the next versions.</p>
+      <button class="button button--primary" value="close">Close</button>
+    </form>
+  </dialog>
 
   <script src="js/pieces.js"></script>
   <script src="js/board.js"></script>

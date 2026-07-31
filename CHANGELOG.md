@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.0.3
+
+- Changed the game board to black with white squares.
+- Removed the circular depressions from empty board squares.
+- Enlarged the board, available pieces and Current Piece display.
+- Added click-to-select piece interaction.
+- Added selected-piece highlighting and current-piece animation.
+- Added New Game reset behaviour.
+- Added a How to Play dialog.
+- Added favicon and PWA icons.
+- Removed accidental local npm dependency from package.json.
+- Updated service-worker cache to v0.0.3.
+
 ## v0.0.2
 
 - Added a polished responsive application interface.
