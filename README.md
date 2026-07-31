@@ -27,3 +27,7 @@ Starter project for a Progressive Web App implementation of Quarto.
   - Random piece
   - Random square
 - Theme support planned (default Blue/Red).
+
+
+## Project Notes
+See `docs/ARCHITECTURE.md` and `docs/PRINTING.md`.
