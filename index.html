@@ -1,23 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Quarto</title>
-<link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173b67">
+  <meta name="description" content="A clean, responsive Quarto board game Progressive Web App.">
+  <title>Quarto</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<header>
-<h1>Quarto</h1>
-<div id="status">Player 1 <span id="timer">30</span></div>
-</header>
+  <div class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Classic strategy game</p>
+        <h1>Quarto</h1>
+      </div>
+      <button class="icon-button" type="button" aria-label="Open settings" title="Settings">
+        <span aria-hidden="true">⚙</span>
+      </button>
+    </header>
 
-<main>
-<div id="current-piece">Current Piece</div>
-<div class="board"></div>
-</main>
+    <main class="game-layout">
+      <section class="player-strip" aria-label="Players and timer">
+        <article class="player-card player-card--active">
+          <span class="player-label">Player 1</span>
+          <strong>Player 1</strong>
+          <span class="turn-badge">Choosing a piece</span>
+        </article>
 
-<script src="js/app.js"></script>
+        <div class="timer-card" aria-label="Move timer">
+          <span>Move timer</span>
+          <strong id="timer">00:30</strong>
+        </div>
+
+        <article class="player-card">
+          <span class="player-label">Player 2</span>
+          <strong>Player 2</strong>
+          <span class="waiting-label">Waiting</span>
+        </article>
+      </section>
+
+      <section class="game-stage">
+        <aside class="side-panel current-panel">
+          <div class="panel-heading">
+            <h2>Current piece</h2>
+            <span class="panel-kicker">For Player 2</span>
+          </div>
+          <div id="current-piece" class="current-piece" aria-label="Current piece">
+            <div class="empty-piece-message">
+              <span class="empty-piece-icon" aria-hidden="true">?</span>
+              <span>Choose a piece</span>
+            </div>
+          </div>
+          <p class="panel-help">The starting player chooses a piece for their opponent to place.</p>
+        </aside>
+
+        <section class="board-section" aria-label="Quarto board">
+          <div class="board-frame">
+            <div id="board" class="board" role="grid" aria-label="Empty four by four Quarto board"></div>
+          </div>
+          <div id="status" class="status-message" role="status" aria-live="polite">
+            Player 1: choose any piece for Player 2.
+          </div>
+        </section>
+
+        <aside class="side-panel pieces-panel">
+          <div class="panel-heading">
+            <h2>Available pieces</h2>
+            <span id="piece-count" class="piece-count">16 remaining</span>
+          </div>
+          <div id="remaining-pieces" class="piece-tray" aria-label="Available Quarto pieces"></div>
+          <p class="panel-help">Each piece is tall or short, round or square, light or dark, and solid or hole.</p>
+        </aside>
+      </section>
+
+      <section class="action-bar" aria-label="Game controls">
+        <button class="button button--primary" type="button">New game</button>
+        <button class="button button--secondary" type="button">How to play</button>
+        <p class="version">Version 0.0.2 - interface preview</p>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/pieces.js"></script>
+  <script src="js/board.js"></script>
+  <script src="js/rules.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

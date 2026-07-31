@@ -1,23 +1,20 @@
 # Quarto Print Assets
 
-This repository includes the specifications for the printable assets.
+The `docs/print` folder contains:
 
-Board:
-- A4 portrait
-- 4x4 grid
-- Maximum practical size
-- Thick black grid lines
-- Print at 100%
+- `Quarto_A4_Game_Board.pdf` - one-page A4 board.
+- `Quarto_A4_Rules.pdf` - one-page A4 quick rules.
+- `Quarto_A4_Print_Pack.pdf` - board followed by rules.
 
-Rules:
-- A4 portrait
-- Objective
-- Piece attributes
-- How to play
-- Winning
-- Draw
-- Reminder that you choose your opponent's piece.
+Board specification:
 
-Combined:
-- Page 1: Board
-- Page 2: Rules
+- A4 portrait.
+- 194 mm square 4x4 grid.
+- Thick black lines.
+- Print at Actual size / 100%.
+
+The PDFs can be regenerated with:
+
+```powershell
+python tools/generate_printables.py
+```

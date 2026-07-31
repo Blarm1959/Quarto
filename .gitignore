@@ -1,2 +1,7 @@
-node_modules/
 .vs/
+.vscode/
+node_modules/
+Thumbs.db
+Desktop.ini
+*.user
+*.suo
