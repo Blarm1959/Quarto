@@ -19,17 +19,17 @@
         <p class="eyebrow">Classic strategy game</p>
         <h1>Quarto</h1>
       </div>
-      <button id="settings-button" class="icon-button" type="button" aria-label="Open settings" title="Settings">
+      <button id="settings-button" class="icon-button" type="button" aria-label="Open game setup" title="Game setup">
         <span aria-hidden="true">⚙</span>
       </button>
     </header>
 
     <main class="game-layout">
       <section class="player-strip" aria-label="Players and timer">
-        <article class="player-card player-card--active">
+        <article id="player-card-1" class="player-card player-card--active">
           <span class="player-label">Player 1</span>
-          <strong>Player 1</strong>
-          <span class="turn-badge">Choosing a piece</span>
+          <strong id="player-name-1">Player 1</strong>
+          <span id="player-state-1" class="turn-badge">Choosing a piece</span>
         </article>
 
         <div class="timer-card" aria-label="Move timer">
@@ -37,10 +37,10 @@
           <strong id="timer">00:30</strong>
         </div>
 
-        <article class="player-card">
+        <article id="player-card-2" class="player-card">
           <span class="player-label">Player 2</span>
-          <strong>Player 2</strong>
-          <span class="waiting-label">Waiting</span>
+          <strong id="player-name-2">Player 2</strong>
+          <span id="player-state-2" class="waiting-label">Waiting</span>
         </article>
       </section>
 
@@ -48,7 +48,7 @@
         <aside class="side-panel current-panel">
           <div class="panel-heading">
             <h2>Current piece</h2>
-            <span class="panel-kicker">For Player 2</span>
+            <span id="current-piece-for" class="panel-kicker">For Player 2</span>
           </div>
           <div id="current-piece" class="current-piece" aria-label="Current piece" aria-live="polite">
             <div class="empty-piece-message">
@@ -56,7 +56,7 @@
               <span>No piece selected</span>
             </div>
           </div>
-          <p class="panel-help">Player 1 chooses a piece for Player 2 to place.</p>
+          <p id="current-piece-help" class="panel-help">Player 1 chooses a piece for Player 2 to place.</p>
         </aside>
 
         <section class="board-section" aria-label="Quarto board">
@@ -81,10 +81,70 @@
       <section class="action-bar" aria-label="Game controls">
         <button id="new-game-button" class="button button--primary" type="button">New game</button>
         <button id="how-to-play-button" class="button button--secondary" type="button">How to play</button>
-        <p class="version">Version 0.0.3 - piece selection</p>
+        <p class="version">Version 0.0.4 - animated selection and game setup</p>
       </section>
     </main>
   </div>
+
+  <dialog id="new-game-dialog" class="rules-dialog setup-dialog">
+    <form id="new-game-form" method="dialog">
+      <div class="dialog-heading">
+        <div>
+          <p class="dialog-eyebrow">Game setup</p>
+          <h2>New game</h2>
+        </div>
+        <button class="dialog-close" value="cancel" aria-label="Close">×</button>
+      </div>
+
+      <div class="setup-grid">
+        <label class="field-label" for="player-1-input">Player 1 name
+          <input id="player-1-input" class="text-input" type="text" maxlength="24" autocomplete="off" placeholder="Player 1">
+        </label>
+        <label class="field-label" for="player-2-input">Player 2 name
+          <input id="player-2-input" class="text-input" type="text" maxlength="24" autocomplete="off" placeholder="Player 2">
+        </label>
+      </div>
+
+      <fieldset class="setup-fieldset">
+        <legend>Who starts?</legend>
+        <div class="choice-grid">
+          <label><input type="radio" name="starter" value="random" checked> Random</label>
+          <label><input type="radio" name="starter" value="alternate"> Alternate</label>
+          <label><input type="radio" name="starter" value="0"> Player 1</label>
+          <label><input type="radio" name="starter" value="1"> Player 2</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="setup-fieldset">
+        <legend>Move timer</legend>
+        <div class="choice-grid">
+          <label><input type="radio" name="timer" value="30" checked> 30 seconds</label>
+          <label><input type="radio" name="timer" value="45"> 45 seconds</label>
+          <label><input type="radio" name="timer" value="60"> 60 seconds</label>
+          <label><input type="radio" name="timer" value="0"> Unlimited</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="setup-fieldset">
+        <legend>Piece colours</legend>
+        <div class="colour-grid">
+          <label class="colour-field" for="light-colour-input">
+            <span>Light pieces</span>
+            <input id="light-colour-input" type="color" value="#2668b2">
+          </label>
+          <label class="colour-field" for="dark-colour-input">
+            <span>Dark pieces</span>
+            <input id="dark-colour-input" type="color" value="#c83d4b">
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="dialog-actions">
+        <button class="button button--secondary" value="cancel" type="button" id="cancel-new-game">Cancel</button>
+        <button class="button button--primary" type="submit">Start game</button>
+      </div>
+    </form>
+  </dialog>
 
   <dialog id="how-to-play-dialog" class="rules-dialog">
     <form method="dialog">

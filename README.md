@@ -1,22 +1,21 @@
 # Quarto
 
-A responsive Progressive Web App implementation of the Quarto board game.
+A lightweight Progressive Web App implementation of the strategy game Quarto.
 
-## Current version: 0.0.3
+## Current version: v0.0.4
 
-This version adds the first interaction to the finished-looking interface:
+The app now includes:
 
-- Black square board with 16 white squares.
-- All 16 Quarto pieces generated from JavaScript data.
-- Click any available piece to select it for the opponent.
-- The selected piece enlarges in the Current Piece panel.
-- Selection can be changed before placement is implemented.
-- New Game resets the interface.
-- How to Play dialog included.
-- Favicon and PWA icons included, removing the browser favicon 404.
-- Printable board, rules and combined print pack remain in `docs/print`.
-
-Piece placement, turn changes and win detection follow in later versions.
+- Responsive black 4x4 board with white squares.
+- All 16 pieces generated from data as SVG.
+- Animated piece selection and Current Piece preview.
+- Central game-state object ready for later placement and turn logic.
+- New Game setup with player names.
+- Random, alternating or fixed starting player.
+- 30, 45, 60 second or unlimited timer setting.
+- Customisable light and dark piece colours.
+- Preferences saved in local storage.
+- A4 printable board, rules and combined print pack under `docs/print`.
 
 ## Run locally
 
@@ -26,3 +25,7 @@ npm start
 ```
 
 Open `http://127.0.0.1:8080`.
+
+## Next milestone
+
+v0.0.5 will add placing the selected piece onto the board.
