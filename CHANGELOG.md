@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.1.5
+
+- On phones, the available-piece picker now opens automatically at the start of every human choose-piece turn.
+- Closing the picker with × or Cancel leaves the existing Choose button available, without reopening the picker during that turn.
+- The picker opens again automatically on the player's next choose-piece turn.
+- Tablet, laptop and desktop piece trays remain unchanged.
+- Updated the Android PWA cache and release metadata to v0.1.5.
+
 ## v0.1.4
 
 - New Game and Play Again now immediately reset the board using the current game settings.

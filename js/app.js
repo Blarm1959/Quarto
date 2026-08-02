@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.1.4";
+  const STORAGE_KEY = "quarto.settings.v0.1.5";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
@@ -18,20 +18,20 @@
     selectedPiece: null, phase: "choose-piece", board: Array(16).fill(null),
     remainingPieceIds: window.QuartoPieces.PIECES.map(piece => piece.id),
     timerRemaining: 30, timerHandle: null, aiHandle: null,
-    winner: null, winningCells: [], winningAttributes: []
+    winner: null, winningCells: [], winningAttributes: [], chooseTurnId: 0
   };
 
   function loadSettings() {
     try {
       const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-      const previous13 = JSON.parse(localStorage.getItem("quarto.settings.v0.1.3") || localStorage.getItem("quarto.settings.v0.1.2") || "{}");
+      const previous14 = JSON.parse(localStorage.getItem("quarto.settings.v0.1.4") || localStorage.getItem("quarto.settings.v0.1.3") || localStorage.getItem("quarto.settings.v0.1.2") || "{}");
       const previous10 = JSON.parse(localStorage.getItem("quarto.settings.v0.1.0") || "{}");
       const previous20 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.20") || "{}");
       const previous19 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.14") || "{}");
       const previous013 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.13") || "{}");
       const previous12 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.12") || "{}");
       const previous11 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.11") || "{}");
-      return { ...DEFAULT_SETTINGS, ...previous11, ...previous12, ...previous13, ...previous19, ...previous20, ...previous10, ...current };
+      return { ...DEFAULT_SETTINGS, ...previous11, ...previous12, ...previous19, ...previous20, ...previous10, ...previous14, ...current };
     } catch { return { ...DEFAULT_SETTINGS }; }
   }
 
@@ -53,6 +53,7 @@
   }
 
   let audioContext = null;
+  let autoOpenedPickerTurnId = -1;
   function playTone(kind) {
     if (!gameState.settings.soundEffects) return;
     try {
@@ -210,6 +211,21 @@
     if (gameState.selectedPiece) preview.appendChild(window.QuartoPieces.createPieceSvg(gameState.selectedPiece));
   }
 
+  function maybeAutoOpenPiecePicker() {
+    if (gameState.phase !== "choose-piece" || isComputer(gameState.currentPlayer)) return;
+    if (!window.matchMedia("(max-width: 740px)").matches) return;
+    if (autoOpenedPickerTurnId === gameState.chooseTurnId) return;
+
+    window.requestAnimationFrame(() => {
+      if (gameState.phase !== "choose-piece" || isComputer(gameState.currentPlayer)) return;
+      if (autoOpenedPickerTurnId === gameState.chooseTurnId) return;
+      const dialog = document.getElementById("piece-picker-dialog");
+      if (!dialog || dialog.open || document.querySelector("dialog[open]")) return;
+      autoOpenedPickerTurnId = gameState.chooseTurnId;
+      dialog.showModal();
+    });
+  }
+
   function renderGame() {
     document.body.dataset.phase = gameState.phase;
     document.body.dataset.computerTurn = String(isComputer(gameState.currentPlayer));
@@ -223,7 +239,7 @@
     const status = document.getElementById("status");
     status?.classList.toggle("status-message--winner", gameState.phase === "game-over" && gameState.winner !== null);
     status?.classList.toggle("status-message--draw", gameState.phase === "game-over" && gameState.winner === null);
-    renderPlayers(); renderCurrentPiece(); renderTray(); renderBoard(); renderPhoneTurnDock(); schedulePhoneLayoutUpdate();
+    renderPlayers(); renderCurrentPiece(); renderTray(); renderBoard(); renderPhoneTurnDock(); schedulePhoneLayoutUpdate(); maybeAutoOpenPiecePicker();
   }
 
   function animatePieceToCurrent(slot) {
@@ -262,7 +278,7 @@
     if (gameState.board.every(value=>value!==null)) {
       gameState.phase="game-over"; stopTimer(); stopAi(); renderGame(); document.getElementById("status").textContent="Draw — the board is full with no Quarto."; return;
     }
-    gameState.phase="choose-piece"; gameState.receivingPlayer=gameState.currentPlayer===0?1:0;
+    gameState.phase="choose-piece"; gameState.receivingPlayer=gameState.currentPlayer===0?1:0; gameState.chooseTurnId += 1;
     renderGame(); resetMoveTimer(); document.getElementById("status").textContent=phaseInstruction(); scheduleComputerTurn();
   }
 
@@ -284,7 +300,8 @@
   function resetGame(starterMode = gameState.settings.starterMode) {
     stopTimer(); stopAi(); applyTheme(); applyMotionPreference();
     const starter=chooseStarter(starterMode); gameState.settings.lastStarter=starter; saveSettings();
-    Object.assign(gameState,{currentPlayer:starter,receivingPlayer:starter===0?1:0,selectedPiece:null,phase:"choose-piece",board:Array(16).fill(null),remainingPieceIds:window.QuartoPieces.PIECES.map(piece=>piece.id),winner:null,winningCells:[],winningAttributes:[]});
+    Object.assign(gameState,{currentPlayer:starter,receivingPlayer:starter===0?1:0,selectedPiece:null,phase:"choose-piece",board:Array(16).fill(null),remainingPieceIds:window.QuartoPieces.PIECES.map(piece=>piece.id),winner:null,winningCells:[],winningAttributes:[],chooseTurnId:gameState.chooseTurnId+1});
+    autoOpenedPickerTurnId = -1;
     renderGame(); resetMoveTimer(); document.getElementById("status").textContent=phaseInstruction(); scheduleComputerTurn();
   }
 
