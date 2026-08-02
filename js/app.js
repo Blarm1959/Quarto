@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.1.0";
+  const STORAGE_KEY = "quarto.settings.v0.1.2";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
@@ -24,12 +24,13 @@
   function loadSettings() {
     try {
       const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      const previous10 = JSON.parse(localStorage.getItem("quarto.settings.v0.1.0") || "{}");
       const previous20 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.20") || "{}");
       const previous19 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.14") || "{}");
       const previous13 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.13") || "{}");
       const previous12 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.12") || "{}");
       const previous11 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.11") || "{}");
-      return { ...DEFAULT_SETTINGS, ...previous11, ...previous12, ...previous13, ...previous19, ...previous20, ...current };
+      return { ...DEFAULT_SETTINGS, ...previous11, ...previous12, ...previous13, ...previous19, ...previous20, ...previous10, ...current };
     } catch { return { ...DEFAULT_SETTINGS }; }
   }
 
@@ -139,7 +140,7 @@
       else { state.className = active ? "turn-badge" : "waiting-label"; state.textContent = active ? (isComputer(index) ? "Thinking…" : gameState.phase === "place-piece" ? "Place the piece" : "Choose a piece") : "Waiting"; }
     }
     document.getElementById("current-piece-for").textContent = gameState.phase === "game-over" ? "Game complete" : gameState.phase === "place-piece" ? `Placed by ${playerName(gameState.currentPlayer)}` : `For ${playerName(gameState.receivingPlayer)}`;
-    document.getElementById("current-piece-help").textContent = gameState.phase === "game-over" ? "Start a new game to play again." : gameState.phase === "place-piece" ? `${playerName(gameState.currentPlayer)} places this piece, then chooses the next piece.` : `${playerName(gameState.currentPlayer)} chooses a piece for ${playerName(gameState.receivingPlayer)} to place.`;
+    document.getElementById("current-piece-help").textContent = gameState.phase === "game-over" ? (gameState.winner === null ? "The board is full. Press Play again when you are ready." : `${formatWinningAttributes(gameState.winningAttributes)}. The winning line remains highlighted.`) : gameState.phase === "place-piece" ? `${playerName(gameState.currentPlayer)} places this piece, then chooses the next piece.` : `${playerName(gameState.currentPlayer)} chooses a piece for ${playerName(gameState.receivingPlayer)} to place.`;
   }
 
   function showEmptyCurrentPiece() {
@@ -178,7 +179,7 @@
 
     if (gameState.phase === "game-over") {
       title.textContent = gameState.winner === null ? "Game complete" : `${playerName(gameState.winner)} wins`;
-      detail.textContent = gameState.winner === null ? "The board is full." : "Start a new game when you are ready.";
+      detail.textContent = gameState.winner === null ? "The board is full. Press Play again." : `${formatWinningAttributes(gameState.winningAttributes)} · Press Play again when ready.`;
       action.hidden = true;
       preview.hidden = true;
       return;
@@ -211,6 +212,16 @@
   function renderGame() {
     document.body.dataset.phase = gameState.phase;
     document.body.dataset.computerTurn = String(isComputer(gameState.currentPlayer));
+    const replayButton = document.getElementById("new-game-button");
+    if (replayButton) {
+      const finished = gameState.phase === "game-over";
+      replayButton.textContent = finished ? "Play again" : "New game";
+      replayButton.classList.toggle("button--play-again", finished);
+      replayButton.setAttribute("aria-label", finished ? "Play again with the same settings" : "Start a new game with the same settings");
+    }
+    const status = document.getElementById("status");
+    status?.classList.toggle("status-message--winner", gameState.phase === "game-over" && gameState.winner !== null);
+    status?.classList.toggle("status-message--draw", gameState.phase === "game-over" && gameState.winner === null);
     renderPlayers(); renderCurrentPiece(); renderTray(); renderBoard(); renderPhoneTurnDock(); schedulePhoneLayoutUpdate();
   }
 
@@ -239,22 +250,16 @@
     if (gameState.phase !== "place-piece" || !gameState.selectedPiece || gameState.board[index] !== null || isComputer(gameState.currentPlayer)) return;
     completePlacement(index);
   }
-  function showGameOverDialog(title, detail) {
-    const dialog = document.getElementById("game-over-dialog");
-    document.getElementById("game-over-title").textContent = title;
-    document.getElementById("game-over-detail").textContent = detail;
-    window.setTimeout(() => { if (dialog && !dialog.open) dialog.showModal(); }, 650);
-  }
   function completePlacement(index) {
     gameState.board[index] = gameState.selectedPiece.id; gameState.selectedPiece = null; playTone("place");
     const result = window.QuartoRules.checkForQuarto(gameState.board);
     if (result) {
       gameState.phase="game-over"; gameState.winner=gameState.currentPlayer; gameState.winningCells=result.line; gameState.winningAttributes=result.attributes; stopTimer();
       const resultText = `${playerName(gameState.winner)} wins (${formatWinningAttributes(result.attributes)})`;
-      renderGame(); document.getElementById("status").textContent=resultText; playTone("win"); showGameOverDialog("Quarto!", resultText); return;
+      stopAi(); renderGame(); document.getElementById("status").textContent=`Quarto! ${resultText}.`; playTone("win"); return;
     }
     if (gameState.board.every(value=>value!==null)) {
-      gameState.phase="game-over"; stopTimer(); renderGame(); document.getElementById("status").textContent="The game is a draw."; showGameOverDialog("Draw", "The board is full with no Quarto."); return;
+      gameState.phase="game-over"; stopTimer(); stopAi(); renderGame(); document.getElementById("status").textContent="Draw — the board is full with no Quarto."; return;
     }
     gameState.phase="choose-piece"; gameState.receivingPlayer=gameState.currentPlayer===0?1:0;
     renderGame(); resetMoveTimer(); document.getElementById("status").textContent=phaseInstruction(); scheduleComputerTurn();
@@ -454,7 +459,8 @@
 
   function bindControls() {
     const setup=document.getElementById("new-game-dialog"); const openSetup=()=>{populateSetupDialog();setup.showModal();};
-    document.getElementById("new-game-button")?.addEventListener("click",openSetup); document.getElementById("settings-button")?.addEventListener("click",openSetup);
+    document.getElementById("new-game-button")?.addEventListener("click",()=>resetGame(gameState.settings.starterMode));
+    document.getElementById("settings-button")?.addEventListener("click",openSetup);
     document.getElementById("cancel-new-game")?.addEventListener("click",()=>setup.close()); document.getElementById("new-game-form")?.addEventListener("submit",startFromDialog);
     document.querySelectorAll('input[name="gameMode"]').forEach(input=>input.addEventListener("change",updateSetupMode));
     document.getElementById("difficulty-input")?.addEventListener("input",updateDifficultyLabel);
@@ -462,7 +468,6 @@
     document.getElementById("wizard-back")?.addEventListener("click",()=>showWizardStep(wizardStep-1));
     document.querySelectorAll('#new-game-form input').forEach(input=>input.addEventListener("change",updateSetupSummary));
     document.querySelectorAll('#new-game-form input[type="text"]').forEach(input=>input.addEventListener("input",updateSetupSummary));
-    document.getElementById("game-over-new-game")?.addEventListener("click",()=>{document.getElementById("game-over-dialog")?.close();openSetup();});
     document.getElementById("how-to-play-button")?.addEventListener("click",()=>document.getElementById("how-to-play-dialog")?.showModal());
     document.getElementById("open-piece-picker")?.addEventListener("click",()=>document.getElementById("piece-picker-dialog")?.showModal());
     document.getElementById("phone-turn-action")?.addEventListener("click",()=>{

@@ -126,15 +126,34 @@ h2 { margin-bottom: 0; font-size: 1.05rem; }
 @keyframes timer-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
 
 
-/* v0.0.6 automatic Quarto detection */
-.board-cell--winner{position:relative;z-index:1;border-color:#ffffff;
-animation:winning-cell-rb .5s linear infinite;}
-@keyframes winning-cell-rb{
-0%,100%{box-shadow:inset 0 0 0 4px rgba(220,40,40,.95),0 0 18px rgba(220,40,40,.9);}
-50%{box-shadow:inset 0 0 0 4px rgba(40,110,255,.95),0 0 18px rgba(40,110,255,.9);}
+/* Winning line: persistent red/blue celebration without covering the pieces */
+.board-cell--winner {
+  position: relative;
+  z-index: 2;
+  border-color: #fff;
+  outline: 3px solid #fff;
+  outline-offset: -5px;
+  animation: winning-cell-rb .56s ease-in-out infinite;
 }
-.board-cell--winnerl-pulse 1.1s ease-in-out infinite}.board-cell--winner .board-piece{animation:winning-piece-pulse 1.1s ease-in-out infinite}.player-card--winner{border-color:#d99b13;box-shadow:0 0 0 3px rgba(240,180,41,.2),var(--shadow)}.turn-badge--winner{color:#5b3c00;background:#ffe6a3}@keyframes winning-cell-pulse{0%,100%{transform:scale(1)}50%{transform:scale(.975)}}@keyframes winning-piece-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.075)}}
-
+@keyframes winning-cell-rb {
+  0%, 100% { box-shadow: inset 0 0 0 5px rgba(221,35,50,.98), 0 0 10px 4px rgba(221,35,50,.78), 0 0 24px 8px rgba(221,35,50,.46); }
+  50% { box-shadow: inset 0 0 0 5px rgba(30,104,230,.98), 0 0 10px 4px rgba(30,104,230,.82), 0 0 24px 8px rgba(30,104,230,.48); }
+}
+.player-card--winner {
+  animation: winner-card-rb 1.12s ease-in-out infinite;
+}
+.turn-badge--winner {
+  color: #fff;
+  animation: winner-badge-rb 1.12s ease-in-out infinite;
+}
+@keyframes winner-card-rb {
+  0%,100% { border-color:#dd2332; box-shadow:0 0 0 3px rgba(221,35,50,.18),var(--shadow); }
+  50% { border-color:#1e68e6; box-shadow:0 0 0 3px rgba(30,104,230,.18),var(--shadow); }
+}
+@keyframes winner-badge-rb {
+  0%,100% { background:#c91f2d; }
+  50% { background:#185bc9; }
+}
 
 /* v0.0.7 responsive laptop, tablet and phone layout */
 html, body { min-height: 100%; }
@@ -1371,12 +1390,6 @@ body { min-height: 100vh; min-height: 100svh; overscroll-behavior-y: none; -webk
 .setup-summary { display:flex; justify-content:space-between; gap:10px; margin-top:14px; padding:12px 14px; border-radius:12px; color:var(--navy); background:#edf5fd; }
 .setup-summary span { color:var(--muted); }
 .wizard-actions { margin-top:auto; padding-top:18px; }
-.game-over-dialog { width:min(420px,calc(100% - 28px)); text-align:center; }
-.game-over-dialog form { padding:28px; }
-.game-over-mark { display:grid; place-items:center; width:74px; height:74px; margin:0 auto 12px; border-radius:50%; color:#fff; background:linear-gradient(145deg,var(--navy-2),#143e68); font-size:2.8rem; font-weight:900; box-shadow:0 12px 28px rgba(14,57,99,.25); }
-.game-over-dialog h2 { margin:2px 0 8px; font-size:2rem; }
-.game-over-detail { min-height:42px; margin:0; color:var(--muted); line-height:1.4; }
-.game-over-actions { justify-content:center; }
 .animations-disabled *, .animations-disabled *::before, .animations-disabled *::after { animation:none!important; transition:none!important; }
 @keyframes wizard-enter { from{opacity:0;transform:translateX(12px)} to{opacity:1;transform:none} }
 @media (max-width:560px) {
@@ -1388,3 +1401,25 @@ body { min-height: 100vh; min-height: 100svh; overscroll-behavior-y: none; -webk
   .wizard-actions { position:sticky; bottom:0; margin-inline:-4px; padding:10px 4px 2px; background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 22%); }
   .wizard-actions .button { flex:1; }
 }
+
+
+/* v0.1.2: keep the final position visible and celebratory until replay. */
+.status-message--winner {
+  color:#102f50;
+  font-weight:800;
+  background:#fff;
+  animation:result-banner-rb 1.12s ease-in-out infinite;
+}
+.status-message--draw { font-weight:800; }
+@keyframes result-banner-rb {
+  0%,100% { border-color:#dd2332; box-shadow:0 0 0 3px rgba(221,35,50,.18); }
+  50% { border-color:#1e68e6; box-shadow:0 0 0 3px rgba(30,104,230,.18); }
+}
+.button--play-again { animation:play-again-breathe 2.8s ease-in-out infinite; }
+@keyframes play-again-breathe { 0%,82%,100%{transform:scale(1)} 90%{transform:scale(1.025)} }
+/* Winning feedback is essential state information, so it remains active even when optional motion is disabled. */
+.animations-disabled .board-cell--winner { animation:winning-cell-rb .8s steps(1,end) infinite!important; }
+.animations-disabled .player-card--winner { animation:winner-card-rb 1.6s steps(1,end) infinite!important; }
+.animations-disabled .turn-badge--winner { animation:winner-badge-rb 1.6s steps(1,end) infinite!important; }
+.animations-disabled .status-message--winner { animation:result-banner-rb 1.6s steps(1,end) infinite!important; }
+.animations-disabled .button--play-again { animation:none!important; }

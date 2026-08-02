@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "v0.1.0",
-  "githubSource": "v0.0.20",
+  "version": "v0.1.2",
+  "githubSource": "v0.1.1",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Add the first strategic AI engine with difficulty levels 1-10 and expert endgame search"
+  "commit": "Keep the final board visible, flash winning squares red and blue, and replay with the same settings"
 }

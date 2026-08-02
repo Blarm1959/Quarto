@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.1.2
+
+- Removed the end-of-game popup so the final board remains fully visible.
+- Keeps the winning row, column or diagonal flashing red and blue until the next game starts.
+- Replaced the remaining orange/yellow winner styling with the official red/blue treatment.
+- Shows the result in the in-page status banner and phone turn dock.
+- Changes New game to Play again after a result.
+- New game and Play again immediately reuse the current settings.
+- The settings cog remains the place to change players, AI level, timer, sound and animations.
+
 ## v0.1.0
 
 - Introduced the first full strategic AI framework for difficulty levels 1–10.
