@@ -167,3 +167,8 @@
 - Added occupied board rendering and placement animations.
 - Added real move countdown behaviour, including Unlimited mode.
 - Updated phase-specific player and status messages.
+
+
+## v0.1.3
+- New Game/Play Again now immediately starts a new game using existing settings.
+- Settings dialog only opened via settings button.
