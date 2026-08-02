@@ -1470,7 +1470,7 @@ body[data-computer-turn="true"] .turn-badge::after { content:""; display:inline-
 }
 
 
-/* v0.1.19: keep the complete board visible while choosing a piece on phones. */
+/* v0.1.20: keep the complete board visible while choosing a piece on phones. */
 @media (max-width: 740px) and (orientation: portrait) {
   body.piece-picker-open .phone-turn-dock,
   body.piece-picker-open .player-strip,
@@ -1533,4 +1533,99 @@ body[data-computer-turn="true"] .turn-badge::after { content:""; display:inline-
     width: 92%;
     height: 92%;
   }
+}
+
+/* v0.1.20: in-page phone piece chooser; board and all sixteen pieces stay visible together. */
+.phone-inline-piece-picker { display: none; }
+
+@media (max-width: 740px) and (orientation: portrait) {
+  body.piece-picker-open .phone-turn-dock,
+  body.piece-picker-open .player-strip,
+  body.piece-picker-open .action-bar {
+    display: none !important;
+  }
+
+  body.piece-picker-open .game-stage,
+  body.piece-picker-open .board-section {
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+  }
+
+  body.piece-picker-open .board-frame {
+    width: min(100%, var(--phone-board-size));
+    margin-inline: auto;
+  }
+
+  .phone-inline-piece-picker {
+    width: 100%;
+    height: var(--piece-picker-height, 208px);
+    min-height: 0;
+    margin-top: 5px;
+    padding: 5px 6px 7px;
+    border: 1px solid rgba(205, 218, 231, .98);
+    border-radius: 14px;
+    background: rgba(255,255,255,.98);
+    box-shadow: 0 8px 22px rgba(29,56,84,.10);
+    overflow: hidden;
+  }
+
+  .phone-inline-piece-picker:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .phone-inline-piece-picker__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 28px;
+    min-height: 28px;
+    margin-bottom: 3px;
+  }
+
+  .phone-inline-piece-picker__heading h2 {
+    margin: 0;
+    font-size: .84rem;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .phone-inline-piece-picker__close {
+    position: static;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    flex: 0 0 28px;
+    font-size: 1.05rem;
+    border-width: 1px;
+    border-radius: 8px;
+  }
+
+  .piece-tray--inline {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+    gap: 3px;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .piece-tray--inline .piece-slot {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    padding: 0;
+    border-radius: 7px;
+  }
+
+  .piece-tray--inline .quarto-piece {
+    width: 94%;
+    height: 94%;
+  }
+
+  /* The old modal chooser is no longer used on phones. */
+  .piece-picker-dialog { display: none !important; }
 }

@@ -86,6 +86,13 @@
             </div>
             <button id="phone-turn-action" class="button button--primary phone-turn-action" type="button">Choose</button>
           </div>
+          <section id="phone-piece-picker" class="phone-inline-piece-picker" aria-label="Choose opponent's piece" hidden>
+            <div class="phone-inline-piece-picker__heading">
+              <h2>Choose opponent's piece</h2>
+              <button id="close-piece-picker" class="dialog-close phone-inline-piece-picker__close" type="button" aria-label="Close piece chooser">×</button>
+            </div>
+            <div id="phone-piece-tray" class="piece-tray piece-tray--inline" aria-label="Available Quarto pieces"></div>
+          </section>
         </section>
 
         <aside class="side-panel pieces-panel">
@@ -194,16 +201,6 @@
     </form>
   </dialog>
 
-  <dialog id="piece-picker-dialog" class="rules-dialog piece-picker-dialog">
-    <form method="dialog">
-      <div class="dialog-heading piece-picker-heading">
-        <h2>Choose opponent's piece</h2>
-        <button class="dialog-close" value="close" aria-label="Close">×</button>
-      </div>
-      <div id="phone-piece-tray" class="piece-tray piece-tray--dialog" aria-label="Available Quarto pieces"></div>
-    </form>
-  </dialog>
-
   <dialog id="how-to-play-dialog" class="rules-dialog">
     <form method="dialog">
       <div class="dialog-heading">
@@ -213,7 +210,7 @@
       <p>Choose a piece for your opponent. They place it on any empty square, then choose the next piece for you.</p>
       <p>Make a row, column or diagonal of four pieces sharing at least one attribute: tall, short, round, square, either of the two colours, solid or hollow.</p>
       <p class="dialog-note">This version automatically detects Quarto wins in every row, column and diagonal.</p>
-      <p id="help-version" class="help-version">Quarto · v0.1.19</p>
+      <p id="help-version" class="help-version">Quarto · v0.1.20</p>
       <button class="button button--primary" value="close">Close</button>
     </form>
   </dialog>

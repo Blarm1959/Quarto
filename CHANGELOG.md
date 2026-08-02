@@ -1,11 +1,13 @@
 # Changelog
 
-## v0.1.19
+## v0.1.20
 
-- Replaced the full-width How to Play button with a compact ? help icon beside Settings.
-- Added the current release version to the bottom of the How to Play dialog.
-- Both displayed version labels use the same build information source.
-- Updated the PWA cache and release metadata.
+- Replaced the phone piece-picker modal with a compact in-page chooser beneath the board.
+- Keeps the complete 4×4 board and all 16 available pieces visible together without scrolling.
+- Automatically resizes the board to the live phone viewport while the chooser is open.
+- Closing the chooser with × restores the normal game controls and leaves the Choose button available.
+- Tablet, laptop and desktop layouts remain unchanged.
+- Updated the Android PWA cache and release metadata.
 
 ## v0.1.6
 - Added a clear Computer thinking state with a natural delay that scales gently by difficulty.

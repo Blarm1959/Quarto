@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.1.19";
+  const STORAGE_KEY = "quarto.settings.v0.1.20";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
@@ -219,16 +219,16 @@
   }
 
   function setPiecePickerOpen(open) {
-    document.body.classList.toggle("piece-picker-open", Boolean(open));
+    const isOpen = Boolean(open);
+    document.body.classList.toggle("piece-picker-open", isOpen);
+    const picker = document.getElementById("phone-piece-picker");
+    if (picker) picker.hidden = !isOpen;
     schedulePhoneLayoutUpdate();
   }
 
   function openPiecePicker() {
     if (gameState.phase !== "choose-piece" || isComputer(gameState.currentPlayer)) return;
-    const dialog = document.getElementById("piece-picker-dialog");
-    if (!dialog || dialog.open) return;
     setPiecePickerOpen(true);
-    dialog.showModal();
   }
 
   function maybeAutoOpenPiecePicker() {
@@ -239,11 +239,9 @@
     window.requestAnimationFrame(() => {
       if (gameState.phase !== "choose-piece" || isComputer(gameState.currentPlayer)) return;
       if (autoOpenedPickerTurnId === gameState.chooseTurnId) return;
-      const dialog = document.getElementById("piece-picker-dialog");
-      if (!dialog || dialog.open || document.querySelector("dialog[open]")) return;
+      if (document.querySelector("dialog[open]")) return;
       autoOpenedPickerTurnId = gameState.chooseTurnId;
       setPiecePickerOpen(true);
-      dialog.showModal();
     });
   }
 
@@ -275,7 +273,7 @@
 
   function selectPiece(piece, slot) {
     if (gameState.phase !== "choose-piece" || isComputer(gameState.currentPlayer)) return;
-    { const picker=document.getElementById("piece-picker-dialog"); if (picker?.open) picker.close(); setPiecePickerOpen(false); }
+    setPiecePickerOpen(false);
     completePieceSelection(piece, slot);
   }
   function completePieceSelection(piece, slot) {
@@ -425,7 +423,7 @@
     const helpVersion=document.getElementById("help-version");
     if (!element && !helpVersion) return;
     const showVersion=(version, commit="", builtAt="")=>{
-      const cleanVersion=String(version || "0.1.19").replace(/^v/i, "");
+      const cleanVersion=String(version || "0.1.20").replace(/^v/i, "");
       if (element) {
         element.textContent=`Version ${cleanVersion}${commit}`;
         element.title=builtAt ? `Published ${new Date(builtAt).toLocaleString()}` : "";
@@ -444,7 +442,7 @@
       const response=await fetch("package.json",{cache:"no-store"});
       const info=await response.json();
       showVersion(info.version);
-    } catch { showVersion("0.1.19"); }
+    } catch { showVersion("0.1.20"); }
   }
 
   let deferredInstallPrompt = null;
@@ -512,10 +510,11 @@
 
       const shellStyle = getComputedStyle(shell);
       const shellPadding = parseFloat(shellStyle.paddingTop) + parseFloat(shellStyle.paddingBottom);
-      const picker = document.getElementById("piece-picker-dialog");
-      const pickerOpen = Boolean(picker?.open || document.body.classList.contains("piece-picker-open"));
-      const pickerHeight = pickerOpen ? Math.min(252, Math.max(210, Math.floor(viewportHeight * 0.34))) : 0;
-      root.style.setProperty("--piece-picker-height", `${pickerHeight || 252}px`);
+      const picker = document.getElementById("phone-piece-picker");
+      const pickerOpen = document.body.classList.contains("piece-picker-open") && !picker?.hidden;
+      const desiredPickerHeight = pickerOpen ? Math.min(224, Math.max(184, Math.floor(viewportHeight * 0.265))) : 0;
+      root.style.setProperty("--piece-picker-height", `${desiredPickerHeight || 208}px`);
+      const pickerHeight = pickerOpen ? Math.max(desiredPickerHeight, picker?.offsetHeight || 0) : 0;
       const fixedHeight = pickerOpen
         ? header.offsetHeight + pickerHeight
         : header.offsetHeight + dock.offsetHeight + players.offsetHeight + actions.offsetHeight;
@@ -567,9 +566,7 @@
     document.getElementById("phone-turn-action")?.addEventListener("click",()=>{
       if (gameState.phase === "choose-piece" && !isComputer(gameState.currentPlayer)) openPiecePicker();
     });
-    const piecePickerDialog = document.getElementById("piece-picker-dialog");
-    piecePickerDialog?.addEventListener("close",()=>setPiecePickerOpen(false));
-    piecePickerDialog?.addEventListener("cancel",()=>setPiecePickerOpen(false));
+    document.getElementById("close-piece-picker")?.addEventListener("click",()=>setPiecePickerOpen(false));
     document.getElementById("install-app-button")?.addEventListener("click",installApplication);
     document.getElementById("install-app-action")?.addEventListener("click",installApplication);
   }
