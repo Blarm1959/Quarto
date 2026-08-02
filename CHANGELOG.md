@@ -17,3 +17,12 @@
 - Added all 16 generated Quarto pieces.
 - Added piece selection and Current Piece preview.
 - Added favicon and PWA icons.
+
+## v0.0.5
+- Added the full two-player choose-and-place turn loop.
+- The starting player chooses a piece for the opponent.
+- The receiving player places it on any empty board square.
+- The placing player then chooses the next piece for their opponent.
+- Added occupied board rendering and placement animations.
+- Added real move countdown behaviour, including Unlimited mode.
+- Updated phase-specific player and status messages.

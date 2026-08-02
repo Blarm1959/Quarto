@@ -110,12 +110,18 @@
     return svg;
   }
 
-  function createRemainingPieces(onSelect) {
+  function getPiece(pieceId) {
+    return PIECES.find(piece => piece.id === Number(pieceId)) || null;
+  }
+
+  function createRemainingPieces(onSelect, remainingPieceIds = PIECES.map(piece => piece.id), enabled = true) {
     const tray = document.getElementById("remaining-pieces");
     if (!tray) return;
     tray.replaceChildren();
 
-    for (const piece of PIECES) {
+    for (const pieceId of remainingPieceIds) {
+      const piece = getPiece(pieceId);
+      if (!piece) continue;
       const slot = document.createElement("button");
       slot.type = "button";
       slot.className = "piece-slot";
@@ -123,10 +129,12 @@
       slot.title = describePiece(piece);
       slot.setAttribute("aria-label", `Select ${describePiece(piece)} piece`);
       slot.appendChild(createPieceSvg(piece));
-      slot.addEventListener("click", () => onSelect?.(piece, slot));
+      slot.disabled = !enabled;
+      slot.classList.toggle("piece-slot--disabled", !enabled);
+      if (enabled) slot.addEventListener("click", () => onSelect?.(piece, slot));
       tray.appendChild(slot);
     }
   }
 
-  window.QuartoPieces = { PIECES, createPieceSvg, createRemainingPieces, describePiece };
+  window.QuartoPieces = { PIECES, getPiece, createPieceSvg, createRemainingPieces, describePiece };
 })();

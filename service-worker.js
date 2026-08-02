@@ -1,4 +1,4 @@
-const CACHE_NAME = "quarto-v0.0.4";
+const CACHE_NAME = "quarto-v0.0.5";
 const APP_FILES = [
   "./", "./index.html", "./favicon.ico", "./css/style.css",
   "./js/app.js", "./js/board.js", "./js/pieces.js", "./js/rules.js", "./js/storage.js",
