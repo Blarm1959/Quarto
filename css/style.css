@@ -127,7 +127,13 @@ h2 { margin-bottom: 0; font-size: 1.05rem; }
 
 
 /* v0.0.6 automatic Quarto detection */
-.board-cell--winner{position:relative;z-index:1;border-color:#f0b429;box-shadow:inset 0 0 0 5px rgba(240,180,41,.38),0 0 0 3px rgba(255,255,255,.82),0 0 24px rgba(240,180,41,.85);animation:winning-cell-pulse 1.1s ease-in-out infinite}.board-cell--winner .board-piece{animation:winning-piece-pulse 1.1s ease-in-out infinite}.player-card--winner{border-color:#d99b13;box-shadow:0 0 0 3px rgba(240,180,41,.2),var(--shadow)}.turn-badge--winner{color:#5b3c00;background:#ffe6a3}@keyframes winning-cell-pulse{0%,100%{transform:scale(1)}50%{transform:scale(.975)}}@keyframes winning-piece-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.075)}}
+.board-cell--winner{position:relative;z-index:1;border-color:#ffffff;
+animation:winning-cell-rb .5s linear infinite;}
+@keyframes winning-cell-rb{
+0%,100%{box-shadow:inset 0 0 0 4px rgba(220,40,40,.95),0 0 18px rgba(220,40,40,.9);}
+50%{box-shadow:inset 0 0 0 4px rgba(40,110,255,.95),0 0 18px rgba(40,110,255,.9);}
+}
+.board-cell--winnerl-pulse 1.1s ease-in-out infinite}.board-cell--winner .board-piece{animation:winning-piece-pulse 1.1s ease-in-out infinite}.player-card--winner{border-color:#d99b13;box-shadow:0 0 0 3px rgba(240,180,41,.2),var(--shadow)}.turn-badge--winner{color:#5b3c00;background:#ffe6a3}@keyframes winning-cell-pulse{0%,100%{transform:scale(1)}50%{transform:scale(.975)}}@keyframes winning-piece-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.075)}}
 
 
 /* v0.0.7 responsive laptop, tablet and phone layout */
