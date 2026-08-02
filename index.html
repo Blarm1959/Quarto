@@ -1,23 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Quarto</title>
-<link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111111">
+  <meta name="description" content="A clean, responsive Quarto board game Progressive Web App.">
+  <title>Quarto</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/quarto-192.png">
+  <link rel="apple-touch-icon" href="icons/quarto-192.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<header>
-<h1>Quarto</h1>
-<div id="status">Player 1 <span id="timer">30</span></div>
-</header>
+  <div class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Classic strategy game</p>
+        <h1>Quarto</h1>
+      </div>
+      <button id="settings-button" class="icon-button" type="button" aria-label="Open game setup" title="Game setup">
+        <span aria-hidden="true">⚙</span>
+      </button>
+    </header>
 
-<main>
-<div id="current-piece">Current Piece</div>
-<div class="board"></div>
-</main>
+    <main class="game-layout">
+      <section class="player-strip" aria-label="Players and timer">
+        <article id="player-card-1" class="player-card player-card--active">
+          <span class="player-label">Player 1</span>
+          <strong id="player-name-1">Player 1</strong>
+          <span id="player-state-1" class="turn-badge">Choosing a piece</span>
+        </article>
 
-<script src="js/app.js"></script>
+        <div class="timer-card" aria-label="Move timer">
+          <span>Move timer</span>
+          <strong id="timer">00:30</strong>
+        </div>
+
+        <article id="player-card-2" class="player-card">
+          <span class="player-label">Player 2</span>
+          <strong id="player-name-2">Player 2</strong>
+          <span id="player-state-2" class="waiting-label">Waiting</span>
+        </article>
+      </section>
+
+      <section class="game-stage">
+        <aside class="side-panel current-panel">
+          <div class="panel-heading">
+            <h2>Current piece</h2>
+            <span id="current-piece-for" class="panel-kicker">For Player 2</span>
+          </div>
+          <div id="current-piece" class="current-piece" aria-label="Current piece" aria-live="polite">
+            <div class="empty-piece-message">
+              <span class="empty-piece-icon" aria-hidden="true">?</span>
+              <span>No piece selected</span>
+            </div>
+          </div>
+          <p id="current-piece-help" class="panel-help">Player 1 chooses a piece for Player 2 to place.</p>
+        </aside>
+
+        <section class="board-section" aria-label="Quarto board">
+          <div class="board-frame">
+            <div id="board" class="board" role="grid" aria-label="Empty four by four Quarto board"></div>
+          </div>
+          <div id="status" class="status-message" role="status" aria-live="polite">
+            Player 1: choose any piece for Player 2.
+          </div>
+        </section>
+
+        <aside class="side-panel pieces-panel">
+          <div class="panel-heading">
+            <h2>Available pieces</h2>
+            <span id="piece-count" class="piece-count">16 remaining</span>
+          </div>
+          <div id="remaining-pieces" class="piece-tray" aria-label="Available Quarto pieces"></div>
+          <p class="panel-help">Each piece is tall or short, round or square, light or dark, and solid or hole.</p>
+        </aside>
+      </section>
+
+      <section class="action-bar" aria-label="Game controls">
+        <button id="new-game-button" class="button button--primary" type="button">New game</button>
+        <button id="how-to-play-button" class="button button--secondary" type="button">How to play</button>
+        <p class="version">Version 0.0.4 - animated selection and game setup</p>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="new-game-dialog" class="rules-dialog setup-dialog">
+    <form id="new-game-form" method="dialog">
+      <div class="dialog-heading">
+        <div>
+          <p class="dialog-eyebrow">Game setup</p>
+          <h2>New game</h2>
+        </div>
+        <button class="dialog-close" value="cancel" aria-label="Close">×</button>
+      </div>
+
+      <div class="setup-grid">
+        <label class="field-label" for="player-1-input">Player 1 name
+          <input id="player-1-input" class="text-input" type="text" maxlength="24" autocomplete="off" placeholder="Player 1">
+        </label>
+        <label class="field-label" for="player-2-input">Player 2 name
+          <input id="player-2-input" class="text-input" type="text" maxlength="24" autocomplete="off" placeholder="Player 2">
+        </label>
+      </div>
+
+      <fieldset class="setup-fieldset">
+        <legend>Who starts?</legend>
+        <div class="choice-grid">
+          <label><input type="radio" name="starter" value="random" checked> Random</label>
+          <label><input type="radio" name="starter" value="alternate"> Alternate</label>
+          <label><input type="radio" name="starter" value="0"> Player 1</label>
+          <label><input type="radio" name="starter" value="1"> Player 2</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="setup-fieldset">
+        <legend>Move timer</legend>
+        <div class="choice-grid">
+          <label><input type="radio" name="timer" value="30" checked> 30 seconds</label>
+          <label><input type="radio" name="timer" value="45"> 45 seconds</label>
+          <label><input type="radio" name="timer" value="60"> 60 seconds</label>
+          <label><input type="radio" name="timer" value="0"> Unlimited</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="setup-fieldset">
+        <legend>Piece colours</legend>
+        <div class="colour-grid">
+          <label class="colour-field" for="light-colour-input">
+            <span>Light pieces</span>
+            <input id="light-colour-input" type="color" value="#2668b2">
+          </label>
+          <label class="colour-field" for="dark-colour-input">
+            <span>Dark pieces</span>
+            <input id="dark-colour-input" type="color" value="#c83d4b">
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="dialog-actions">
+        <button class="button button--secondary" value="cancel" type="button" id="cancel-new-game">Cancel</button>
+        <button class="button button--primary" type="submit">Start game</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="how-to-play-dialog" class="rules-dialog">
+    <form method="dialog">
+      <div class="dialog-heading">
+        <h2>How to play</h2>
+        <button class="dialog-close" value="close" aria-label="Close">×</button>
+      </div>
+      <p>Choose a piece for your opponent. They place it on any empty square, then choose the next piece for you.</p>
+      <p>Make a row, column or diagonal of four pieces sharing at least one attribute: tall, short, round, square, light, dark, solid or hole.</p>
+      <p class="dialog-note">Piece placement and win detection are added in the next versions.</p>
+      <button class="button button--primary" value="close">Close</button>
+    </form>
+  </dialog>
+
+  <script src="js/pieces.js"></script>
+  <script src="js/board.js"></script>
+  <script src="js/rules.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
