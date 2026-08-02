@@ -75,7 +75,7 @@
           </div>
           <div id="remaining-pieces" class="piece-tray" aria-label="Available Quarto pieces"></div>
           <button id="open-piece-picker" class="button button--primary phone-piece-picker-button" type="button">Choose a piece</button>
-          <p class="panel-help">Each piece is tall or short, round or square, light or dark, and solid or hole.</p>
+          <p id="piece-attributes-help" class="panel-help">Each piece is tall or short, round or square, black or white, and solid or hollow.</p>
         </aside>
       </section>
 
@@ -141,16 +141,15 @@
       </fieldset>
 
       <fieldset class="setup-fieldset">
-        <legend>Piece colours</legend>
-        <div class="colour-grid">
-          <label class="colour-field" for="light-colour-input">
-            <span>Light pieces</span>
-            <input id="light-colour-input" type="color" value="#2668b2">
-          </label>
-          <label class="colour-field" for="dark-colour-input">
-            <span>Dark pieces</span>
-            <input id="dark-colour-input" type="color" value="#c83d4b">
-          </label>
+        <legend>Piece style</legend>
+        <div class="mode-choice-grid piece-style-grid">
+          <label class="mode-choice piece-style-choice"><input type="radio" name="pieceStyle" value="classic" checked><span><strong>Classic</strong><small>Clear traditional shapes · Black / White</small></span></label>
+          <label class="mode-choice piece-style-choice"><input type="radio" name="pieceStyle" value="modern"><span><strong>Modern</strong><small>Smooth contemporary shapes · Red / Blue</small></span></label>
+        </div>
+        <label class="custom-colour-toggle"><input id="custom-colours-input" type="checkbox"> Choose different colours</label>
+        <div id="custom-colour-fields" class="colour-grid" hidden>
+          <label class="colour-field" for="colour-a-input"><span>First colour</span><span class="colour-control"><input id="colour-a-input" type="color" value="#f4f1e8"><input id="colour-a-name-input" class="text-input colour-name-input" type="text" maxlength="18" value="White" aria-label="First colour name"></span></label>
+          <label class="colour-field" for="colour-b-input"><span>Second colour</span><span class="colour-control"><input id="colour-b-input" type="color" value="#17191c"><input id="colour-b-name-input" class="text-input colour-name-input" type="text" maxlength="18" value="Black" aria-label="Second colour name"></span></label>
         </div>
       </fieldset>
 
@@ -179,7 +178,7 @@
         <button class="dialog-close" value="close" aria-label="Close">×</button>
       </div>
       <p>Choose a piece for your opponent. They place it on any empty square, then choose the next piece for you.</p>
-      <p>Make a row, column or diagonal of four pieces sharing at least one attribute: tall, short, round, square, light, dark, solid or hole.</p>
+      <p>Make a row, column or diagonal of four pieces sharing at least one attribute: tall, short, round, square, either of the two colours, solid or hollow.</p>
       <p class="dialog-note">This version automatically detects Quarto wins in every row, column and diagonal.</p>
       <button class="button button--primary" value="close">Close</button>
     </form>

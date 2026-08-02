@@ -1,15 +1,19 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.0.12";
+  const STORAGE_KEY = "quarto.settings.v0.0.13";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
     difficulty: 5,
     starterMode: "random",
     timerSeconds: 30,
-    lightColour: "#2668b2",
-    darkColour: "#c83d4b",
+    pieceStyle: "classic",
+    useCustomColours: false,
+    colourA: "#f4f1e8",
+    colourB: "#17191c",
+    colourAName: "White",
+    colourBName: "Black",
     lastStarter: 1
   };
 
@@ -24,8 +28,9 @@
   function loadSettings() {
     try {
       const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-      const previous = JSON.parse(localStorage.getItem("quarto.settings.v0.0.11") || "{}");
-      return { ...DEFAULT_SETTINGS, ...previous, ...current };
+      const previous12 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.12") || "{}");
+      const previous11 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.11") || "{}");
+      return { ...DEFAULT_SETTINGS, ...previous11, ...previous12, ...current };
     } catch { return { ...DEFAULT_SETTINGS }; }
   }
 
@@ -43,8 +48,9 @@
     return Math.random() < 0.5 ? 0 : 1;
   }
   function applyTheme() {
-    document.documentElement.style.setProperty("--light-piece", gameState.settings.lightColour);
-    document.documentElement.style.setProperty("--dark-piece", gameState.settings.darkColour);
+    const appearance = window.QuartoPieces.configureAppearance(gameState.settings);
+    const help = document.getElementById("piece-attributes-help");
+    if (help) help.textContent = `Each piece is tall or short, round or square, ${appearance.colourAName.toLowerCase()} or ${appearance.colourBName.toLowerCase()}, and solid or hollow.`;
   }
   function formatTimer(seconds) { return gameState.settings.timerSeconds ? `00:${String(Math.max(0, seconds)).padStart(2, "0")}` : "∞"; }
   function stopTimer() { if (gameState.timerHandle) clearInterval(gameState.timerHandle); gameState.timerHandle = null; }
@@ -73,10 +79,18 @@
     if (gameState.phase === "place-piece") return `${playerName(gameState.currentPlayer)}: place the selected piece on any empty square.`;
     return `${playerName(gameState.currentPlayer)}: choose any piece for ${playerName(gameState.receivingPlayer)}.`;
   }
+  function displayAttribute(attribute) {
+    const [colourA, colourB] = window.QuartoPieces.getColourNames();
+    if (attribute === "Light") return colourA;
+    if (attribute === "Dark") return colourB;
+    if (attribute === "Hole") return "Hollow";
+    return attribute;
+  }
   function formatWinningAttributes(attributes) {
-    if (attributes.length === 1) return `4 ${attributes[0]} pieces`;
-    if (attributes.length === 2) return `4 ${attributes[0]} & 4 ${attributes[1]} pieces`;
-    return attributes.map((attribute,index) => index === attributes.length - 1 ? `& 4 ${attribute} pieces` : `4 ${attribute}`).join(", ");
+    const displayed = attributes.map(displayAttribute);
+    if (displayed.length === 1) return `4 ${displayed[0].toLowerCase()} pieces`;
+    if (displayed.length === 2) return `4 ${displayed[0].toLowerCase()} & 4 ${displayed[1].toLowerCase()} pieces`;
+    return displayed.map((attribute,index) => index === displayed.length - 1 ? `& 4 ${attribute.toLowerCase()} pieces` : `4 ${attribute.toLowerCase()}`).join(", ");
   }
 
   function renderPlayers() {
@@ -190,6 +204,10 @@
     document.getElementById("difficulty-field").hidden = mode !== "computer";
     document.getElementById("player-2-field").hidden = mode === "computer";
   }
+  function updateCustomColourFields() {
+    const fields = document.getElementById("custom-colour-fields");
+    if (fields) fields.hidden = !document.getElementById("custom-colours-input").checked;
+  }
   function updateDifficultyLabel() {
     const level=Number(document.getElementById("difficulty-input").value);
     document.getElementById("difficulty-name").textContent=`Level ${level} · ${difficultyName(level)}`;
@@ -201,9 +219,13 @@
     document.querySelector(`input[name="starter"][value="${gameState.settings.starterMode}"]`)?.click();
     document.querySelector(`input[name="timer"][value="${gameState.settings.timerSeconds}"]`)?.click();
     document.getElementById("difficulty-input").value=String(gameState.settings.difficulty);
-    document.getElementById("light-colour-input").value=gameState.settings.lightColour;
-    document.getElementById("dark-colour-input").value=gameState.settings.darkColour;
-    updateSetupMode(); updateDifficultyLabel();
+    document.querySelector(`input[name="pieceStyle"][value="${gameState.settings.pieceStyle || "classic"}"]`)?.click();
+    document.getElementById("custom-colours-input").checked=gameState.settings.useCustomColours===true;
+    document.getElementById("colour-a-input").value=gameState.settings.colourA || "#f4f1e8";
+    document.getElementById("colour-b-input").value=gameState.settings.colourB || "#17191c";
+    document.getElementById("colour-a-name-input").value=gameState.settings.colourAName || "White";
+    document.getElementById("colour-b-name-input").value=gameState.settings.colourBName || "Black";
+    updateCustomColourFields(); updateSetupMode(); updateDifficultyLabel();
   }
   function startFromDialog(event) {
     event.preventDefault(); const data=new FormData(event.currentTarget);
@@ -211,7 +233,12 @@
     gameState.settings.difficulty=Number(data.get("difficulty")||5);
     gameState.settings.playerNames=[document.getElementById("player-1-input").value.trim()||"Player 1",document.getElementById("player-2-input").value.trim()||"Player 2"];
     gameState.settings.starterMode=String(data.get("starter")||"random"); gameState.settings.timerSeconds=Number(data.get("timer")||30);
-    gameState.settings.lightColour=document.getElementById("light-colour-input").value; gameState.settings.darkColour=document.getElementById("dark-colour-input").value;
+    gameState.settings.pieceStyle=String(data.get("pieceStyle")||"classic");
+    gameState.settings.useCustomColours=document.getElementById("custom-colours-input").checked;
+    gameState.settings.colourA=document.getElementById("colour-a-input").value;
+    gameState.settings.colourB=document.getElementById("colour-b-input").value;
+    gameState.settings.colourAName=document.getElementById("colour-a-name-input").value.trim()||"Colour 1";
+    gameState.settings.colourBName=document.getElementById("colour-b-name-input").value.trim()||"Colour 2";
     saveSettings(); document.getElementById("new-game-dialog").close(); resetGame(gameState.settings.starterMode);
   }
   async function renderApplicationVersion() {
@@ -224,6 +251,16 @@
     document.getElementById("cancel-new-game")?.addEventListener("click",()=>setup.close()); document.getElementById("new-game-form")?.addEventListener("submit",startFromDialog);
     document.querySelectorAll('input[name="gameMode"]').forEach(input=>input.addEventListener("change",updateSetupMode));
     document.getElementById("difficulty-input")?.addEventListener("input",updateDifficultyLabel);
+    document.getElementById("custom-colours-input")?.addEventListener("change",updateCustomColourFields);
+    document.querySelectorAll('input[name="pieceStyle"]').forEach(input=>input.addEventListener("change",()=>{
+      if (!document.getElementById("custom-colours-input").checked) {
+        const defaults=window.QuartoPieces.STYLE_DEFAULTS[input.value];
+        document.getElementById("colour-a-input").value=defaults.colourA;
+        document.getElementById("colour-b-input").value=defaults.colourB;
+        document.getElementById("colour-a-name-input").value=defaults.colourAName;
+        document.getElementById("colour-b-name-input").value=defaults.colourBName;
+      }
+    }));
     document.getElementById("how-to-play-button")?.addEventListener("click",()=>document.getElementById("how-to-play-dialog")?.showModal());
     document.getElementById("open-piece-picker")?.addEventListener("click",()=>document.getElementById("piece-picker-dialog")?.showModal());
   }

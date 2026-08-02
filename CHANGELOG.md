@@ -1,3 +1,14 @@
+# Changelog
+
+## v0.0.13
+
+- Added **Classic** piece style with clear traditional cylinders and rectangular pieces.
+- Retained the existing artwork as the **Modern** piece style.
+- Classic defaults to black and white; Modern defaults to red and blue.
+- Added an optional custom-colour override.
+- Updated piece descriptions and winning messages to use the colours currently shown.
+- Changed player-facing “hole” wording to the clearer “hollow”.
+
 ## v0.0.12
 - Added a playable one-player mode against the computer.
 - Added a 1–10 difficulty control grouped as Beginner, Intermediate and Expert.
