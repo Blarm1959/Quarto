@@ -348,3 +348,361 @@ body { overflow-x: hidden; }
   .action-bar { min-height: 38px; padding: 3px 5px; }
   .button { min-height: 34px; }
 }
+
+
+/* v0.0.10: 13-inch laptop and compact-screen layout */
+:root {
+  --compact-stage-height: calc(100dvh - 178px);
+}
+
+.app-shell {
+  width: min(1480px, 100%);
+  padding: 8px clamp(8px, 1.2vw, 18px) 10px;
+}
+
+.app-header {
+  min-height: 36px;
+  margin-bottom: 5px;
+}
+
+.app-header .eyebrow {
+  display: none;
+}
+
+.app-header h1 {
+  font-size: clamp(1.65rem, 2.25vw, 2.25rem);
+}
+
+.icon-button {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+}
+
+.game-layout {
+  gap: 6px;
+}
+
+.player-strip {
+  grid-template-columns: minmax(0, 1fr) 118px minmax(0, 1fr);
+  gap: 7px;
+}
+
+.player-card,
+.timer-card {
+  min-height: 54px;
+  border-radius: 12px;
+}
+
+.player-card {
+  padding: 6px 10px;
+}
+
+.player-card strong {
+  margin: 0 0 3px;
+  font-size: .96rem;
+}
+
+.player-label,
+.timer-card span,
+.panel-kicker,
+.piece-count,
+.waiting-label {
+  font-size: .64rem;
+}
+
+.turn-badge {
+  padding: 2px 7px;
+  font-size: .66rem;
+}
+
+.timer-card {
+  padding: 5px 8px;
+}
+
+.timer-card strong {
+  font-size: 1.42rem;
+}
+
+.game-stage {
+  grid-template-columns:
+    minmax(145px, .56fr)
+    minmax(350px, 1.34fr)
+    minmax(225px, .86fr);
+  gap: 8px;
+  align-items: start;
+}
+
+.side-panel {
+  padding: 9px;
+  border-radius: 14px;
+}
+
+.panel-heading {
+  margin-bottom: 6px;
+}
+
+.panel-heading h2 {
+  font-size: .94rem;
+}
+
+.current-piece {
+  min-height: clamp(118px, 20vh, 168px);
+  border-radius: 12px;
+}
+
+.current-piece-visual {
+  width: min(66%, 138px);
+}
+
+.current-piece .quarto-piece {
+  width: min(66%, 138px);
+  height: min(66%, 138px);
+}
+
+.empty-piece-icon {
+  width: 50px;
+  height: 50px;
+}
+
+.panel-help {
+  margin-top: 6px;
+  font-size: .72rem;
+  line-height: 1.24;
+}
+
+.board-section {
+  width: min(100%, var(--compact-stage-height));
+  max-width: 520px;
+}
+
+.board-frame {
+  padding: 7px;
+  border-width: 4px;
+  border-radius: 16px;
+}
+
+.board-frame::after {
+  inset: 3px;
+  border-radius: 11px;
+}
+
+.board {
+  gap: 6px;
+}
+
+.board-cell {
+  border-radius: 7px;
+}
+
+.status-message {
+  min-height: 32px;
+  margin-top: 5px;
+  padding: 5px 9px;
+  border-radius: 9px;
+  font-size: .79rem;
+  line-height: 1.15;
+}
+
+.piece-tray {
+  gap: 5px;
+}
+
+.piece-slot {
+  min-height: 0;
+  padding: 1px;
+  border-radius: 8px;
+}
+
+.pieces-panel .panel-help {
+  margin-bottom: 0;
+}
+
+.action-bar {
+  min-height: 38px;
+  gap: 7px;
+  padding: 4px 7px;
+  border-radius: 12px;
+}
+
+.button {
+  min-height: 32px;
+  padding: 0 13px;
+  border-radius: 9px;
+  font-size: .8rem;
+}
+
+.version {
+  font-size: .7rem;
+  white-space: nowrap;
+}
+
+/*
+  Keep the three-column game layout down to 900 CSS pixels.
+  This is important on laptops using 125% Windows display scaling.
+*/
+@media (min-width: 900px) {
+  .app-shell {
+    max-width: 1480px;
+  }
+
+  .game-stage {
+    display: grid;
+    grid-template-columns:
+      minmax(145px, .56fr)
+      minmax(350px, 1.34fr)
+      minmax(225px, .86fr);
+    grid-template-areas: none;
+  }
+
+  .board-section,
+  .current-panel,
+  .pieces-panel {
+    grid-area: auto;
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .piece-tray {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Extra compression for 1366x768-class displays and scaled laptop screens. */
+@media (min-width: 900px) and (max-height: 720px) {
+  :root {
+    --compact-stage-height: calc(100dvh - 163px);
+  }
+
+  .app-shell {
+    padding-top: 5px;
+    padding-bottom: 6px;
+  }
+
+  .app-header {
+    min-height: 31px;
+    margin-bottom: 3px;
+  }
+
+  .app-header h1 {
+    font-size: 1.55rem;
+  }
+
+  .icon-button {
+    width: 34px;
+    height: 34px;
+  }
+
+  .game-layout {
+    gap: 4px;
+  }
+
+  .player-card,
+  .timer-card {
+    min-height: 48px;
+  }
+
+  .player-card {
+    padding: 4px 9px;
+  }
+
+  .player-card strong {
+    font-size: .9rem;
+  }
+
+  .timer-card strong {
+    font-size: 1.25rem;
+  }
+
+  .side-panel {
+    padding: 7px;
+  }
+
+  .current-piece {
+    min-height: clamp(104px, 18vh, 142px);
+  }
+
+  .panel-help {
+    font-size: .67rem;
+  }
+
+  .board-frame {
+    padding: 6px;
+  }
+
+  .status-message {
+    min-height: 28px;
+    margin-top: 4px;
+    padding-block: 4px;
+    font-size: .73rem;
+  }
+
+  .action-bar {
+    min-height: 34px;
+    padding-block: 3px;
+  }
+
+  .button {
+    min-height: 28px;
+  }
+}
+
+/* Tablet layout begins below 900px instead of 1120px. */
+@media (min-width: 741px) and (max-width: 899px) {
+  .app-shell {
+    max-width: 880px;
+  }
+
+  .game-stage {
+    grid-template-columns: minmax(320px, 1.25fr) minmax(215px, .75fr);
+    grid-template-areas:
+      "board current"
+      "board pieces";
+    gap: 7px;
+  }
+
+  .board-section {
+    grid-area: board;
+    width: 100%;
+  }
+
+  .current-panel {
+    grid-area: current;
+  }
+
+  .pieces-panel {
+    grid-area: pieces;
+  }
+
+  .current-piece {
+    min-height: 125px;
+  }
+
+  .piece-tray {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Preserve the established phone layouts but remove unnecessary vertical space. */
+@media (max-width: 740px) {
+  :root {
+    --compact-stage-height: auto;
+  }
+
+  .app-shell {
+    padding: 6px 7px 9px;
+  }
+
+  .app-header {
+    min-height: 34px;
+    margin-bottom: 4px;
+  }
+
+  .game-layout {
+    gap: 6px;
+  }
+
+  .action-bar {
+    min-height: 38px;
+  }
+}

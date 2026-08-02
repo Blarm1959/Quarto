@@ -1,3 +1,11 @@
+## v0.0.10
+- Optimised the full game for 1366x768-class 13-inch laptop screens at 100% browser zoom.
+- Kept the three-column layout down to 900 CSS pixels for laptops using Windows display scaling.
+- Reduced non-game spacing while preserving a practical board size.
+- Made the footer version read automatically from package.json.
+- Kept the existing tablet, phone portrait and phone landscape layouts.
+- Updated the service-worker cache to prevent stale v0.0.7 files being shown.
+
 ## v0.0.7
 - Reworked the layout for 15-inch laptops at 100% browser zoom.
 - Added dedicated desktop, compact-laptop, tablet, phone portrait and phone landscape layouts.

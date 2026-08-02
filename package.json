@@ -1,6 +1,6 @@
 {
   "name": "quarto",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A responsive Progressive Web App implementation of Quarto",
   "private": true,
   "scripts": {

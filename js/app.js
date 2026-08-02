@@ -296,6 +296,26 @@
     resetGame(gameState.settings.starterMode);
   }
 
+
+  async function renderApplicationVersion() {
+    const versionElement = document.getElementById("app-version");
+    if (!versionElement) return;
+
+    try {
+      const response = await fetch("package.json", { cache: "no-store" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const packageInfo = await response.json();
+      const version = String(packageInfo.version || "").trim();
+
+      versionElement.textContent = version
+        ? `Version ${version}`
+        : "Quarto";
+    } catch {
+      versionElement.textContent = "Quarto";
+    }
+  }
+
   function bindControls() {
     const setupDialog = document.getElementById("new-game-dialog");
     const openSetup = () => { populateSetupDialog(); setupDialog.showModal(); };
@@ -309,6 +329,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     bindControls();
+    renderApplicationVersion();
     resetGame(gameState.settings.starterMode);
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js").catch(() => {});
   });
