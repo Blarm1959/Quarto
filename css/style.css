@@ -992,3 +992,47 @@ body { overflow-x: hidden; }
     font-size: .49rem;
   }
 }
+
+/* v0.0.12: first polished game setup and phone piece picker */
+.phone-piece-picker-button { display: none; }
+.mode-choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.mode-choice { position: relative; cursor: pointer; }
+.mode-choice input { position: absolute; opacity: 0; pointer-events: none; }
+.mode-choice span { display: grid; gap: 3px; min-height: 74px; padding: 13px; border: 2px solid var(--line); border-radius: 14px; background: var(--surface-soft); transition: .18s ease; }
+.mode-choice strong { color: var(--ink); }
+.mode-choice small { color: var(--muted); line-height: 1.25; }
+.mode-choice input:checked + span { border-color: var(--navy-2); background: #eaf3fc; box-shadow: 0 0 0 3px rgba(36,91,150,.10); }
+.difficulty-field { margin: 14px 0; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-soft); }
+.difficulty-field[hidden], .field-label[hidden] { display: none; }
+.difficulty-field > div:first-child { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.difficulty-field > div:first-child span { color: var(--navy-2); font-weight: 700; }
+.difficulty-field input[type="range"] { width: 100%; accent-color: var(--navy-2); }
+.difficulty-scale { display: flex; justify-content: space-between; margin-top: 4px; color: var(--muted); font-size: .72rem; }
+.piece-picker-dialog { width: min(94vw, 520px); }
+.piece-tray--dialog { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 14px; }
+.piece-tray--dialog .piece-slot { min-height: 82px; }
+body[data-computer-turn="true"] .board-cell:not(.board-cell--occupied) { cursor: wait; }
+
+@media (max-width: 740px) and (orientation: portrait) {
+  .app-header { padding-inline: 2px; }
+  .app-header h1 { font-size: 1.55rem; }
+  .player-strip { order: 2; }
+  .game-stage { order: 1; }
+  .action-bar { order: 3; }
+  .board-frame { box-shadow: 0 12px 28px rgba(12,24,37,.20); }
+  .board-cell { border-radius: 10px; }
+  .status-message { font-weight: 650; }
+  body[data-phase="choose-piece"] .pieces-panel { display: block; padding: 6px; background: transparent; border: 0; box-shadow: none; }
+  body[data-phase="choose-piece"] .pieces-panel .panel-heading,
+  body[data-phase="choose-piece"] .pieces-panel .piece-tray,
+  body[data-phase="choose-piece"] .pieces-panel .panel-help { display: none; }
+  .phone-piece-picker-button { display: flex; width: 100%; min-height: 48px; font-size: .98rem; }
+  .piece-picker-dialog { width: calc(100% - 16px); max-width: none; margin: auto 8px 8px; border-radius: 22px 22px 14px 14px; }
+  .piece-picker-dialog::backdrop { background: rgba(8,18,29,.64); backdrop-filter: blur(3px); }
+  .piece-picker-dialog form { padding: 14px; }
+  .piece-picker-dialog h2 { font-size: 1.25rem; }
+  .piece-tray--dialog { gap: 7px; }
+  .piece-tray--dialog .piece-slot { min-height: 0; aspect-ratio: 1; border-radius: 12px; }
+  .mode-choice-grid { grid-template-columns: 1fr; }
+  .mode-choice span { min-height: 62px; }
+}

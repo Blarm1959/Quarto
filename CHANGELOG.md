@@ -1,3 +1,12 @@
+## v0.0.12
+- Added a playable one-player mode against the computer.
+- Added a 1–10 difficulty control grouped as Beginner, Intermediate and Expert.
+- Added an initial difficulty-aware computer strategy for placing and selecting pieces.
+- Added a dedicated phone piece-selection bottom sheet with large touch targets.
+- Improved the phone game hierarchy so the board is shown before secondary information.
+- Added a clearer game-mode selector to New Game setup.
+- Updated project metadata, documentation and offline cache to v0.0.12.
+
 ## v0.0.11
 - Added a dedicated phone portrait layout tested at 360 x 740 CSS pixels.
 - Enlarged the board to almost the full phone width.

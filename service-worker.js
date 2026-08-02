@@ -1,7 +1,7 @@
-const CACHE_NAME = "quarto-v0.0.11";
+const CACHE_NAME = "quarto-v0.0.12";
 const APP_FILES = [
   "./", "./index.html", "./favicon.ico", "./css/style.css",
-  "./js/app.js", "./js/board.js", "./js/pieces.js", "./js/rules.js", "./js/storage.js",
+  "./js/app.js", "./js/board.js", "./js/pieces.js", "./js/rules.js", "./js/storage.js", "./js/ai.js",
   "./manifest.json", "./icons/quarto-192.png", "./icons/quarto-512.png"
 ];
 self.addEventListener("install", event => {

@@ -114,8 +114,8 @@
     return PIECES.find(piece => piece.id === Number(pieceId)) || null;
   }
 
-  function createRemainingPieces(onSelect, remainingPieceIds = PIECES.map(piece => piece.id), enabled = true) {
-    const tray = document.getElementById("remaining-pieces");
+  function createRemainingPieces(onSelect, remainingPieceIds = PIECES.map(piece => piece.id), enabled = true, container = null) {
+    const tray = container || document.getElementById("remaining-pieces");
     if (!tray) return;
     tray.replaceChildren();
 

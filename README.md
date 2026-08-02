@@ -1,10 +1,10 @@
 # Quarto
 
-A lightweight Progressive Web App implementation of the strategy game Quarto.
+A responsive Progressive Web App implementation of the strategy game Quarto.
 
 ## Current version
 
-v0.0.10
+v0.0.12
 
 ## Run locally
 
@@ -13,13 +13,14 @@ npm install
 npm start
 ```
 
-Open `http://127.0.0.1:8080`.
+Open `http://127.0.0.1:8004`.
 
-## Next milestone
+## Current features
 
-v0.0.5 will add placing the selected piece onto the board.
-
-## v0.0.5 gameplay
-The app now supports the core two-player Quarto turn loop: choose a piece for the opponent, place the received piece on the board, then choose the next piece. Automatic Quarto detection is planned for the next milestone.
-
-- Responsive phone and laptop layouts, including portrait and landscape play.
+- One-player games against a computer opponent with difficulty levels 1–10.
+- Two-player games on the same device.
+- Dedicated phone, tablet, laptop and desktop layouts.
+- Phone-first piece-selection dialog and large touch targets.
+- Automatic Quarto detection for rows, columns and diagonals.
+- Configurable player names, starter, timer and piece colours.
+- Installable Progressive Web App support.

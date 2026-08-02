@@ -74,6 +74,7 @@
             <span id="piece-count" class="piece-count">16 remaining</span>
           </div>
           <div id="remaining-pieces" class="piece-tray" aria-label="Available Quarto pieces"></div>
+          <button id="open-piece-picker" class="button button--primary phone-piece-picker-button" type="button">Choose a piece</button>
           <p class="panel-help">Each piece is tall or short, round or square, light or dark, and solid or hole.</p>
         </aside>
       </section>
@@ -96,11 +97,25 @@
         <button class="dialog-close" value="cancel" aria-label="Close">×</button>
       </div>
 
+      <fieldset class="setup-fieldset setup-fieldset--mode">
+        <legend>Game mode</legend>
+        <div class="mode-choice-grid">
+          <label class="mode-choice"><input type="radio" name="gameMode" value="computer" checked><span><strong>One player</strong><small>Play against the computer</small></span></label>
+          <label class="mode-choice"><input type="radio" name="gameMode" value="two-player"><span><strong>Two players</strong><small>Share this device</small></span></label>
+        </div>
+      </fieldset>
+
+      <div id="difficulty-field" class="difficulty-field">
+        <div><strong>Computer difficulty</strong><span id="difficulty-name">Intermediate</span></div>
+        <input id="difficulty-input" name="difficulty" type="range" min="1" max="10" step="1" value="5">
+        <div class="difficulty-scale"><span>1 Beginner</span><span>10 Expert</span></div>
+      </div>
+
       <div class="setup-grid">
         <label class="field-label" for="player-1-input">Player 1 name
           <input id="player-1-input" class="text-input" type="text" maxlength="24" autocomplete="off" placeholder="Player 1">
         </label>
-        <label class="field-label" for="player-2-input">Player 2 name
+        <label class="field-label" id="player-2-field" for="player-2-input">Player 2 name
           <input id="player-2-input" class="text-input" type="text" maxlength="24" autocomplete="off" placeholder="Player 2">
         </label>
       </div>
@@ -146,6 +161,17 @@
     </form>
   </dialog>
 
+  <dialog id="piece-picker-dialog" class="rules-dialog piece-picker-dialog">
+    <form method="dialog">
+      <div class="dialog-heading">
+        <div><p class="dialog-eyebrow">Your turn</p><h2>Choose a piece for your opponent</h2></div>
+        <button class="dialog-close" value="close" aria-label="Close">×</button>
+      </div>
+      <div id="phone-piece-tray" class="piece-tray piece-tray--dialog" aria-label="Available Quarto pieces"></div>
+      <button class="button button--secondary" value="close">Cancel</button>
+    </form>
+  </dialog>
+
   <dialog id="how-to-play-dialog" class="rules-dialog">
     <form method="dialog">
       <div class="dialog-heading">
@@ -163,6 +189,7 @@
   <script src="js/board.js"></script>
   <script src="js/rules.js"></script>
   <script src="js/storage.js"></script>
+  <script src="js/ai.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
