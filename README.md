@@ -4,7 +4,7 @@ A responsive Progressive Web App implementation of the strategy game Quarto.
 
 ## Current version
 
-v0.0.18
+v0.0.19
 
 ## Run locally
 

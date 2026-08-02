@@ -174,7 +174,7 @@
   function renderGame() {
     document.body.dataset.phase = gameState.phase;
     document.body.dataset.computerTurn = String(isComputer(gameState.currentPlayer));
-    renderPlayers(); renderCurrentPiece(); renderTray(); renderBoard(); renderPhoneTurnDock();
+    renderPlayers(); renderCurrentPiece(); renderTray(); renderBoard(); renderPhoneTurnDock(); schedulePhoneLayoutUpdate();
   }
 
   function animatePieceToCurrent(slot) {
@@ -318,6 +318,63 @@
     } catch (error) { console.warn("Quarto service worker registration failed",error); }
   }
 
+  let phoneLayoutFrame = 0;
+  let phoneLayoutTimer = 0;
+
+  function visibleViewportHeight() {
+    const visualHeight = window.visualViewport?.height;
+    return Math.max(0, Math.round(visualHeight || window.innerHeight || document.documentElement.clientHeight));
+  }
+
+  function updatePhoneLayout() {
+    cancelAnimationFrame(phoneLayoutFrame);
+    phoneLayoutFrame = requestAnimationFrame(() => {
+      const root = document.documentElement;
+      const viewportHeight = visibleViewportHeight();
+      root.style.setProperty("--app-viewport-height", `${viewportHeight}px`);
+
+      const phonePortrait = window.matchMedia("(max-width: 740px) and (orientation: portrait)").matches;
+      if (!phonePortrait) {
+        root.style.removeProperty("--phone-board-size");
+        return;
+      }
+
+      const shell = document.querySelector(".app-shell");
+      const header = document.querySelector(".app-header");
+      const dock = document.getElementById("phone-turn-dock");
+      const players = document.querySelector(".player-strip");
+      const actions = document.querySelector(".action-bar");
+      if (!shell || !header || !dock || !players || !actions) return;
+
+      const shellStyle = getComputedStyle(shell);
+      const shellPadding = parseFloat(shellStyle.paddingTop) + parseFloat(shellStyle.paddingBottom);
+      const fixedHeight = header.offsetHeight + dock.offsetHeight + players.offsetHeight + actions.offsetHeight;
+      const verticalGaps = 18;
+      const heightAvailable = Math.floor(viewportHeight - shellPadding - fixedHeight - verticalGaps);
+      const widthAvailable = Math.floor(shell.clientWidth);
+      const boardSize = Math.max(220, Math.min(widthAvailable, heightAvailable));
+      root.style.setProperty("--phone-board-size", `${boardSize}px`);
+    });
+  }
+
+  function schedulePhoneLayoutUpdate() {
+    updatePhoneLayout();
+    clearTimeout(phoneLayoutTimer);
+    phoneLayoutTimer = window.setTimeout(updatePhoneLayout, 120);
+    window.setTimeout(updatePhoneLayout, 360);
+  }
+
+  function bindPhoneViewport() {
+    window.addEventListener("resize", schedulePhoneLayoutUpdate, { passive: true });
+    window.addEventListener("orientationchange", schedulePhoneLayoutUpdate, { passive: true });
+    window.addEventListener("pageshow", schedulePhoneLayoutUpdate, { passive: true });
+    window.visualViewport?.addEventListener("resize", schedulePhoneLayoutUpdate, { passive: true });
+    window.visualViewport?.addEventListener("scroll", schedulePhoneLayoutUpdate, { passive: true });
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) schedulePhoneLayoutUpdate();
+    });
+  }
+
   function bindControls() {
     const setup=document.getElementById("new-game-dialog"); const openSetup=()=>{populateSetupDialog();setup.showModal();};
     document.getElementById("new-game-button")?.addEventListener("click",openSetup); document.getElementById("settings-button")?.addEventListener("click",openSetup);
@@ -333,6 +390,13 @@
     document.getElementById("install-app-action")?.addEventListener("click",installApplication);
   }
 
-  document.addEventListener("DOMContentLoaded",()=>{ bindControls(); renderApplicationVersion(); resetGame(gameState.settings.starterMode); registerPwa(); });
+  document.addEventListener("DOMContentLoaded",()=>{
+    bindControls();
+    bindPhoneViewport();
+    renderApplicationVersion();
+    resetGame(gameState.settings.starterMode);
+    registerPwa();
+    schedulePhoneLayoutUpdate();
+  });
   window.QuartoGame={state:gameState,resetGame};
 })();

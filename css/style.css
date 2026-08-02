@@ -1295,3 +1295,50 @@ body { min-height: 100vh; min-height: 100svh; overscroll-behavior-y: none; -webk
     min-height: 32px;
   }
 }
+
+
+/* v0.0.19: derive the phone play surface from Android's live visual viewport. */
+:root {
+  --app-viewport-height: 100dvh;
+  --phone-board-size: min(100%, calc(var(--app-viewport-height) - 220px));
+}
+
+@media (max-width: 740px) and (orientation: portrait) {
+  html,
+  body {
+    height: var(--app-viewport-height);
+    min-height: var(--app-viewport-height);
+    overscroll-behavior-y: contain;
+  }
+
+  .app-shell {
+    height: var(--app-viewport-height);
+    min-height: var(--app-viewport-height);
+  }
+
+  .game-layout {
+    flex: 1 1 auto;
+    height: auto;
+    overflow: hidden;
+  }
+
+  .game-stage {
+    min-height: 0;
+  }
+
+  .board-section {
+    width: min(100%, var(--phone-board-size));
+    max-width: var(--phone-board-size);
+  }
+
+  .board-frame {
+    width: 100%;
+  }
+
+  .player-strip,
+  .action-bar,
+  .phone-turn-dock,
+  .app-header {
+    flex-shrink: 0;
+  }
+}

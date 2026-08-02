@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "v0.0.18",
-  "githubSource": "v0.0.17",
+  "version": "v0.0.19",
+  "githubSource": "v0.0.18",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Keep the complete phone game screen visible without scrolling"
+  "commit": "Recalculate the phone layout from the live viewport after refresh and resume"
 }

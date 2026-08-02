@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.0.19
+
+- Recalculates the phone play surface from the live visual viewport rather than relying on a fixed `100dvh` assumption.
+- Keeps the board, turn dock, player strip and bottom controls visible after pull-to-refresh, app resume and browser UI changes.
+- Re-runs the calculation after resize, orientation change, page restore and visibility changes.
+- Retains the established tablet, laptop and desktop layouts.
+
 ## v0.0.18
 
 - Fixed the phone portrait layout so CSS Grid no longer stretches large empty gaps between sections.
@@ -98,6 +105,13 @@
 - Fixed the bottom-left to top-right square diagonal case.
 
 # Changelog
+
+## v0.0.19
+
+- Recalculates the phone play surface from the live visual viewport rather than relying on a fixed `100dvh` assumption.
+- Keeps the board, turn dock, player strip and bottom controls visible after pull-to-refresh, app resume and browser UI changes.
+- Re-runs the calculation after resize, orientation change, page restore and visibility changes.
+- Retains the established tablet, laptop and desktop layouts.
 
 ## v0.0.4
 - Added a single game-state object as the source of truth for players, starter, board, pieces and phase.
