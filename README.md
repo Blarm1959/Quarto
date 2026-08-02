@@ -32,3 +32,5 @@ v0.0.5 will add placing the selected piece onto the board.
 
 ## v0.0.5 gameplay
 The app now supports the core two-player Quarto turn loop: choose a piece for the opponent, place the received piece on the board, then choose the next piece. Automatic Quarto detection is planned for the next milestone.
+
+- Responsive phone and laptop layouts, including portrait and landscape play.

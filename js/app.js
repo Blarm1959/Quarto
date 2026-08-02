@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.0.6";
+  const STORAGE_KEY = "quarto.settings.v0.0.7";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Player 2"],
     starterMode: "random",
@@ -197,6 +197,7 @@
   }
 
   function renderGame() {
+    document.body.dataset.phase = gameState.phase;
     renderPlayers();
     renderCurrentPiece();
     renderTray();

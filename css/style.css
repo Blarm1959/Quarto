@@ -128,3 +128,223 @@ h2 { margin-bottom: 0; font-size: 1.05rem; }
 
 /* v0.0.6 automatic Quarto detection */
 .board-cell--winner{position:relative;z-index:1;border-color:#f0b429;box-shadow:inset 0 0 0 5px rgba(240,180,41,.38),0 0 0 3px rgba(255,255,255,.82),0 0 24px rgba(240,180,41,.85);animation:winning-cell-pulse 1.1s ease-in-out infinite}.board-cell--winner .board-piece{animation:winning-piece-pulse 1.1s ease-in-out infinite}.player-card--winner{border-color:#d99b13;box-shadow:0 0 0 3px rgba(240,180,41,.2),var(--shadow)}.turn-badge--winner{color:#5b3c00;background:#ffe6a3}@keyframes winning-cell-pulse{0%,100%{transform:scale(1)}50%{transform:scale(.975)}}@keyframes winning-piece-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.075)}}
+
+
+/* v0.0.7 responsive laptop, tablet and phone layout */
+html, body { min-height: 100%; }
+body { overflow-x: hidden; }
+
+.app-shell {
+  width: min(1500px, 100%);
+  padding: clamp(10px, 1.5vw, 20px) clamp(10px, 2vw, 28px) clamp(12px, 1.8vw, 24px);
+}
+
+.app-header {
+  min-height: 48px;
+  margin-bottom: clamp(8px, 1.2vh, 14px);
+}
+
+.app-header h1 { font-size: clamp(1.8rem, 3vw, 2.75rem); }
+.game-layout { gap: clamp(8px, 1.2vh, 14px); }
+
+.player-strip {
+  grid-template-columns: minmax(0, 1fr) minmax(108px, 132px) minmax(0, 1fr);
+  gap: clamp(8px, 1vw, 12px);
+}
+
+.player-card {
+  min-height: 70px;
+  padding: 10px 14px;
+  border-radius: 15px;
+}
+
+.player-card strong { margin: 1px 0 4px; font-size: 1.05rem; }
+.timer-card { min-width: 0; min-height: 70px; padding: 8px 12px; border-radius: 15px; }
+.timer-card strong { font-size: clamp(1.45rem, 2.4vw, 1.85rem); }
+
+.game-stage {
+  grid-template-columns:
+    minmax(170px, 0.64fr)
+    minmax(360px, 1.35fr)
+    minmax(250px, 0.92fr);
+  gap: clamp(10px, 1.2vw, 16px);
+  align-items: start;
+}
+
+.side-panel { padding: clamp(12px, 1.3vw, 16px); border-radius: 18px; }
+.panel-heading { margin-bottom: 10px; }
+.current-piece {
+  min-height: clamp(150px, 27vh, 225px);
+  border-radius: 15px;
+}
+.current-piece .quarto-piece { width: min(72%, 180px); height: min(72%, 180px); }
+.current-piece-visual { width: min(72%, 185px); }
+.panel-help { margin-top: 9px; font-size: .81rem; line-height: 1.32; }
+
+.board-section {
+  width: min(100%, calc(100vh - 255px));
+  max-width: 610px;
+  justify-self: center;
+}
+
+.board-frame {
+  padding: clamp(8px, 1.2vw, 14px);
+  border-width: 5px;
+  border-radius: 20px;
+}
+.board { gap: clamp(6px, .7vw, 9px); }
+.board-cell { border-radius: clamp(6px, .7vw, 9px); }
+.status-message {
+  min-height: 44px;
+  margin-top: 9px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: .91rem;
+}
+
+.piece-tray { gap: clamp(6px, .65vw, 9px); }
+.piece-slot { border-radius: 10px; padding: 2px; }
+.piece-slot:hover { transform: translateY(-3px) scale(1.025); }
+
+.action-bar { min-height: 50px; padding: 8px 10px; border-radius: 15px; }
+.button { min-height: 40px; padding-inline: 16px; }
+
+/* Typical 15-inch and smaller laptop screens. Keep the complete game visible at 100%. */
+@media (min-width: 1121px) and (max-height: 850px) {
+  .eyebrow { display: none; }
+  .app-header { min-height: 38px; margin-bottom: 6px; }
+  .app-header h1 { font-size: 2rem; }
+  .icon-button { width: 40px; height: 40px; border-radius: 11px; }
+  .game-layout { gap: 8px; }
+  .player-card, .timer-card { min-height: 60px; }
+  .player-card { padding: 7px 12px; }
+  .player-card strong { font-size: .98rem; }
+  .player-label, .timer-card span, .panel-kicker, .piece-count, .waiting-label { font-size: .68rem; }
+  .turn-badge { padding: 2px 7px; font-size: .69rem; }
+  .timer-card strong { font-size: 1.55rem; }
+  .board-section { width: min(100%, calc(100vh - 235px)); max-width: 535px; }
+  .current-piece { min-height: clamp(130px, 23vh, 185px); }
+  .current-piece-visual { width: min(67%, 155px); }
+  .panel-help { font-size: .76rem; }
+  .side-panel { padding: 11px; }
+  .action-bar { min-height: 44px; padding: 5px 8px; }
+  .button { min-height: 36px; }
+}
+
+/* Tablet and narrow laptop: board plus a compact side column. */
+@media (max-width: 1120px) {
+  .app-shell { max-width: 980px; }
+  .game-stage {
+    grid-template-columns: minmax(330px, 1.25fr) minmax(230px, .75fr);
+    grid-template-areas:
+      "board current"
+      "board pieces";
+    align-items: stretch;
+  }
+  .board-section { grid-area: board; width: 100%; max-width: 650px; }
+  .current-panel { grid-area: current; }
+  .pieces-panel { grid-area: pieces; }
+  .current-piece { min-height: 150px; }
+  .piece-tray { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Phone and small tablet portrait. */
+@media (max-width: 740px) {
+  .app-shell { padding: 9px 8px 14px; }
+  .app-header { min-height: 40px; margin-bottom: 6px; }
+  .eyebrow { display: none; }
+  .app-header h1 { font-size: 1.75rem; }
+  .icon-button { width: 40px; height: 40px; border-radius: 11px; }
+  .game-layout { gap: 8px; }
+
+  .player-strip {
+    grid-template-columns: minmax(0, 1fr) 84px minmax(0, 1fr);
+    gap: 5px;
+  }
+  .player-card, .timer-card { min-height: 62px; border-radius: 12px; }
+  .player-card { padding: 7px 8px; }
+  .player-card strong {
+    margin: 0 0 3px;
+    font-size: .88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .player-label, .timer-card span, .waiting-label { font-size: .58rem; letter-spacing: .02em; }
+  .turn-badge { max-width: 100%; padding: 2px 5px; font-size: .59rem; white-space: nowrap; }
+  .timer-card { grid-column: auto; grid-row: auto; padding: 5px; }
+  .timer-card strong { font-size: 1.2rem; }
+
+  .game-stage {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "board"
+      "current"
+      "pieces";
+    gap: 8px;
+  }
+  .board-section { grid-area: board; width: 100%; max-width: none; }
+  .current-panel { grid-area: current; }
+  .pieces-panel { grid-area: pieces; }
+  .board-frame { padding: 7px; border-width: 4px; border-radius: 15px; }
+  .board { gap: 5px; }
+  .board-cell { border-width: 1px; border-radius: 6px; }
+  .status-message { min-height: 40px; margin-top: 6px; padding: 7px 9px; font-size: .82rem; }
+
+  .side-panel { padding: 10px; border-radius: 14px; }
+  .panel-heading { margin-bottom: 7px; }
+  .panel-heading h2 { font-size: .95rem; }
+  .current-panel { display: grid; grid-template-columns: minmax(105px, 34%) 1fr; gap: 9px; align-items: center; }
+  .current-panel .panel-heading { grid-column: 1 / -1; margin-bottom: 0; }
+  .current-piece { min-height: 112px; }
+  .current-piece-visual { width: min(88%, 112px); }
+  .current-piece .quarto-piece { width: min(88%, 112px); height: min(88%, 112px); }
+  .current-panel .panel-help { margin: 0; font-size: .79rem; }
+  .piece-tray { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .piece-slot { min-height: 58px; }
+
+  /* During choosing there is no current piece, so preserve the screen for the tray. */
+  body[data-phase="choose-piece"] .current-panel { display: none; }
+  /* During placement the tray cannot be used, so preserve the screen for the board/current piece. */
+  body[data-phase="place-piece"] .pieces-panel { display: none; }
+
+  .action-bar { position: sticky; bottom: 0; z-index: 20; flex-wrap: nowrap; gap: 6px; padding: 6px; }
+  .button { min-height: 42px; flex: 1 1 0; padding: 0 9px; font-size: .86rem; }
+  .version { display: none; }
+}
+
+/* Very narrow phones. */
+@media (max-width: 390px) {
+  .player-strip { grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr); }
+  .player-card { padding-inline: 6px; }
+  .turn-badge { font-size: .54rem; }
+  .piece-slot { min-height: 52px; }
+  .current-panel { grid-template-columns: 100px 1fr; }
+}
+
+/* Phone landscape: keep the board and active control side by side. */
+@media (max-height: 520px) and (orientation: landscape) and (max-width: 950px) {
+  .app-shell { max-width: none; padding: 5px 8px 8px; }
+  .app-header { display: none; }
+  .player-strip { grid-template-columns: 1fr 92px 1fr; }
+  .player-card, .timer-card { min-height: 48px; }
+  .game-stage {
+    grid-template-columns: minmax(280px, 1fr) minmax(210px, .72fr);
+    grid-template-areas:
+      "board current"
+      "board pieces";
+    gap: 7px;
+  }
+  .board-section { width: min(100%, calc(100vh - 118px)); justify-self: center; }
+  .status-message { min-height: 32px; font-size: .75rem; }
+  .current-panel { display: block; }
+  .current-piece { min-height: 92px; }
+  .piece-tray { grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; }
+  .piece-slot { min-height: 42px; }
+  body[data-phase="choose-piece"] .current-panel { display: none; }
+  body[data-phase="choose-piece"] .pieces-panel { grid-area: current / current / pieces / pieces; }
+  body[data-phase="place-piece"] .pieces-panel { display: none; }
+  .action-bar { min-height: 38px; padding: 3px 5px; }
+  .button { min-height: 34px; }
+}

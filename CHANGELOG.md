@@ -1,3 +1,12 @@
+## v0.0.7
+- Reworked the layout for 15-inch laptops at 100% browser zoom.
+- Added dedicated desktop, compact-laptop, tablet, phone portrait and phone landscape layouts.
+- Made touch targets and controls phone-friendly.
+- On phones, hides the unused Current Piece panel while choosing.
+- On phones, hides the unavailable pieces tray while placing.
+- Added a compact sticky control bar on phones.
+- Preserved the square board at every screen size.
+
 ## v0.0.6
 - Added automatic Quarto detection for all rows, columns and both diagonals.
 - Detects Tall, Short, Round, Square, Dark, Light, Hole and Solid wins.
