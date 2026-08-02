@@ -139,7 +139,7 @@
 
   function getPiece(pieceId) { return PIECES.find(piece => piece.id === Number(pieceId)) || null; }
 
-  function createRemainingPieces(onSelect, remainingPieceIds = PIECES.map(piece => piece.id), enabled = true, container = null) {
+  function createRemainingPieces(onSelect, remainingPieceIds = PIECES.map(piece => piece.id), enabled = true, container = null, highlightedPieceId = null) {
     const tray = container || document.getElementById("remaining-pieces");
     if (!tray) return;
     tray.replaceChildren();
@@ -150,6 +150,7 @@
       slot.type = "button";
       slot.className = "piece-slot";
       slot.dataset.pieceId = String(piece.id);
+      if (piece.id === highlightedPieceId) slot.classList.add("piece-slot--ai-choice");
       slot.title = describePiece(piece);
       slot.setAttribute("aria-label", `Select ${describePiece(piece)} piece`);
       slot.appendChild(createPieceSvg(piece));

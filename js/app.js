@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.1.5";
+  const STORAGE_KEY = "quarto.settings.v0.1.6";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
@@ -18,13 +18,14 @@
     selectedPiece: null, phase: "choose-piece", board: Array(16).fill(null),
     remainingPieceIds: window.QuartoPieces.PIECES.map(piece => piece.id),
     timerRemaining: 30, timerHandle: null, aiHandle: null,
-    winner: null, winningCells: [], winningAttributes: [], chooseTurnId: 0
+    winner: null, winningCells: [], winningAttributes: [], chooseTurnId: 0,
+    aiStage: null, aiPreviewPieceId: null, aiPreviewCell: null
   };
 
   function loadSettings() {
     try {
       const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-      const previous14 = JSON.parse(localStorage.getItem("quarto.settings.v0.1.4") || localStorage.getItem("quarto.settings.v0.1.3") || localStorage.getItem("quarto.settings.v0.1.2") || "{}");
+      const previous14 = JSON.parse(localStorage.getItem("quarto.settings.v0.1.5") || localStorage.getItem("quarto.settings.v0.1.4") || localStorage.getItem("quarto.settings.v0.1.3") || localStorage.getItem("quarto.settings.v0.1.2") || "{}");
       const previous10 = JSON.parse(localStorage.getItem("quarto.settings.v0.1.0") || "{}");
       const previous20 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.20") || "{}");
       const previous19 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.14") || "{}");
@@ -139,7 +140,7 @@
       card.classList.toggle("player-card--active", active);
       card.classList.toggle("player-card--winner", won);
       if (won) { state.className = "turn-badge turn-badge--winner"; state.textContent = "Winner"; }
-      else { state.className = active ? "turn-badge" : "waiting-label"; state.textContent = active ? (isComputer(index) ? "Thinking…" : gameState.phase === "place-piece" ? "Place the piece" : "Choose a piece") : "Waiting"; }
+      else { state.className = active ? "turn-badge" : "waiting-label"; state.textContent = active ? (isComputer(index) ? (gameState.aiStage === "preview-place" ? "Placing…" : gameState.aiStage === "preview-choice" ? "Choosing…" : "Thinking…") : gameState.phase === "place-piece" ? "Place the piece" : "Choose a piece") : "Waiting"; }
     }
     document.getElementById("current-piece-for").textContent = gameState.phase === "game-over" ? "Game complete" : gameState.phase === "place-piece" ? `Placed by ${playerName(gameState.currentPlayer)}` : `For ${playerName(gameState.receivingPlayer)}`;
     document.getElementById("current-piece-help").textContent = gameState.phase === "game-over" ? (gameState.winner === null ? "The board is full. Press Play again when you are ready." : `${formatWinningAttributes(gameState.winningAttributes)}. The winning line remains highlighted.`) : gameState.phase === "place-piece" ? `${playerName(gameState.currentPlayer)} places this piece, then chooses the next piece.` : `${playerName(gameState.currentPlayer)} chooses a piece for ${playerName(gameState.receivingPlayer)} to place.`;
@@ -157,14 +158,14 @@
   }
   function renderTray() {
     const enabled = gameState.phase === "choose-piece" && !isComputer(gameState.currentPlayer);
-    window.QuartoPieces.createRemainingPieces(selectPiece, gameState.remainingPieceIds, enabled);
+    window.QuartoPieces.createRemainingPieces(selectPiece, gameState.remainingPieceIds, enabled, null, gameState.aiPreviewPieceId);
     const phoneTray = document.getElementById("phone-piece-tray");
-    window.QuartoPieces.createRemainingPieces(selectPiece, gameState.remainingPieceIds, enabled, phoneTray);
+    window.QuartoPieces.createRemainingPieces(selectPiece, gameState.remainingPieceIds, enabled, phoneTray, gameState.aiPreviewPieceId);
     document.getElementById("piece-count").textContent = `${gameState.remainingPieceIds.length} remaining`;
     document.getElementById("open-piece-picker").disabled = !enabled;
   }
   function renderBoard() {
-    window.QuartoBoard.createBoard(gameState.board, placePiece, gameState.winningCells);
+    window.QuartoBoard.createBoard(gameState.board, placePiece, gameState.winningCells, gameState.aiPreviewCell);
     window.QuartoBoard.setPlacementEnabled(gameState.phase === "place-piece" && !isComputer(gameState.currentPlayer));
   }
   function renderPhoneTurnDock() {
@@ -188,10 +189,16 @@
     }
 
     if (computerTurn) {
-      title.textContent = "Computer is thinking";
-      detail.textContent = `Level ${gameState.settings.difficulty} · ${difficultyName(gameState.settings.difficulty)}`;
+      title.textContent = gameState.aiStage === "preview-place" ? "Computer is placing" : gameState.aiStage === "preview-choice" ? "Computer chose your piece" : "Computer is thinking";
+      detail.textContent = gameState.aiStage === "preview-place" ? "Watch the highlighted square" : gameState.aiStage === "preview-choice" ? "The highlighted piece is coming to you" : `Level ${gameState.settings.difficulty} · ${difficultyName(gameState.settings.difficulty)}`;
       action.hidden = true;
-      preview.hidden = true;
+      if (gameState.aiStage === "preview-choice" && gameState.aiPreviewPieceId !== null) {
+        const chosenPiece = window.QuartoPieces.getPiece(gameState.aiPreviewPieceId);
+        if (chosenPiece) preview.appendChild(window.QuartoPieces.createPieceSvg(chosenPiece));
+        preview.hidden = false;
+      } else {
+        preview.hidden = true;
+      }
       return;
     }
 
@@ -258,6 +265,7 @@
     completePieceSelection(piece, slot);
   }
   function completePieceSelection(piece, slot) {
+    gameState.aiStage = null; gameState.aiPreviewPieceId = null; gameState.aiPreviewCell = null;
     animatePieceToCurrent(slot); playTone("select"); gameState.selectedPiece = piece;
     gameState.remainingPieceIds = gameState.remainingPieceIds.filter(id => id !== piece.id);
     gameState.currentPlayer = gameState.receivingPlayer; gameState.receivingPlayer = gameState.currentPlayer === 0 ? 1 : 0; gameState.phase = "place-piece";
@@ -268,6 +276,7 @@
     completePlacement(index);
   }
   function completePlacement(index) {
+    gameState.aiStage = null; gameState.aiPreviewPieceId = null; gameState.aiPreviewCell = null;
     gameState.board[index] = gameState.selectedPiece.id; gameState.selectedPiece = null; playTone("place");
     const result = window.QuartoRules.checkForQuarto(gameState.board);
     if (result) {
@@ -282,25 +291,50 @@
     renderGame(); resetMoveTimer(); document.getElementById("status").textContent=phaseInstruction(); scheduleComputerTurn();
   }
 
+  function computerThinkingDelay() {
+    const level = Math.max(1, Math.min(10, Number(gameState.settings.difficulty) || 1));
+    const base = 320 + level * 55;
+    return base + Math.floor(Math.random() * 260);
+  }
+
   function scheduleComputerTurn() {
     stopAi();
     if (gameState.phase === "game-over" || !isComputer(gameState.currentPlayer)) return;
+    gameState.aiStage = "thinking";
+    gameState.aiPreviewPieceId = null;
+    gameState.aiPreviewCell = null;
+    renderGame();
     document.getElementById("status").textContent = `Computer is thinking — level ${gameState.settings.difficulty} ${difficultyName(gameState.settings.difficulty)}.`;
+
     gameState.aiHandle = setTimeout(() => {
+      if (gameState.phase === "game-over" || !isComputer(gameState.currentPlayer)) return;
+      const previewDelay = gameState.settings.animations === false ? 180 : 620;
+
       if (gameState.phase === "place-piece") {
         const index = window.QuartoAI.choosePlacement(gameState.board, gameState.selectedPiece.id, gameState.settings.difficulty, gameState.remainingPieceIds);
-        if (index !== null) completePlacement(index);
+        if (index === null) return;
+        gameState.aiStage = "preview-place";
+        gameState.aiPreviewCell = index;
+        renderGame();
+        document.getElementById("status").textContent = "Computer has chosen where to place the piece.";
+        gameState.aiHandle = setTimeout(() => completePlacement(index), previewDelay);
       } else {
         const piece = window.QuartoAI.choosePiece(gameState.board, gameState.remainingPieceIds, gameState.settings.difficulty);
-        if (piece) completePieceSelection(piece, null);
+        if (!piece) return;
+        gameState.aiStage = "preview-choice";
+        gameState.aiPreviewPieceId = piece.id;
+        renderGame();
+        document.getElementById("status").textContent = `Computer chose the ${window.QuartoPieces.describePiece(piece)} piece for you.`;
+        const highlightedSlot = document.querySelector(`.piece-slot[data-piece-id="${piece.id}"]`);
+        gameState.aiHandle = setTimeout(() => completePieceSelection(piece, highlightedSlot), previewDelay);
       }
-    }, 650);
+    }, computerThinkingDelay());
   }
 
   function resetGame(starterMode = gameState.settings.starterMode) {
     stopTimer(); stopAi(); applyTheme(); applyMotionPreference();
     const starter=chooseStarter(starterMode); gameState.settings.lastStarter=starter; saveSettings();
-    Object.assign(gameState,{currentPlayer:starter,receivingPlayer:starter===0?1:0,selectedPiece:null,phase:"choose-piece",board:Array(16).fill(null),remainingPieceIds:window.QuartoPieces.PIECES.map(piece=>piece.id),winner:null,winningCells:[],winningAttributes:[],chooseTurnId:gameState.chooseTurnId+1});
+    Object.assign(gameState,{currentPlayer:starter,receivingPlayer:starter===0?1:0,selectedPiece:null,phase:"choose-piece",board:Array(16).fill(null),remainingPieceIds:window.QuartoPieces.PIECES.map(piece=>piece.id),winner:null,winningCells:[],winningAttributes:[],chooseTurnId:gameState.chooseTurnId+1,aiStage:null,aiPreviewPieceId:null,aiPreviewCell:null});
     autoOpenedPickerTurnId = -1;
     renderGame(); resetMoveTimer(); document.getElementById("status").textContent=phaseInstruction(); scheduleComputerTurn();
   }

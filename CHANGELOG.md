@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.6
+- Added a clear Computer thinking state with a natural delay that scales gently by difficulty.
+- Highlights the square chosen by the computer before it places a piece.
+- Highlights the piece chosen by the computer before handing it to the human player.
+- Added clearer phone and player-card messages for thinking, choosing and placing stages.
+- Preserved the existing AI strategy and difficulty behaviour.
+
 ## v0.1.5
 
 - On phones, the available-piece picker now opens automatically at the start of every human choose-piece turn.

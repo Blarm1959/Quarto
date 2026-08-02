@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "0.1.5",
-  "githubSource": "v0.1.4.g1",
+  "version": "0.1.6",
+  "githubSource": "v0.1.5.g1",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Auto-open the phone piece picker at the start of each human choose turn; preserve manual Choose after dismissal"
+  "commit": "Polish computer turns with thinking states and visible piece and square previews"
 }

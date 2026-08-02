@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  function createBoard(boardState = Array(16).fill(null), onPlace, winningCells = []) {
+  function createBoard(boardState = Array(16).fill(null), onPlace, winningCells = [], previewCell = null) {
     const board = document.getElementById("board");
     if (!board) return;
     const winningSet = new Set(winningCells);
@@ -18,6 +18,7 @@
       cell.dataset.column = String(column);
       cell.setAttribute("role", "gridcell");
       if (winningSet.has(index)) cell.classList.add("board-cell--winner");
+      if (index === previewCell) cell.classList.add("board-cell--ai-target");
       if (pieceId === null) {
         cell.setAttribute("aria-label", `Empty square, row ${row + 1}, column ${column + 1}`);
         cell.addEventListener("click", () => onPlace?.(index, cell));
