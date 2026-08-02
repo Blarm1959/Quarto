@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.1.4
+
+- New Game and Play Again now immediately reset the board using the current game settings.
+- The Settings cog is now the only control that opens the game setup dialog.
+- Added defensive event handling so the replay button cannot fall through to setup behaviour.
+- Updated the Android PWA service-worker cache to v0.1.4.
+- Core JavaScript, CSS and JSON assets now use network-first refresh behaviour to prevent an installed app retaining obsolete button logic.
+- Preserves existing player names, game mode, AI level, timer, sound, animations and starter setting when replaying.
+
 ## v0.1.2
 
 - Removed the end-of-game popup so the final board remains fully visible.

@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "0.1.3",
-  "githubSource": "v0.1.1",
+  "version": "0.1.4",
+  "githubSource": "v0.1.3.g1",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Keep the final board visible, flash winning squares red and blue, and replay with the same settings"
+  "commit": "Make New Game and Play Again restart immediately with current settings; keep setup exclusive to Settings"
 }

@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.1.2";
+  const STORAGE_KEY = "quarto.settings.v0.1.4";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
@@ -24,10 +24,11 @@
   function loadSettings() {
     try {
       const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      const previous13 = JSON.parse(localStorage.getItem("quarto.settings.v0.1.3") || localStorage.getItem("quarto.settings.v0.1.2") || "{}");
       const previous10 = JSON.parse(localStorage.getItem("quarto.settings.v0.1.0") || "{}");
       const previous20 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.20") || "{}");
       const previous19 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.14") || "{}");
-      const previous13 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.13") || "{}");
+      const previous013 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.13") || "{}");
       const previous12 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.12") || "{}");
       const previous11 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.11") || "{}");
       return { ...DEFAULT_SETTINGS, ...previous11, ...previous12, ...previous13, ...previous19, ...previous20, ...previous10, ...current };
@@ -325,6 +326,14 @@
     const opponent=mode==="computer" ? `Computer · Level ${level}` : (document.getElementById("player-2-input")?.value.trim()||"Player 2");
     summary.innerHTML=`<strong>${player1} vs ${opponent}</strong><span>${timer ? `${timer}-second turns` : "No move timer"}</span>`;
   }
+  function startNewGameWithCurrentSettings(event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    const setup = document.getElementById("new-game-dialog");
+    if (setup?.open) setup.close();
+    resetGame(gameState.settings.starterMode);
+  }
+
   function populateSetupDialog() {
     document.getElementById("player-1-input").value=gameState.settings.playerNames[0]||"Player 1";
     document.getElementById("player-2-input").value=gameState.settings.playerNames[1]||"Player 2";
@@ -458,8 +467,14 @@
   }
 
   function bindControls() {
-    const setup=document.getElementById("new-game-dialog"); const openSetup=()=>{populateSetupDialog();setup.showModal();};
-    document.getElementById("new-game-button")?.addEventListener("click",()=>resetGame(gameState.settings.starterMode));
+    const setup=document.getElementById("new-game-dialog");
+    const openSetup=(event)=>{
+      event?.preventDefault();
+      event?.stopPropagation();
+      populateSetupDialog();
+      setup.showModal();
+    };
+    document.getElementById("new-game-button")?.addEventListener("click",startNewGameWithCurrentSettings);
     document.getElementById("settings-button")?.addEventListener("click",openSetup);
     document.getElementById("cancel-new-game")?.addEventListener("click",()=>setup.close()); document.getElementById("new-game-form")?.addEventListener("submit",startFromDialog);
     document.querySelectorAll('input[name="gameMode"]').forEach(input=>input.addEventListener("change",updateSetupMode));

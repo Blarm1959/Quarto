@@ -1,4 +1,4 @@
-const VERSION = "0.1.2";
+const VERSION = "0.1.4";
 const STATIC_CACHE = `quarto-static-v${VERSION}`;
 const RUNTIME_CACHE = `quarto-runtime-v${VERSION}`;
 const APP_SHELL = [
@@ -33,6 +33,14 @@ self.addEventListener("fetch", event => {
     return;
   }
   if (url.origin !== self.location.origin) return;
+  const isCoreAsset = /\.(?:js|css|json)$/.test(url.pathname);
+  if (isCoreAsset) {
+    event.respondWith(fetch(request, { cache: "no-store" }).then(response => {
+      if (response.ok) caches.open(STATIC_CACHE).then(cache => cache.put(request, response.clone()));
+      return response;
+    }).catch(() => caches.match(request)));
+    return;
+  }
   event.respondWith(caches.match(request).then(cached => {
     const update = fetch(request).then(response => {
       if (response.ok) caches.open(RUNTIME_CACHE).then(cache=>cache.put(request,response.clone()));
