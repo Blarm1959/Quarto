@@ -127,10 +127,54 @@
     window.QuartoBoard.createBoard(gameState.board, placePiece, gameState.winningCells);
     window.QuartoBoard.setPlacementEnabled(gameState.phase === "place-piece" && !isComputer(gameState.currentPlayer));
   }
+  function renderPhoneTurnDock() {
+    const dock = document.getElementById("phone-turn-dock");
+    const preview = document.getElementById("phone-current-piece");
+    const title = document.getElementById("phone-turn-title");
+    const detail = document.getElementById("phone-turn-detail");
+    const action = document.getElementById("phone-turn-action");
+    if (!dock || !preview || !title || !detail || !action) return;
+
+    const computerTurn = isComputer(gameState.currentPlayer) && gameState.phase !== "game-over";
+    preview.replaceChildren();
+    dock.dataset.mode = gameState.phase;
+
+    if (gameState.phase === "game-over") {
+      title.textContent = gameState.winner === null ? "Game complete" : `${playerName(gameState.winner)} wins`;
+      detail.textContent = gameState.winner === null ? "The board is full." : "Start a new game when you are ready.";
+      action.hidden = true;
+      preview.hidden = true;
+      return;
+    }
+
+    if (computerTurn) {
+      title.textContent = "Computer is thinking";
+      detail.textContent = `Level ${gameState.settings.difficulty} · ${difficultyName(gameState.settings.difficulty)}`;
+      action.hidden = true;
+      preview.hidden = true;
+      return;
+    }
+
+    if (gameState.phase === "choose-piece") {
+      title.textContent = `${playerName(gameState.currentPlayer)}, choose a piece`;
+      detail.textContent = `For ${playerName(gameState.receivingPlayer)} · ${gameState.remainingPieceIds.length} remaining`;
+      action.textContent = "Choose";
+      action.hidden = false;
+      preview.hidden = true;
+      return;
+    }
+
+    title.textContent = `${playerName(gameState.currentPlayer)}, place this piece`;
+    detail.textContent = window.QuartoPieces.describePiece(gameState.selectedPiece);
+    action.hidden = true;
+    preview.hidden = false;
+    if (gameState.selectedPiece) preview.appendChild(window.QuartoPieces.createPieceSvg(gameState.selectedPiece));
+  }
+
   function renderGame() {
     document.body.dataset.phase = gameState.phase;
     document.body.dataset.computerTurn = String(isComputer(gameState.currentPlayer));
-    renderPlayers(); renderCurrentPiece(); renderTray(); renderBoard();
+    renderPlayers(); renderCurrentPiece(); renderTray(); renderBoard(); renderPhoneTurnDock();
   }
 
   function animatePieceToCurrent(slot) {
@@ -282,6 +326,9 @@
     document.getElementById("difficulty-input")?.addEventListener("input",updateDifficultyLabel);
     document.getElementById("how-to-play-button")?.addEventListener("click",()=>document.getElementById("how-to-play-dialog")?.showModal());
     document.getElementById("open-piece-picker")?.addEventListener("click",()=>document.getElementById("piece-picker-dialog")?.showModal());
+    document.getElementById("phone-turn-action")?.addEventListener("click",()=>{
+      if (gameState.phase === "choose-piece" && !isComputer(gameState.currentPlayer)) document.getElementById("piece-picker-dialog")?.showModal();
+    });
     document.getElementById("install-app-button")?.addEventListener("click",installApplication);
     document.getElementById("install-app-action")?.addEventListener("click",installApplication);
   }

@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.0.17
+
+- Added a dedicated phone play surface that keeps the board as the dominant element.
+- Replaced phone-only side panels with a compact turn dock directly below the board.
+- Added a current-piece preview in the phone turn dock while placing.
+- Added a large phone action button that opens the piece-selection bottom sheet while choosing.
+- Improved phone spacing, safe-area use and bottom-sheet sizing for installed Android use.
+- Kept tablet, laptop and desktop layouts unchanged.
+
 ## v0.0.16
 
 - Added automatic deployment to GitHub Pages after every push to `main`.

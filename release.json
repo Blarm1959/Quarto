@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "v0.0.16",
-  "githubSource": "v0.0.15",
+  "version": "v0.0.17",
+  "githubSource": "v0.0.16",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Add automatic GitHub Pages deployment and live build information"
+  "commit": "Add dedicated phone play surface and bottom-sheet turn controls"
 }

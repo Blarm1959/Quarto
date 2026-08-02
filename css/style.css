@@ -1058,3 +1058,129 @@ body { min-height: 100vh; min-height: 100svh; overscroll-behavior-y: none; -webk
   .pwa-banner span { flex-basis:calc(100% - 44px); }
 }
 @media (orientation:landscape) and (max-height:520px) { .app-shell { padding-top:max(6px,env(safe-area-inset-top)); } }
+
+
+/* v0.0.17: dedicated phone play surface */
+.phone-turn-dock { display: none; }
+
+@media (max-width: 740px) and (orientation: portrait) {
+  html, body { height: 100%; }
+  body { background: var(--page); }
+  .app-shell {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding-top: max(7px, env(safe-area-inset-top));
+    padding-bottom: max(7px, env(safe-area-inset-bottom));
+  }
+  .app-header {
+    min-height: 34px;
+    margin-bottom: 3px;
+  }
+  .app-header h1 { font-size: 1.45rem; }
+  .header-actions { gap: 5px; }
+  .icon-button { width: 34px; height: 34px; flex-basis: 34px; }
+  .game-layout { flex: 1; min-height: 0; gap: 5px; }
+  .game-stage { gap: 5px; }
+  .board-frame {
+    padding: 5px;
+    border-width: 3px;
+    border-radius: 14px;
+  }
+  .board { gap: 4px; }
+  .board-cell { border-radius: 9px; }
+  .status-message { display: none; }
+
+  .phone-turn-dock {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px;
+    min-height: 58px;
+    margin-top: 5px;
+    padding: 7px 8px;
+    border: 1px solid rgba(205, 218, 231, .96);
+    border-radius: 14px;
+    background: rgba(255,255,255,.96);
+    box-shadow: 0 8px 22px rgba(29,56,84,.09);
+  }
+  .phone-current-piece {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: #edf3f8;
+  }
+  .phone-current-piece[hidden] { display: none; }
+  .phone-current-piece .quarto-piece { width: 43px; height: 43px; }
+  .phone-turn-copy { min-width: 0; display: grid; gap: 2px; }
+  .phone-turn-copy strong {
+    overflow: hidden;
+    color: var(--ink);
+    font-size: .82rem;
+    line-height: 1.12;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .phone-turn-copy span {
+    overflow: hidden;
+    color: var(--muted);
+    font-size: .68rem;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .phone-turn-action {
+    min-width: 78px;
+    min-height: 42px;
+    padding-inline: 13px;
+    font-size: .86rem;
+  }
+  .phone-turn-action[hidden] { display: none; }
+
+  /* The board and turn dock are the phone game surface. Secondary panels are removed. */
+  .current-panel,
+  .pieces-panel { display: none !important; }
+
+  .player-strip {
+    grid-template-columns: minmax(0, 1fr) 62px minmax(0, 1fr);
+    gap: 4px;
+  }
+  .player-card, .timer-card { min-height: 48px; }
+  .player-card { padding: 4px 6px; }
+  .player-card strong { font-size: .78rem; }
+  .turn-badge { font-size: .49rem; }
+  .timer-card strong { font-size: .98rem; }
+
+  .action-bar {
+    position: static;
+    min-height: 40px;
+    margin-top: auto;
+    padding: 4px;
+  }
+  .action-bar .button { min-height: 34px; }
+  .install-app-action { display: none !important; }
+
+  .piece-picker-dialog {
+    width: 100%;
+    margin: auto 0 0;
+    max-height: min(78dvh, 650px);
+    border: 0;
+    border-radius: 24px 24px 0 0;
+  }
+  .piece-picker-dialog form {
+    max-height: min(78dvh, 650px);
+    overflow: auto;
+    padding: 15px max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  }
+  .piece-tray--dialog { gap: 8px; }
+  .piece-tray--dialog .piece-slot { min-height: 68px; }
+}
+
+@media (max-width: 380px) and (orientation: portrait) {
+  .phone-turn-dock { gap: 6px; padding-inline: 6px; }
+  .phone-turn-action { min-width: 70px; padding-inline: 10px; }
+  .phone-turn-copy strong { font-size: .76rem; }
+  .phone-turn-copy span { font-size: .63rem; }
+}
