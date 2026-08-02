@@ -1,0 +1,73 @@
+name: Deploy Quarto to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate project files
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in js/*.js service-worker.js; do node --check "$file"; done
+          node -e 'for (const file of ["package.json","package-lock.json","manifest.json","release.json"]) JSON.parse(require("fs").readFileSync(file,"utf8"));'
+
+      - name: Prepare website artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          mkdir -p _site
+          cp index.html offline.html favicon.ico manifest.json package.json release.json service-worker.js _site/
+          cp -R css js icons docs _site/
+          touch _site/.nojekyll
+          node <<'NODE'
+          const fs = require('fs');
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const release = JSON.parse(fs.readFileSync('release.json', 'utf8'));
+          const info = {
+            project: 'Quarto',
+            version: pkg.version,
+            tag: release.version,
+            commit: process.env.GITHUB_SHA || '',
+            builtAt: new Date().toISOString(),
+            environment: 'github-pages'
+          };
+          fs.writeFileSync('_site/build-info.json', JSON.stringify(info, null, 2) + '\n');
+          NODE
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload website artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+      - name: Deploy website
+        id: deployment
+        uses: actions/deploy-pages@v4

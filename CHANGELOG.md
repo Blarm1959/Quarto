@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.0.16
+
+- Added automatic deployment to GitHub Pages after every push to `main`.
+- Added deployment validation for JavaScript and JSON before publishing.
+- Added generated live-build metadata containing the version, Git commit and deployment time.
+- Updated the app footer to display deployed build information when available.
+- Kept all PWA URLs relative so Quarto works below a GitHub Pages repository path.
+- Added a one-time GitHub Pages setup and troubleshooting guide.
+- Excluded local Visual Studio workspace data from the replacement project.
+
 ## v0.0.15
 
 - Strengthened Quarto as an installable Progressive Web App.

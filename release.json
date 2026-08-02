@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "v0.0.15",
-  "githubSource": "v0.0.14",
+  "version": "v0.0.16",
+  "githubSource": "v0.0.15",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Add installable PWA foundation and Android-ready app metadata"
+  "commit": "Add automatic GitHub Pages deployment and live build information"
 }

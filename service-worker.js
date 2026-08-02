@@ -1,10 +1,10 @@
-const VERSION = "0.0.15";
+const VERSION = "0.0.16";
 const STATIC_CACHE = `quarto-static-v${VERSION}`;
 const RUNTIME_CACHE = `quarto-runtime-v${VERSION}`;
 const APP_SHELL = [
   "./", "./index.html", "./offline.html", "./favicon.ico", "./css/style.css",
   "./js/app.js", "./js/board.js", "./js/pieces.js", "./js/rules.js", "./js/storage.js", "./js/ai.js",
-  "./manifest.json", "./package.json", "./release.json",
+  "./manifest.json", "./package.json", "./release.json", "./build-info.json",
   "./icons/quarto-96.png", "./icons/quarto-128.png", "./icons/quarto-144.png", "./icons/quarto-152.png",
   "./icons/quarto-180.png", "./icons/quarto-192.png", "./icons/quarto-384.png", "./icons/quarto-512.png",
   "./icons/quarto-maskable-192.png", "./icons/quarto-maskable-512.png"

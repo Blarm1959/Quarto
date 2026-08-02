@@ -222,7 +222,21 @@
   }
   async function renderApplicationVersion() {
     const element=document.getElementById("app-version");
-    try { const response=await fetch("package.json",{cache:"no-store"}); const info=await response.json(); element.textContent=`Version ${info.version}`; } catch { element.textContent="Quarto"; }
+    if (!element) return;
+    try {
+      const response=await fetch("build-info.json",{cache:"no-store"});
+      if (!response.ok) throw new Error("No deployed build information");
+      const info=await response.json();
+      const commit=info.commit ? ` · ${String(info.commit).slice(0,7)}` : "";
+      element.textContent=`Version ${info.version}${commit}`;
+      element.title=info.builtAt ? `Published ${new Date(info.builtAt).toLocaleString()}` : "";
+      return;
+    } catch {}
+    try {
+      const response=await fetch("package.json",{cache:"no-store"});
+      const info=await response.json();
+      element.textContent=`Version ${info.version}`;
+    } catch { element.textContent="Quarto"; }
   }
 
   let deferredInstallPrompt = null;
