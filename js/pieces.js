@@ -14,34 +14,23 @@
     }
   }
 
-  const STYLE_DEFAULTS = {
-    classic: { colourA: "#f4f1e8", colourB: "#17191c", colourAName: "White", colourBName: "Black" },
-    modern: { colourA: "#2468b4", colourB: "#d13f4d", colourAName: "Blue", colourBName: "Red" }
+  // Quarto's permanent visual identity: eight blue pieces and eight red pieces.
+  // Hollow centres are deliberately rendered as one solid white shape so they
+  // remain unmistakable at phone size and never appear as a white/black ring.
+  const COLOURS = {
+    blue: "#1769d2",
+    red: "#e42b32",
+    hollow: "#ffffff"
   };
 
-  let appearance = { style: "classic", ...STYLE_DEFAULTS.classic };
-
-  function normaliseStyle(style) { return style === "modern" ? "modern" : "classic"; }
-
-  function configureAppearance(settings = {}) {
-    const style = normaliseStyle(settings.pieceStyle);
-    const defaults = STYLE_DEFAULTS[style];
-    const useCustom = settings.useCustomColours === true;
-    appearance = {
-      style,
-      colourA: useCustom && settings.colourA ? settings.colourA : defaults.colourA,
-      colourB: useCustom && settings.colourB ? settings.colourB : defaults.colourB,
-      colourAName: useCustom && settings.colourAName ? settings.colourAName : defaults.colourAName,
-      colourBName: useCustom && settings.colourBName ? settings.colourBName : defaults.colourBName
-    };
-    document.documentElement.dataset.pieceStyle = style;
-    document.documentElement.style.setProperty("--piece-colour-a", appearance.colourA);
-    document.documentElement.style.setProperty("--piece-colour-b", appearance.colourB);
-    return { ...appearance };
+  function configureAppearance() {
+    document.documentElement.style.setProperty("--piece-colour-a", COLOURS.blue);
+    document.documentElement.style.setProperty("--piece-colour-b", COLOURS.red);
+    return { colourA: COLOURS.blue, colourB: COLOURS.red, colourAName: "Blue", colourBName: "Red" };
   }
 
-  function getColourName(piece) { return piece.dark ? appearance.colourBName : appearance.colourAName; }
-  function getColourNames() { return [appearance.colourAName, appearance.colourBName]; }
+  function getColourName(piece) { return piece.dark ? "Red" : "Blue"; }
+  function getColourNames() { return ["Blue", "Red"]; }
   function describePiece(piece) {
     return [piece.tall ? "Tall" : "Short", piece.round ? "Round" : "Square", getColourName(piece), piece.hole ? "Hollow" : "Solid"].join(", ");
   }
@@ -61,61 +50,90 @@
     return element;
   }
 
-  function addShadow(svg, round, width = 31) {
-    svg.appendChild(svgElement("ellipse", { cx: 50, cy: 93, rx: round ? 27 : width, ry: 4.5, fill: "rgba(15,22,30,0.18)" }));
+  function addShadow(svg, round, width = 27) {
+    svg.appendChild(svgElement("ellipse", {
+      cx: 50, cy: 93, rx: round ? 25 : width, ry: 4.2,
+      fill: "rgba(15,22,30,0.18)"
+    }));
   }
 
-  function createClassicPiece(svg, piece, baseColour) {
-    const stroke = shade(baseColour, piece.dark ? 48 : -70);
-    const topY = piece.tall ? 10 : 43;
-    const bottomY = 89;
-    addShadow(svg, piece.round, 27);
+  function createRoundPiece(svg, piece, baseColour) {
+    const topY = piece.tall ? 10 : 45;
+    const bottomY = 88;
+    const rx = 23;
+    const edge = shade(baseColour, -48);
 
-    if (piece.round) {
-      const rx = 24;
-      svg.appendChild(svgElement("path", {
-        d: `M ${50-rx} ${topY+6} L ${50-rx} ${bottomY-6} A ${rx} 6 0 0 0 ${50+rx} ${bottomY-6} L ${50+rx} ${topY+6} Z`,
-        fill: baseColour, stroke, "stroke-width": 2.5
+    addShadow(svg, true);
+    svg.appendChild(svgElement("path", {
+      d: `M ${50-rx} ${topY+6} L ${50-rx} ${bottomY-6} A ${rx} 6 0 0 0 ${50+rx} ${bottomY-6} L ${50+rx} ${topY+6} Z`,
+      fill: baseColour, stroke: edge, "stroke-width": 2.2
+    }));
+    svg.appendChild(svgElement("ellipse", {
+      cx: 50, cy: bottomY-6, rx, ry: 6,
+      fill: shade(baseColour, -10), stroke: edge, "stroke-width": 2.2
+    }));
+    svg.appendChild(svgElement("ellipse", {
+      cx: 50, cy: topY+6, rx, ry: 6,
+      fill: shade(baseColour, 18), stroke: edge, "stroke-width": 2.2
+    }));
+    svg.appendChild(svgElement("path", {
+      d: `M ${34} ${topY+12} Q ${31} ${(topY+bottomY)/2} ${35} ${bottomY-12}`,
+      fill: "none", stroke: "rgba(255,255,255,.28)", "stroke-width": 3.2, "stroke-linecap": "round"
+    }));
+
+    if (piece.hole) {
+      // A single, uninterrupted white centre. No inner dark ellipse is drawn.
+      svg.appendChild(svgElement("ellipse", {
+        cx: 50, cy: topY+6, rx: 13.5, ry: 4.2,
+        fill: COLOURS.hollow, stroke: COLOURS.hollow, "stroke-width": 1
       }));
-      svg.appendChild(svgElement("ellipse", { cx: 50, cy: bottomY-6, rx, ry: 6, fill: shade(baseColour, -8), stroke, "stroke-width": 2.5 }));
-      svg.appendChild(svgElement("ellipse", { cx: 50, cy: topY+6, rx, ry: 6, fill: shade(baseColour, 22), stroke, "stroke-width": 2.5 }));
-      if (piece.hole) {
-        svg.appendChild(svgElement("ellipse", { cx: 50, cy: topY+6, rx: 14, ry: 3.9, fill: shade(baseColour, -55), stroke, "stroke-width": 2 }));
-        svg.appendChild(svgElement("ellipse", { cx: 50, cy: topY+5.4, rx: 9, ry: 2.2, fill: "rgba(18,22,28,.78)" }));
-      }
-    } else {
-      const x = 28, width = 38, side = 9, topDepth = 7;
-      svg.appendChild(svgElement("path", { d: `M ${x} ${topY+topDepth} L ${x+width} ${topY+topDepth} L ${x+width} ${bottomY} L ${x} ${bottomY} Z`, fill: baseColour, stroke, "stroke-width": 2.5 }));
-      svg.appendChild(svgElement("path", { d: `M ${x+width} ${topY+topDepth} L ${x+width+side} ${topY} L ${x+width+side} ${bottomY-side} L ${x+width} ${bottomY} Z`, fill: shade(baseColour, -28), stroke, "stroke-width": 2.5 }));
-      svg.appendChild(svgElement("path", { d: `M ${x} ${topY+topDepth} L ${x+side} ${topY} L ${x+width+side} ${topY} L ${x+width} ${topY+topDepth} Z`, fill: shade(baseColour, 25), stroke, "stroke-width": 2.5 }));
-      if (piece.hole) {
-        svg.appendChild(svgElement("path", { d: `M ${x+9} ${topY+5.5} L ${x+15} ${topY+2} L ${x+width} ${topY+2} L ${x+width-6} ${topY+5.5} Z`, fill: shade(baseColour, -58), stroke, "stroke-width": 1.8 }));
-      }
     }
   }
 
-  function createModernPiece(svg, piece, baseColour) {
-    const stroke = shade(baseColour, -48);
-    const topY = piece.tall ? 8 : 28;
-    const baseY = 90;
-    const width = piece.round ? 58 : 62;
-    const x = (100 - width) / 2;
-    const height = baseY - topY;
-    addShadow(svg, piece.round);
-    svg.appendChild(svgElement("rect", { x, y: topY, width, height, rx: piece.round ? width / 2 : 8, fill: baseColour, stroke, "stroke-width": 4 }));
-    svg.appendChild(svgElement("ellipse", { cx: 50, cy: topY + 8, rx: piece.round ? 20 : 22, ry: 7, fill: "rgba(255,255,255,0.18)" }));
-    svg.appendChild(svgElement("path", { d: piece.round ? `M ${x+14} ${topY+15} Q ${x+9} ${topY+height/2} ${x+16} ${baseY-14}` : `M ${x+12} ${topY+13} L ${x+12} ${baseY-14}`, fill: "none", stroke: "rgba(255,255,255,0.34)", "stroke-width": 5, "stroke-linecap": "round" }));
+  function createSquarePiece(svg, piece, baseColour) {
+    const topY = piece.tall ? 10 : 45;
+    const bottomY = 88;
+    const x = 28;
+    const width = 38;
+    const side = 9;
+    const topDepth = 7;
+    const edge = shade(baseColour, -48);
+
+    addShadow(svg, false, 26);
+    svg.appendChild(svgElement("path", {
+      d: `M ${x} ${topY+topDepth} L ${x+width} ${topY+topDepth} L ${x+width} ${bottomY} L ${x} ${bottomY} Z`,
+      fill: baseColour, stroke: edge, "stroke-width": 2.2
+    }));
+    svg.appendChild(svgElement("path", {
+      d: `M ${x+width} ${topY+topDepth} L ${x+width+side} ${topY} L ${x+width+side} ${bottomY-side} L ${x+width} ${bottomY} Z`,
+      fill: shade(baseColour, -28), stroke: edge, "stroke-width": 2.2
+    }));
+    svg.appendChild(svgElement("path", {
+      d: `M ${x} ${topY+topDepth} L ${x+side} ${topY} L ${x+width+side} ${topY} L ${x+width} ${topY+topDepth} Z`,
+      fill: shade(baseColour, 18), stroke: edge, "stroke-width": 2.2
+    }));
+    svg.appendChild(svgElement("path", {
+      d: `M ${34} ${topY+15} L ${34} ${bottomY-12}`,
+      fill: "none", stroke: "rgba(255,255,255,.25)", "stroke-width": 3, "stroke-linecap": "round"
+    }));
+
     if (piece.hole) {
-      svg.appendChild(svgElement("ellipse", { cx: 50, cy: topY+9, rx: piece.round ? 13 : 12, ry: 7.5, fill: shade(baseColour, 30), stroke, "stroke-width": 3 }));
-      svg.appendChild(svgElement("ellipse", { cx: 50, cy: topY+10, rx: piece.round ? 7.5 : 7, ry: 4.8, fill: "rgba(12,18,24,0.72)" }));
+      // The complete inset is white; there is no second, darker centre shape.
+      svg.appendChild(svgElement("path", {
+        d: `M ${x+9} ${topY+5.5} L ${x+15} ${topY+2} L ${x+width} ${topY+2} L ${x+width-6} ${topY+5.5} Z`,
+        fill: COLOURS.hollow, stroke: COLOURS.hollow, "stroke-width": 1
+      }));
     }
   }
 
   function createPieceSvg(piece) {
-    const svg = svgElement("svg", { viewBox: "0 0 100 100", class: "quarto-piece", role: "img", "aria-label": describePiece(piece) });
-    const baseColour = piece.dark ? appearance.colourB : appearance.colourA;
-    if (appearance.style === "classic") createClassicPiece(svg, piece, baseColour);
-    else createModernPiece(svg, piece, baseColour);
+    const svg = svgElement("svg", {
+      viewBox: "0 0 100 100", class: "quarto-piece", role: "img",
+      "aria-label": describePiece(piece)
+    });
+    const baseColour = piece.dark ? COLOURS.red : COLOURS.blue;
+    if (piece.round) createRoundPiece(svg, piece, baseColour);
+    else createSquarePiece(svg, piece, baseColour);
     return svg;
   }
 
@@ -142,5 +160,8 @@
     }
   }
 
-  window.QuartoPieces = { PIECES, STYLE_DEFAULTS, getPiece, createPieceSvg, createRemainingPieces, describePiece, configureAppearance, getColourName, getColourNames };
+  window.QuartoPieces = {
+    PIECES, COLOURS, getPiece, createPieceSvg, createRemainingPieces,
+    describePiece, configureAppearance, getColourName, getColourNames
+  };
 })();

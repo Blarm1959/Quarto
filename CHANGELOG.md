@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.0.14
+
+- Standardised the game on one permanent high-visibility red and blue piece set.
+- Removed Classic/Modern style selection and every custom-colour option.
+- Redrew all 16 generated pieces with consistent proportions, perspective, lighting and shadows.
+- Made every hollow centre a single solid white shape, with no dark centre or inner ring.
+- Updated all piece names, help text and winning messages to use Red and Blue.
+- Updated project metadata and offline cache to v0.0.14.
+
 ## v0.0.13
 
 - Added **Classic** piece style with clear traditional cylinders and rectangular pieces.

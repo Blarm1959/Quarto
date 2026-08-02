@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "v0.0.13",
-  "githubSource": "v0.0.12",
+  "version": "v0.0.14",
+  "githubSource": "v0.0.13",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Add Classic and Modern piece themes with colour-aware wording"
+  "commit": "Standardise on fixed red and blue pieces with solid white hollows"
 }

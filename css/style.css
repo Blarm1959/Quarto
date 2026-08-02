@@ -7,8 +7,8 @@
   --line: #d7e0e8;
   --navy: #173b67;
   --navy-2: #245b96;
-  --dark-piece: #c83d4b;
-  --light-piece: #2668b2;
+  --piece-colour-a: #1769d2;
+  --piece-colour-b: #e42b32;
   --board-black: #111111;
   --board-white: #ffffff;
   --shadow: 0 18px 45px rgba(28, 54, 79, 0.13);
@@ -1037,13 +1037,3 @@ body[data-computer-turn="true"] .board-cell:not(.board-cell--occupied) { cursor:
   .mode-choice span { min-height: 62px; }
 }
 
-/* v0.0.13 piece appearance settings */
-.piece-style-grid { margin-top: 2px; }
-.piece-style-choice small { line-height: 1.35; }
-.custom-colour-toggle { display:flex; align-items:center; gap:9px; margin-top:14px; color:var(--text); font-weight:700; cursor:pointer; }
-.custom-colour-toggle input { width:18px; height:18px; accent-color:var(--navy-2); }
-#custom-colour-fields { margin-top:12px; }
-#custom-colour-fields[hidden] { display:none; }
-html[data-piece-style="classic"] .quarto-piece { filter:drop-shadow(0 3px 2px rgba(25,36,47,.18)); }
-.colour-control { display:grid; grid-template-columns:52px 1fr; gap:8px; align-items:center; }
-.colour-name-input { min-width:0; padding:8px 10px; }

@@ -75,7 +75,7 @@
           </div>
           <div id="remaining-pieces" class="piece-tray" aria-label="Available Quarto pieces"></div>
           <button id="open-piece-picker" class="button button--primary phone-piece-picker-button" type="button">Choose a piece</button>
-          <p id="piece-attributes-help" class="panel-help">Each piece is tall or short, round or square, black or white, and solid or hollow.</p>
+          <p id="piece-attributes-help" class="panel-help">Each piece is tall or short, round or square, blue or red, and solid or hollow.</p>
         </aside>
       </section>
 
@@ -140,18 +140,6 @@
         </div>
       </fieldset>
 
-      <fieldset class="setup-fieldset">
-        <legend>Piece style</legend>
-        <div class="mode-choice-grid piece-style-grid">
-          <label class="mode-choice piece-style-choice"><input type="radio" name="pieceStyle" value="classic" checked><span><strong>Classic</strong><small>Clear traditional shapes · Black / White</small></span></label>
-          <label class="mode-choice piece-style-choice"><input type="radio" name="pieceStyle" value="modern"><span><strong>Modern</strong><small>Smooth contemporary shapes · Red / Blue</small></span></label>
-        </div>
-        <label class="custom-colour-toggle"><input id="custom-colours-input" type="checkbox"> Choose different colours</label>
-        <div id="custom-colour-fields" class="colour-grid" hidden>
-          <label class="colour-field" for="colour-a-input"><span>First colour</span><span class="colour-control"><input id="colour-a-input" type="color" value="#f4f1e8"><input id="colour-a-name-input" class="text-input colour-name-input" type="text" maxlength="18" value="White" aria-label="First colour name"></span></label>
-          <label class="colour-field" for="colour-b-input"><span>Second colour</span><span class="colour-control"><input id="colour-b-input" type="color" value="#17191c"><input id="colour-b-name-input" class="text-input colour-name-input" type="text" maxlength="18" value="Black" aria-label="Second colour name"></span></label>
-        </div>
-      </fieldset>
 
       <div class="dialog-actions">
         <button class="button button--secondary" value="cancel" type="button" id="cancel-new-game">Cancel</button>
