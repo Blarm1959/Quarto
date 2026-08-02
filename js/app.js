@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.1.18";
+  const STORAGE_KEY = "quarto.settings.v0.1.19";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
@@ -218,6 +218,19 @@
     if (gameState.selectedPiece) preview.appendChild(window.QuartoPieces.createPieceSvg(gameState.selectedPiece));
   }
 
+  function setPiecePickerOpen(open) {
+    document.body.classList.toggle("piece-picker-open", Boolean(open));
+    schedulePhoneLayoutUpdate();
+  }
+
+  function openPiecePicker() {
+    if (gameState.phase !== "choose-piece" || isComputer(gameState.currentPlayer)) return;
+    const dialog = document.getElementById("piece-picker-dialog");
+    if (!dialog || dialog.open) return;
+    setPiecePickerOpen(true);
+    dialog.showModal();
+  }
+
   function maybeAutoOpenPiecePicker() {
     if (gameState.phase !== "choose-piece" || isComputer(gameState.currentPlayer)) return;
     if (!window.matchMedia("(max-width: 740px)").matches) return;
@@ -229,6 +242,7 @@
       const dialog = document.getElementById("piece-picker-dialog");
       if (!dialog || dialog.open || document.querySelector("dialog[open]")) return;
       autoOpenedPickerTurnId = gameState.chooseTurnId;
+      setPiecePickerOpen(true);
       dialog.showModal();
     });
   }
@@ -261,7 +275,7 @@
 
   function selectPiece(piece, slot) {
     if (gameState.phase !== "choose-piece" || isComputer(gameState.currentPlayer)) return;
-    document.getElementById("piece-picker-dialog")?.close();
+    { const picker=document.getElementById("piece-picker-dialog"); if (picker?.open) picker.close(); setPiecePickerOpen(false); }
     completePieceSelection(piece, slot);
   }
   function completePieceSelection(piece, slot) {
@@ -411,7 +425,7 @@
     const helpVersion=document.getElementById("help-version");
     if (!element && !helpVersion) return;
     const showVersion=(version, commit="", builtAt="")=>{
-      const cleanVersion=String(version || "0.1.18").replace(/^v/i, "");
+      const cleanVersion=String(version || "0.1.19").replace(/^v/i, "");
       if (element) {
         element.textContent=`Version ${cleanVersion}${commit}`;
         element.title=builtAt ? `Published ${new Date(builtAt).toLocaleString()}` : "";
@@ -430,7 +444,7 @@
       const response=await fetch("package.json",{cache:"no-store"});
       const info=await response.json();
       showVersion(info.version);
-    } catch { showVersion("0.1.18"); }
+    } catch { showVersion("0.1.19"); }
   }
 
   let deferredInstallPrompt = null;
@@ -498,8 +512,14 @@
 
       const shellStyle = getComputedStyle(shell);
       const shellPadding = parseFloat(shellStyle.paddingTop) + parseFloat(shellStyle.paddingBottom);
-      const fixedHeight = header.offsetHeight + dock.offsetHeight + players.offsetHeight + actions.offsetHeight;
-      const verticalGaps = 18;
+      const picker = document.getElementById("piece-picker-dialog");
+      const pickerOpen = Boolean(picker?.open || document.body.classList.contains("piece-picker-open"));
+      const pickerHeight = pickerOpen ? Math.min(252, Math.max(210, Math.floor(viewportHeight * 0.34))) : 0;
+      root.style.setProperty("--piece-picker-height", `${pickerHeight || 252}px`);
+      const fixedHeight = pickerOpen
+        ? header.offsetHeight + pickerHeight
+        : header.offsetHeight + dock.offsetHeight + players.offsetHeight + actions.offsetHeight;
+      const verticalGaps = pickerOpen ? 12 : 18;
       const heightAvailable = Math.floor(viewportHeight - shellPadding - fixedHeight - verticalGaps);
       const widthAvailable = Math.floor(shell.clientWidth);
       const boardSize = Math.max(220, Math.min(widthAvailable, heightAvailable));
@@ -543,10 +563,13 @@
     document.querySelectorAll('#new-game-form input').forEach(input=>input.addEventListener("change",updateSetupSummary));
     document.querySelectorAll('#new-game-form input[type="text"]').forEach(input=>input.addEventListener("input",updateSetupSummary));
     document.getElementById("how-to-play-button")?.addEventListener("click",()=>document.getElementById("how-to-play-dialog")?.showModal());
-    document.getElementById("open-piece-picker")?.addEventListener("click",()=>document.getElementById("piece-picker-dialog")?.showModal());
+    document.getElementById("open-piece-picker")?.addEventListener("click",openPiecePicker);
     document.getElementById("phone-turn-action")?.addEventListener("click",()=>{
-      if (gameState.phase === "choose-piece" && !isComputer(gameState.currentPlayer)) document.getElementById("piece-picker-dialog")?.showModal();
+      if (gameState.phase === "choose-piece" && !isComputer(gameState.currentPlayer)) openPiecePicker();
     });
+    const piecePickerDialog = document.getElementById("piece-picker-dialog");
+    piecePickerDialog?.addEventListener("close",()=>setPiecePickerOpen(false));
+    piecePickerDialog?.addEventListener("cancel",()=>setPiecePickerOpen(false));
     document.getElementById("install-app-button")?.addEventListener("click",installApplication);
     document.getElementById("install-app-action")?.addEventListener("click",installApplication);
   }

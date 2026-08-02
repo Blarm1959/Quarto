@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.18
+## v0.1.19
 
 - Replaced the full-width How to Play button with a compact ? help icon beside Settings.
 - Added the current release version to the bottom of the How to Play dialog.

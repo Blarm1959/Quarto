@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "0.1.18",
-  "githubSource": "v0.1.6.g1",
+  "version": "0.1.19",
+  "githubSource": "v0.1.18.g1",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Move help to a header icon and show the release version in the help dialog"
+  "commit": "Keep the complete board visible while choosing a piece on phones"
 }

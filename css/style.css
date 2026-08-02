@@ -1468,3 +1468,69 @@ body[data-computer-turn="true"] .turn-badge::after { content:""; display:inline-
   text-align: center;
   letter-spacing: .02em;
 }
+
+
+/* v0.1.19: keep the complete board visible while choosing a piece on phones. */
+@media (max-width: 740px) and (orientation: portrait) {
+  body.piece-picker-open .phone-turn-dock,
+  body.piece-picker-open .player-strip,
+  body.piece-picker-open .action-bar {
+    display: none !important;
+  }
+
+  .piece-picker-dialog {
+    width: 100%;
+    max-width: none;
+    max-height: var(--piece-picker-height, 252px);
+    margin: auto 0 0;
+    border-radius: 18px 18px 0 0;
+    overflow: hidden;
+  }
+
+  .piece-picker-dialog::backdrop {
+    background: rgba(8,18,29,.22);
+    backdrop-filter: none;
+  }
+
+  .piece-picker-dialog form {
+    max-height: var(--piece-picker-height, 252px);
+    overflow: hidden;
+    padding: 7px max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+  }
+
+  .piece-picker-heading {
+    min-height: 30px;
+    margin: 0 0 5px;
+  }
+
+  .piece-picker-heading h2 {
+    margin: 0;
+    font-size: .98rem;
+    line-height: 1.1;
+  }
+
+  .piece-picker-heading .dialog-close {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    font-size: 1.2rem;
+  }
+
+  .piece-tray--dialog {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    margin: 0;
+  }
+
+  .piece-tray--dialog .piece-slot {
+    min-height: 0;
+    aspect-ratio: 1.18 / 1;
+    padding: 1px;
+    border-radius: 9px;
+  }
+
+  .piece-tray--dialog .quarto-piece {
+    width: 92%;
+    height: 92%;
+  }
+}
