@@ -1,3 +1,9 @@
+## v0.0.6
+- Added automatic Quarto detection for all rows, columns and both diagonals.
+- Detects Tall, Short, Round, Square, Dark, Light, Hole and Solid wins.
+- Highlights the winning four squares and identifies all shared attributes.
+- Fixed the bottom-left to top-right square diagonal case.
+
 # Changelog
 
 ## v0.0.4

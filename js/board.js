@@ -1,25 +1,23 @@
 (function () {
   "use strict";
 
-  function createBoard(boardState = Array(16).fill(null), onPlace) {
+  function createBoard(boardState = Array(16).fill(null), onPlace, winningCells = []) {
     const board = document.getElementById("board");
     if (!board) return;
-
+    const winningSet = new Set(winningCells);
     board.replaceChildren();
-
     for (let index = 0; index < 16; index += 1) {
       const cell = document.createElement("button");
       const row = Math.floor(index / 4);
       const column = index % 4;
       const pieceId = boardState[index];
-
       cell.type = "button";
       cell.className = "board-cell";
       cell.dataset.index = String(index);
       cell.dataset.row = String(row);
       cell.dataset.column = String(column);
       cell.setAttribute("role", "gridcell");
-
+      if (winningSet.has(index)) cell.classList.add("board-cell--winner");
       if (pieceId === null) {
         cell.setAttribute("aria-label", `Empty square, row ${row + 1}, column ${column + 1}`);
         cell.addEventListener("click", () => onPlace?.(index, cell));
@@ -33,7 +31,6 @@
         wrap.appendChild(window.QuartoPieces.createPieceSvg(piece));
         cell.appendChild(wrap);
       }
-
       board.appendChild(cell);
     }
   }

@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.0.5";
+  const STORAGE_KEY = "quarto.settings.v0.0.6";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Player 2"],
     starterMode: "random",
@@ -20,7 +20,10 @@
     board: Array(16).fill(null),
     remainingPieceIds: window.QuartoPieces.PIECES.map(piece => piece.id),
     timerRemaining: 30,
-    timerHandle: null
+    timerHandle: null,
+    winner: null,
+    winningCells: [],
+    winningAttributes: []
   };
 
   function loadSettings() {
@@ -91,27 +94,42 @@
     return `${playerName(gameState.currentPlayer)}: choose any piece for ${playerName(gameState.receivingPlayer)}.`;
   }
 
+  function formatWinningAttributes(attributes) {
+    if (attributes.length === 1) return `4 ${attributes[0]} pieces`;
+    if (attributes.length === 2) return `4 ${attributes[0]} & 4 ${attributes[1]} pieces`;
+    return attributes.map((attribute,index) => index === attributes.length - 1 ? `& 4 ${attribute} pieces` : `4 ${attribute}`).join(", ");
+  }
+
   function renderPlayers() {
     for (let index = 0; index < 2; index += 1) {
       const card = document.getElementById(`player-card-${index + 1}`);
       const name = document.getElementById(`player-name-${index + 1}`);
       const state = document.getElementById(`player-state-${index + 1}`);
-      const active = index === gameState.currentPlayer;
+      const active = gameState.phase !== "game-over" && index === gameState.currentPlayer;
+      const won = gameState.phase === "game-over" && index === gameState.winner;
       name.textContent = playerName(index);
       card.classList.toggle("player-card--active", active);
-      state.className = active ? "turn-badge" : "waiting-label";
-      state.textContent = active
-        ? (gameState.phase === "place-piece" ? "Placing the piece" : "Choosing a piece")
-        : "Waiting";
+      card.classList.toggle("player-card--winner", won);
+      if (won) {
+        state.className = "turn-badge turn-badge--winner";
+        state.textContent = "Winner";
+      } else {
+        state.className = active ? "turn-badge" : "waiting-label";
+        state.textContent = active ? (gameState.phase === "place-piece" ? "Placing the piece" : "Choosing a piece") : "Waiting";
+      }
     }
 
-    const forText = gameState.phase === "place-piece"
-      ? `Placed by ${playerName(gameState.currentPlayer)}`
-      : `For ${playerName(gameState.receivingPlayer)}`;
+    const forText = gameState.phase === "game-over"
+      ? "Game complete"
+      : gameState.phase === "place-piece"
+        ? `Placed by ${playerName(gameState.currentPlayer)}`
+        : `For ${playerName(gameState.receivingPlayer)}`;
     document.getElementById("current-piece-for").textContent = forText;
-    document.getElementById("current-piece-help").textContent = gameState.phase === "place-piece"
-      ? `${playerName(gameState.currentPlayer)} places this piece, then chooses the next piece.`
-      : `${playerName(gameState.currentPlayer)} chooses a piece for ${playerName(gameState.receivingPlayer)} to place.`;
+    document.getElementById("current-piece-help").textContent = gameState.phase === "game-over"
+      ? "Start a new game to play again."
+      : gameState.phase === "place-piece"
+        ? `${playerName(gameState.currentPlayer)} places this piece, then chooses the next piece.`
+        : `${playerName(gameState.currentPlayer)} chooses a piece for ${playerName(gameState.receivingPlayer)} to place.`;
   }
 
   function showEmptyCurrentPiece() {
@@ -174,7 +192,7 @@
   }
 
   function renderBoard() {
-    window.QuartoBoard.createBoard(gameState.board, placePiece);
+    window.QuartoBoard.createBoard(gameState.board, placePiece, gameState.winningCells);
     window.QuartoBoard.setPlacementEnabled(gameState.phase === "place-piece");
   }
 
@@ -202,22 +220,33 @@
 
   function placePiece(index, cell) {
     if (gameState.phase !== "place-piece" || !gameState.selectedPiece || gameState.board[index] !== null) return;
-
     gameState.board[index] = gameState.selectedPiece.id;
     cell.classList.add("board-cell--landing");
     gameState.selectedPiece = null;
-    gameState.phase = "choose-piece";
-    gameState.receivingPlayer = gameState.currentPlayer === 0 ? 1 : 0;
 
-    renderGame();
-    resetMoveTimer();
-
-    if (gameState.board.every(value => value !== null)) {
+    const result = window.QuartoRules.checkForQuarto(gameState.board);
+    if (result) {
+      gameState.phase = "game-over";
+      gameState.winner = gameState.currentPlayer;
+      gameState.winningCells = result.line;
+      gameState.winningAttributes = result.attributes;
       stopTimer();
-      document.getElementById("status").textContent = "The board is full. The game is a draw unless a Quarto was called.";
+      renderGame();
+      document.getElementById("status").textContent = `${playerName(gameState.winner)} wins (${formatWinningAttributes(result.attributes)})`;
       return;
     }
 
+    gameState.phase = "choose-piece";
+    gameState.receivingPlayer = gameState.currentPlayer === 0 ? 1 : 0;
+    renderGame();
+    resetMoveTimer();
+    if (gameState.board.every(value => value !== null)) {
+      stopTimer();
+      gameState.phase = "game-over";
+      renderGame();
+      document.getElementById("status").textContent = "The game is a draw.";
+      return;
+    }
     document.getElementById("status").textContent = phaseInstruction();
   }
 
@@ -229,6 +258,9 @@
     gameState.phase = "choose-piece";
     gameState.board = Array(16).fill(null);
     gameState.remainingPieceIds = window.QuartoPieces.PIECES.map(piece => piece.id);
+    gameState.winner = null;
+    gameState.winningCells = [];
+    gameState.winningAttributes = [];
     saveSettings();
 
     applyTheme();
