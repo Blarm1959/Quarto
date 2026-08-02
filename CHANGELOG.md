@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.0.18
+
+- Fixed the phone portrait layout so CSS Grid no longer stretches large empty gaps between sections.
+- Keeps the board, current-piece dock, player strip and New Game/How to Play controls inside the visible S23 viewport.
+- Prevents the main installed-app game screen from vertically scrolling during play.
+- Added extra compact sizing for shorter phone viewports while preserving the square board.
+- Kept tablet, laptop, desktop and phone-landscape layouts unchanged.
+
 ## v0.0.17
 
 - Added a dedicated phone play surface that keeps the board as the dominant element.

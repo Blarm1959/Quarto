@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "v0.0.17",
-  "githubSource": "v0.0.16",
+  "version": "v0.0.18",
+  "githubSource": "v0.0.17",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Add dedicated phone play surface and bottom-sheet turn controls"
+  "commit": "Keep the complete phone game screen visible without scrolling"
 }
