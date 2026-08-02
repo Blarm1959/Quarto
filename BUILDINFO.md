@@ -1,7 +1,7 @@
 # Build Information
 
 Project: Quarto
-Version: v0.0.20
+Version: v0.1.0
 Source code release: v0.0.15
 Development Port: 8004
 Package changes: No

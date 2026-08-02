@@ -1,14 +1,24 @@
 # Changelog
 
-## v0.0.20
+## v0.1.0
+
+- Introduced the first full strategic AI framework for difficulty levels 1–10.
+- AI now evaluates both Quarto decisions: where to place the supplied piece and which piece to give the opponent.
+- Levels 1–3 make controlled, human-like mistakes rather than purely random moves.
+- Levels 4–6 consistently take immediate wins and increasingly avoid dangerous gifts.
+- Levels 7–10 use bounded negamax search across complete place-and-gift turns.
+- Levels 9–10 deepen their search and attempt exact endgame analysis when the board is sufficiently full.
+- Added time and node budgets so expert calculation remains responsive on phones.
+
+## v0.1.0
 
 - Replaced the single long setup form with a three-step New Game wizard.
 - Added clearer difficulty descriptions for levels 1–10.
 - Added optional sound effects and animation controls.
 - Added a polished Quarto/draw result dialog while preserving the visible winning board.
-- Included the planned v0.0.20 game-polish work and v0.0.21 setup-wizard work in this single v0.0.20 release.
+- Included the planned v0.1.0 game-polish work and v0.0.21 setup-wizard work in this single v0.1.0 release.
 
-## v0.0.20
+## v0.1.0
 
 - Recalculates the phone play surface from the live visual viewport rather than relying on a fixed `100dvh` assumption.
 - Keeps the board, turn dock, player strip and bottom controls visible after pull-to-refresh, app resume and browser UI changes.
@@ -114,7 +124,7 @@
 
 # Changelog
 
-## v0.0.20
+## v0.1.0
 
 - Recalculates the phone play surface from the live visual viewport rather than relying on a fixed `100dvh` assumption.
 - Keeps the board, turn dock, player strip and bottom controls visible after pull-to-refresh, app resume and browser UI changes.

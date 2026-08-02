@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.0.20";
+  const STORAGE_KEY = "quarto.settings.v0.1.0";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
@@ -24,11 +24,12 @@
   function loadSettings() {
     try {
       const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      const previous20 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.20") || "{}");
       const previous19 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.14") || "{}");
       const previous13 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.13") || "{}");
       const previous12 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.12") || "{}");
       const previous11 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.11") || "{}");
-      return { ...DEFAULT_SETTINGS, ...previous11, ...previous12, ...previous13, ...previous19, ...current };
+      return { ...DEFAULT_SETTINGS, ...previous11, ...previous12, ...previous13, ...previous19, ...previous20, ...current };
     } catch { return { ...DEFAULT_SETTINGS }; }
   }
 
@@ -41,11 +42,12 @@
     return "Expert";
   }
   function difficultyDescription(level) {
-    if (level <= 2) return "A friendly beginner that makes believable mistakes.";
-    if (level <= 4) return "A casual opponent that spots some simple opportunities.";
-    if (level <= 6) return "A balanced opponent that sees immediate wins and obvious danger.";
-    if (level <= 8) return "A strong opponent that plans ahead and avoids risky gifts.";
-    return "The strongest available search with very few deliberate mistakes.";
+    if (level === 1) return "A true beginner: legal moves, simple ideas and believable missed chances.";
+    if (level <= 3) return "A learning opponent that increasingly notices wins and dangerous pieces.";
+    if (level <= 4) return "A casual player that takes immediate wins and usually avoids obvious gifts.";
+    if (level <= 6) return "A reliable tactical player that sees wins, threats and safer piece choices.";
+    if (level <= 8) return "A strong opponent that searches complete place-and-gift turns ahead.";
+    return "Expert search with deeper look-ahead and exact endgame analysis where practical.";
   }
 
   let audioContext = null;
@@ -264,7 +266,7 @@
     document.getElementById("status").textContent = `Computer is thinking — level ${gameState.settings.difficulty} ${difficultyName(gameState.settings.difficulty)}.`;
     gameState.aiHandle = setTimeout(() => {
       if (gameState.phase === "place-piece") {
-        const index = window.QuartoAI.choosePlacement(gameState.board, gameState.selectedPiece.id, gameState.settings.difficulty);
+        const index = window.QuartoAI.choosePlacement(gameState.board, gameState.selectedPiece.id, gameState.settings.difficulty, gameState.remainingPieceIds);
         if (index !== null) completePlacement(index);
       } else {
         const piece = window.QuartoAI.choosePiece(gameState.board, gameState.remainingPieceIds, gameState.settings.difficulty);

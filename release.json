@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "v0.0.20",
-  "githubSource": "v0.0.19",
+  "version": "v0.1.0",
+  "githubSource": "v0.0.20",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Add guided new-game wizard, optional sound and animations, and a polished game-over celebration"
+  "commit": "Add the first strategic AI engine with difficulty levels 1-10 and expert endgame search"
 }
