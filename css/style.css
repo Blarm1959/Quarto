@@ -706,3 +706,289 @@ body { overflow-x: hidden; }
     min-height: 38px;
   }
 }
+
+
+/* v0.0.11: dedicated phone portrait layout */
+@media (max-width: 740px) and (orientation: portrait) {
+  html {
+    min-width: 0;
+  }
+
+  body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .app-shell {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 6px 8px 10px;
+  }
+
+  .app-header {
+    min-height: 38px;
+    margin: 0 0 5px;
+  }
+
+  .app-header h1 {
+    font-size: 1.7rem;
+    line-height: 1;
+  }
+
+  .icon-button {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+  }
+
+  .game-layout {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .player-strip {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr) 68px minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .player-card,
+  .timer-card {
+    min-width: 0;
+    min-height: 52px;
+    border-radius: 10px;
+  }
+
+  .player-card {
+    padding: 5px 7px;
+  }
+
+  .player-card strong {
+    margin: 1px 0 2px;
+    font-size: .82rem;
+    line-height: 1.05;
+  }
+
+  .player-label,
+  .timer-card span,
+  .waiting-label {
+    font-size: .52rem;
+    line-height: 1;
+  }
+
+  .turn-badge {
+    max-width: 100%;
+    padding: 2px 5px;
+    font-size: .53rem;
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .timer-card {
+    grid-column: auto;
+    grid-row: auto;
+    padding: 4px 3px;
+  }
+
+  .timer-card strong {
+    margin-top: 1px;
+    font-size: 1.03rem;
+  }
+
+  .game-stage {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "board"
+      "current"
+      "pieces";
+    gap: 6px;
+  }
+
+  .board-section {
+    grid-area: board;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .board-frame {
+    width: 100%;
+    max-width: none;
+    padding: 6px;
+    border-width: 4px;
+    border-radius: 15px;
+  }
+
+  .board-frame::after {
+    inset: 3px;
+    border-radius: 10px;
+  }
+
+  .board {
+    width: 100%;
+    gap: 5px;
+  }
+
+  .board-cell {
+    min-width: 0;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .status-message {
+    min-height: 34px;
+    margin-top: 5px;
+    padding: 5px 7px;
+    border-radius: 9px;
+    font-size: .76rem;
+    line-height: 1.15;
+  }
+
+  .side-panel {
+    width: 100%;
+    min-width: 0;
+    padding: 8px;
+    border-radius: 12px;
+  }
+
+  .panel-heading {
+    margin-bottom: 5px;
+  }
+
+  .panel-heading h2 {
+    font-size: .9rem;
+  }
+
+  .panel-kicker,
+  .piece-count {
+    font-size: .58rem;
+  }
+
+  .current-panel {
+    grid-area: current;
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    gap: 6px 9px;
+    align-items: center;
+  }
+
+  .current-panel .panel-heading {
+    grid-column: 1 / -1;
+  }
+
+  .current-piece {
+    min-height: 92px;
+    height: 92px;
+    border-radius: 10px;
+  }
+
+  .current-piece-visual,
+  .current-piece .quarto-piece {
+    width: 82px;
+    height: 82px;
+  }
+
+  .empty-piece-message {
+    gap: 4px;
+    font-size: .7rem;
+    text-align: center;
+  }
+
+  .empty-piece-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 1.1rem;
+  }
+
+  .current-panel .panel-help {
+    margin: 0;
+    font-size: .74rem;
+    line-height: 1.25;
+  }
+
+  .pieces-panel {
+    grid-area: pieces;
+  }
+
+  .piece-tray {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .piece-slot {
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1;
+    padding: 2px;
+    border-radius: 9px;
+  }
+
+  .pieces-panel .panel-help {
+    margin-top: 6px;
+    font-size: .68rem;
+    line-height: 1.2;
+  }
+
+  body[data-phase="choose-piece"] .current-panel {
+    display: none;
+  }
+
+  body[data-phase="place-piece"] .pieces-panel {
+    display: none;
+  }
+
+  .action-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    width: 100%;
+    min-height: 42px;
+    padding: 4px;
+    gap: 5px;
+    flex-wrap: nowrap;
+    border-radius: 11px;
+  }
+
+  .button {
+    min-width: 0;
+    min-height: 36px;
+    flex: 1 1 0;
+    padding: 0 8px;
+    border-radius: 8px;
+    font-size: .8rem;
+  }
+
+  .version {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) and (orientation: portrait) {
+  .app-shell {
+    padding-inline: 6px;
+  }
+
+  .player-strip {
+    grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr);
+    gap: 3px;
+  }
+
+  .player-card {
+    padding-inline: 5px;
+  }
+
+  .player-card strong {
+    font-size: .77rem;
+  }
+
+  .turn-badge {
+    font-size: .49rem;
+  }
+}

@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "v0.0.10",
-  "githubSource": "v0.0.9.g1",
+  "version": "v0.0.11",
+  "githubSource": "v0.0.10.g1",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Fit Quarto on 13-inch screens and show version automatically"
+  "commit": "Add dedicated phone-first Quarto layout"
 }

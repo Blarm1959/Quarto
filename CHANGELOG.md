@@ -1,3 +1,12 @@
+## v0.0.11
+- Added a dedicated phone portrait layout tested at 360 x 740 CSS pixels.
+- Enlarged the board to almost the full phone width.
+- Reduced players and timer to a compact single-row strip.
+- Shows only the controls needed for the current game phase.
+- Made the current-piece card horizontal on phones.
+- Increased touch targets for available pieces and game buttons.
+- Preserved desktop, compact-laptop, tablet and phone-landscape layouts.
+
 ## v0.0.10
 - Optimised the full game for 1366x768-class 13-inch laptop screens at 100% browser zoom.
 - Kept the three-column layout down to 900 CSS pixels for laptops using Windows display scaling.

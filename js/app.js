@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.0.7";
+  const STORAGE_KEY = "quarto.settings.v0.0.11";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Player 2"],
     starterMode: "random",
