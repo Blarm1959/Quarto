@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.18
+
+- Replaced the full-width How to Play button with a compact ? help icon beside Settings.
+- Added the current release version to the bottom of the How to Play dialog.
+- Both displayed version labels use the same build information source.
+- Updated the PWA cache and release metadata.
+
 ## v0.1.6
 - Added a clear Computer thinking state with a natural delay that scales gently by difficulty.
 - Highlights the square chosen by the computer before it places a piece.

@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.1.6";
+  const STORAGE_KEY = "quarto.settings.v0.1.18";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
@@ -408,21 +408,29 @@
   }
   async function renderApplicationVersion() {
     const element=document.getElementById("app-version");
-    if (!element) return;
+    const helpVersion=document.getElementById("help-version");
+    if (!element && !helpVersion) return;
+    const showVersion=(version, commit="", builtAt="")=>{
+      const cleanVersion=String(version || "0.1.18").replace(/^v/i, "");
+      if (element) {
+        element.textContent=`Version ${cleanVersion}${commit}`;
+        element.title=builtAt ? `Published ${new Date(builtAt).toLocaleString()}` : "";
+      }
+      if (helpVersion) helpVersion.textContent=`Quarto · v${cleanVersion}`;
+    };
     try {
       const response=await fetch("build-info.json",{cache:"no-store"});
       if (!response.ok) throw new Error("No deployed build information");
       const info=await response.json();
       const commit=info.commit ? ` · ${String(info.commit).slice(0,7)}` : "";
-      element.textContent=`Version ${info.version}${commit}`;
-      element.title=info.builtAt ? `Published ${new Date(info.builtAt).toLocaleString()}` : "";
+      showVersion(info.version, commit, info.builtAt);
       return;
     } catch {}
     try {
       const response=await fetch("package.json",{cache:"no-store"});
       const info=await response.json();
-      element.textContent=`Version ${info.version}`;
-    } catch { element.textContent="Quarto"; }
+      showVersion(info.version);
+    } catch { showVersion("0.1.18"); }
   }
 
   let deferredInstallPrompt = null;

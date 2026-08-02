@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "0.1.6",
-  "githubSource": "v0.1.5.g1",
+  "version": "0.1.18",
+  "githubSource": "v0.1.6.g1",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Polish computer turns with thinking states and visible piece and square previews"
+  "commit": "Move help to a header icon and show the release version in the help dialog"
 }
