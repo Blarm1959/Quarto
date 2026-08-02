@@ -1,14 +1,80 @@
 {
+  "id": "./",
   "name": "Quarto",
   "short_name": "Quarto",
-  "description": "A responsive digital version of the classic Quarto strategy game.",
-  "start_url": "./",
+  "description": "Play the classic Quarto strategy game against another player or the computer.",
+  "lang": "en-GB",
+  "dir": "ltr",
+  "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
   "background_color": "#eef3f8",
-  "theme_color": "#111111",
+  "theme_color": "#0e3963",
+  "categories": [
+    "games",
+    "strategy"
+  ],
+  "prefer_related_applications": false,
   "icons": [
-    { "src": "icons/quarto-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icons/quarto-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "icons/quarto-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/quarto-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/quarto-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/quarto-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/quarto-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/quarto-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/quarto-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/quarto-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/quarto-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

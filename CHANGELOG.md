@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.0.15
+
+- Strengthened Quarto as an installable Progressive Web App.
+- Added a complete icon set, including Android maskable icons and an Apple touch icon.
+- Added install controls that appear only when the browser supports installation.
+- Added a version-aware service worker with offline app-shell caching and safer update handling.
+- Added an in-app update banner when a new release is ready.
+- Added an offline fallback page for first-load failures.
+- Added safe-area, standalone-display and mobile viewport support for modern phones.
+- Added manifest metadata suitable for later Android/Play Store packaging while retaining one web codebase.
+
 ## v0.0.14
 
 - Standardised the game on one permanent high-visibility red and blue piece set.

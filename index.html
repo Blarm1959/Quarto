@@ -2,13 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#111111">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e3963">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Quarto">
+  <meta name="application-name" content="Quarto">
+  <meta name="format-detection" content="telephone=no">
   <meta name="description" content="A clean, responsive Quarto board game Progressive Web App.">
   <title>Quarto</title>
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/quarto-192.png">
-  <link rel="apple-touch-icon" href="icons/quarto-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/quarto-180.png">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -19,9 +25,12 @@
         <p class="eyebrow">Classic strategy game</p>
         <h1>Quarto</h1>
       </div>
+      <div class="header-actions">
+      <button id="install-app-button" class="icon-button install-app-button" type="button" aria-label="Install Quarto" title="Install Quarto" hidden><span aria-hidden="true">⇩</span></button>
       <button id="settings-button" class="icon-button" type="button" aria-label="Open game setup" title="Game setup">
         <span aria-hidden="true">⚙</span>
       </button>
+      </div>
     </header>
 
     <main class="game-layout">
@@ -82,6 +91,7 @@
       <section class="action-bar" aria-label="Game controls">
         <button id="new-game-button" class="button button--primary" type="button">New game</button>
         <button id="how-to-play-button" class="button button--secondary" type="button">How to play</button>
+        <button id="install-app-action" class="button button--secondary install-app-action" type="button" hidden>Install app</button>
         <p id="app-version" class="version">Version loading…</p>
       </section>
     </main>
@@ -171,6 +181,12 @@
       <button class="button button--primary" value="close">Close</button>
     </form>
   </dialog>
+
+  <div id="pwa-update-banner" class="pwa-banner" role="status" hidden>
+    <span>A new Quarto version is ready.</span>
+    <button id="pwa-update-button" class="button button--primary" type="button">Update now</button>
+    <button id="pwa-update-dismiss" class="dialog-close" type="button" aria-label="Dismiss update">×</button>
+  </div>
 
   <script src="js/pieces.js"></script>
   <script src="js/board.js"></script>

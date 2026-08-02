@@ -4,7 +4,7 @@ A responsive Progressive Web App implementation of the strategy game Quarto.
 
 ## Current version
 
-v0.0.14
+v0.0.15
 
 ## Run locally
 
@@ -25,3 +25,8 @@ Open `http://127.0.0.1:8004`.
 - Configurable player names, starting player and move timer.
 - A fixed, high-visibility red and blue piece set with solid white hollow centres.
 - Installable Progressive Web App support.
+
+
+## Installable web app
+
+Serve the project over HTTPS (or use localhost), open it in a compatible browser, and use **Install app** when offered. After the first successful load, the game shell is available offline.

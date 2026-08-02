@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "v0.0.14",
-  "githubSource": "v0.0.13",
+  "version": "v0.0.15",
+  "githubSource": "v0.0.14",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Standardise on fixed red and blue pieces with solid white hollows"
+  "commit": "Add installable PWA foundation and Android-ready app metadata"
 }

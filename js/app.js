@@ -224,6 +224,42 @@
     const element=document.getElementById("app-version");
     try { const response=await fetch("package.json",{cache:"no-store"}); const info=await response.json(); element.textContent=`Version ${info.version}`; } catch { element.textContent="Quarto"; }
   }
+
+  let deferredInstallPrompt = null;
+  function setInstallButtonsVisible(visible) {
+    ["install-app-button","install-app-action"].forEach(id => {
+      const button=document.getElementById(id); if (button) button.hidden=!visible;
+    });
+  }
+  async function installApplication() {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt=null; setInstallButtonsVisible(false);
+  }
+  function showUpdateBanner(registration) {
+    const banner=document.getElementById("pwa-update-banner");
+    if (!banner || !registration.waiting) return;
+    banner.hidden=false;
+    document.getElementById("pwa-update-button")?.addEventListener("click",()=>registration.waiting?.postMessage({type:"SKIP_WAITING"}),{once:true});
+    document.getElementById("pwa-update-dismiss")?.addEventListener("click",()=>banner.hidden=true,{once:true});
+  }
+  async function registerPwa() {
+    window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();deferredInstallPrompt=event;setInstallButtonsVisible(true);});
+    window.addEventListener("appinstalled",()=>{deferredInstallPrompt=null;setInstallButtonsVisible(false);});
+    if (!("serviceWorker" in navigator)) return;
+    try {
+      const registration=await navigator.serviceWorker.register("service-worker.js",{scope:"./"});
+      if (registration.waiting) showUpdateBanner(registration);
+      registration.addEventListener("updatefound",()=>{
+        const worker=registration.installing;
+        worker?.addEventListener("statechange",()=>{if(worker.state==="installed" && navigator.serviceWorker.controller) showUpdateBanner(registration);});
+      });
+      let refreshing=false;
+      navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!refreshing){refreshing=true;location.reload();}});
+    } catch (error) { console.warn("Quarto service worker registration failed",error); }
+  }
+
   function bindControls() {
     const setup=document.getElementById("new-game-dialog"); const openSetup=()=>{populateSetupDialog();setup.showModal();};
     document.getElementById("new-game-button")?.addEventListener("click",openSetup); document.getElementById("settings-button")?.addEventListener("click",openSetup);
@@ -232,8 +268,10 @@
     document.getElementById("difficulty-input")?.addEventListener("input",updateDifficultyLabel);
     document.getElementById("how-to-play-button")?.addEventListener("click",()=>document.getElementById("how-to-play-dialog")?.showModal());
     document.getElementById("open-piece-picker")?.addEventListener("click",()=>document.getElementById("piece-picker-dialog")?.showModal());
+    document.getElementById("install-app-button")?.addEventListener("click",installApplication);
+    document.getElementById("install-app-action")?.addEventListener("click",installApplication);
   }
 
-  document.addEventListener("DOMContentLoaded",()=>{ bindControls(); renderApplicationVersion(); resetGame(gameState.settings.starterMode); if("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js").catch(()=>{}); });
+  document.addEventListener("DOMContentLoaded",()=>{ bindControls(); renderApplicationVersion(); resetGame(gameState.settings.starterMode); registerPwa(); });
   window.QuartoGame={state:gameState,resetGame};
 })();
