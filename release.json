@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "v0.0.19",
-  "githubSource": "v0.0.18",
+  "version": "v0.0.20",
+  "githubSource": "v0.0.19",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Recalculate the phone layout from the live viewport after refresh and resume"
+  "commit": "Add guided new-game wizard, optional sound and animations, and a polished game-over celebration"
 }

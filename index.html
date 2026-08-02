@@ -105,9 +105,9 @@
     </main>
   </div>
 
-  <dialog id="new-game-dialog" class="rules-dialog setup-dialog">
+  <dialog id="new-game-dialog" class="rules-dialog setup-dialog setup-wizard-dialog">
     <form id="new-game-form" method="dialog">
-      <div class="dialog-heading">
+      <div class="dialog-heading setup-wizard-heading">
         <div>
           <p class="dialog-eyebrow">Game setup</p>
           <h2>New game</h2>
@@ -115,53 +115,79 @@
         <button class="dialog-close" value="cancel" aria-label="Close">×</button>
       </div>
 
-      <fieldset class="setup-fieldset setup-fieldset--mode">
-        <legend>Game mode</legend>
-        <div class="mode-choice-grid">
-          <label class="mode-choice"><input type="radio" name="gameMode" value="computer" checked><span><strong>One player</strong><small>Play against the computer</small></span></label>
-          <label class="mode-choice"><input type="radio" name="gameMode" value="two-player"><span><strong>Two players</strong><small>Share this device</small></span></label>
-        </div>
-      </fieldset>
-
-      <div id="difficulty-field" class="difficulty-field">
-        <div><strong>Computer difficulty</strong><span id="difficulty-name">Intermediate</span></div>
-        <input id="difficulty-input" name="difficulty" type="range" min="1" max="10" step="1" value="5">
-        <div class="difficulty-scale"><span>1 Beginner</span><span>10 Expert</span></div>
+      <div class="wizard-progress" aria-label="Setup progress">
+        <span class="wizard-progress-step wizard-progress-step--active" data-step-indicator="0">1 <small>Game</small></span>
+        <span class="wizard-progress-line"></span>
+        <span class="wizard-progress-step" data-step-indicator="1">2 <small>Players</small></span>
+        <span class="wizard-progress-line"></span>
+        <span class="wizard-progress-step" data-step-indicator="2">3 <small>Options</small></span>
       </div>
 
-      <div class="setup-grid">
-        <label class="field-label" for="player-1-input">Player 1 name
-          <input id="player-1-input" class="text-input" type="text" maxlength="24" autocomplete="off" placeholder="Player 1">
-        </label>
-        <label class="field-label" id="player-2-field" for="player-2-input">Player 2 name
-          <input id="player-2-input" class="text-input" type="text" maxlength="24" autocomplete="off" placeholder="Player 2">
-        </label>
-      </div>
+      <section class="wizard-step wizard-step--active" data-wizard-step="0">
+        <h3>How would you like to play?</h3>
+        <fieldset class="setup-fieldset setup-fieldset--mode">
+          <legend>Game mode</legend>
+          <div class="mode-choice-grid">
+            <label class="mode-choice"><input type="radio" name="gameMode" value="computer" checked><span><strong>One player</strong><small>Play against the computer</small></span></label>
+            <label class="mode-choice"><input type="radio" name="gameMode" value="two-player"><span><strong>Two players</strong><small>Share this device</small></span></label>
+          </div>
+        </fieldset>
 
-      <fieldset class="setup-fieldset">
-        <legend>Who starts?</legend>
-        <div class="choice-grid">
-          <label><input type="radio" name="starter" value="random" checked> Random</label>
-          <label><input type="radio" name="starter" value="alternate"> Alternate</label>
-          <label><input type="radio" name="starter" value="0"> Player 1</label>
-          <label><input type="radio" name="starter" value="1"> Player 2</label>
+        <div id="difficulty-field" class="difficulty-field">
+          <div><strong>Computer difficulty</strong><span id="difficulty-name">Level 5 · Intermediate</span></div>
+          <input id="difficulty-input" name="difficulty" type="range" min="1" max="10" step="1" value="5">
+          <div class="difficulty-scale"><span>1 Beginner</span><span>10 Expert</span></div>
+          <p id="difficulty-description" class="setup-help">A balanced opponent that sees immediate wins and obvious danger.</p>
         </div>
-      </fieldset>
+      </section>
 
-      <fieldset class="setup-fieldset">
-        <legend>Move timer</legend>
-        <div class="choice-grid">
-          <label><input type="radio" name="timer" value="30" checked> 30 seconds</label>
-          <label><input type="radio" name="timer" value="45"> 45 seconds</label>
-          <label><input type="radio" name="timer" value="60"> 60 seconds</label>
-          <label><input type="radio" name="timer" value="0"> Unlimited</label>
+      <section class="wizard-step" data-wizard-step="1" hidden>
+        <h3>Who is playing?</h3>
+        <div class="setup-grid setup-grid--players">
+          <label class="field-label" for="player-1-input">Player 1 name
+            <input id="player-1-input" class="text-input" type="text" maxlength="24" autocomplete="off" placeholder="Player 1">
+          </label>
+          <label class="field-label" id="player-2-field" for="player-2-input">Player 2 name
+            <input id="player-2-input" class="text-input" type="text" maxlength="24" autocomplete="off" placeholder="Player 2">
+          </label>
         </div>
-      </fieldset>
+        <fieldset class="setup-fieldset">
+          <legend>Who starts?</legend>
+          <div class="choice-grid">
+            <label><input type="radio" name="starter" value="random" checked> Random</label>
+            <label><input type="radio" name="starter" value="alternate"> Alternate each game</label>
+            <label><input type="radio" name="starter" value="0"> Player 1</label>
+            <label><input type="radio" name="starter" value="1"> Player 2 / Computer</label>
+          </div>
+        </fieldset>
+      </section>
 
+      <section class="wizard-step" data-wizard-step="2" hidden>
+        <h3>Final options</h3>
+        <fieldset class="setup-fieldset">
+          <legend>Move timer</legend>
+          <div class="choice-grid timer-choice-grid">
+            <label><input type="radio" name="timer" value="30" checked> 30 seconds</label>
+            <label><input type="radio" name="timer" value="45"> 45 seconds</label>
+            <label><input type="radio" name="timer" value="60"> 60 seconds</label>
+            <label><input type="radio" name="timer" value="0"> Unlimited</label>
+          </div>
+        </fieldset>
+        <fieldset class="setup-fieldset">
+          <legend>Game feel</legend>
+          <div class="toggle-list">
+            <label class="toggle-row"><span><strong>Sound effects</strong><small>Subtle sounds for selecting, placing and winning</small></span><input id="sound-effects-input" name="soundEffects" type="checkbox" checked></label>
+            <label class="toggle-row"><span><strong>Animations</strong><small>Piece movement and winning highlights</small></span><input id="animations-input" name="animations" type="checkbox" checked></label>
+          </div>
+        </fieldset>
+        <div id="setup-summary" class="setup-summary" aria-live="polite"></div>
+      </section>
 
-      <div class="dialog-actions">
+      <div class="dialog-actions wizard-actions">
         <button class="button button--secondary" value="cancel" type="button" id="cancel-new-game">Cancel</button>
-        <button class="button button--primary" type="submit">Start game</button>
+        <button class="button button--secondary" type="button" id="wizard-back" hidden>Back</button>
+        <button class="button button--primary" type="button" id="wizard-next">Next</button>
+        <button class="button button--primary" type="submit" id="wizard-start" hidden>Start game</button>
       </div>
     </form>
   </dialog>
@@ -187,6 +213,19 @@
       <p>Make a row, column or diagonal of four pieces sharing at least one attribute: tall, short, round, square, either of the two colours, solid or hollow.</p>
       <p class="dialog-note">This version automatically detects Quarto wins in every row, column and diagonal.</p>
       <button class="button button--primary" value="close">Close</button>
+    </form>
+  </dialog>
+
+  <dialog id="game-over-dialog" class="rules-dialog game-over-dialog">
+    <form method="dialog">
+      <div class="game-over-mark" aria-hidden="true">Q</div>
+      <p class="dialog-eyebrow">Game complete</p>
+      <h2 id="game-over-title">Quarto!</h2>
+      <p id="game-over-detail" class="game-over-detail"></p>
+      <div class="dialog-actions game-over-actions">
+        <button class="button button--secondary" value="close">View board</button>
+        <button class="button button--primary" value="close" type="button" id="game-over-new-game">New game</button>
+      </div>
     </form>
   </dialog>
 

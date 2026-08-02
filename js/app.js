@@ -1,14 +1,16 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.0.14";
+  const STORAGE_KEY = "quarto.settings.v0.0.20";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
     difficulty: 5,
     starterMode: "random",
     timerSeconds: 30,
-    lastStarter: 1
+    lastStarter: 1,
+    soundEffects: true,
+    animations: true
   };
 
   const gameState = {
@@ -22,10 +24,11 @@
   function loadSettings() {
     try {
       const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      const previous19 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.14") || "{}");
       const previous13 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.13") || "{}");
       const previous12 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.12") || "{}");
       const previous11 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.11") || "{}");
-      return { ...DEFAULT_SETTINGS, ...previous11, ...previous12, ...previous13, ...current };
+      return { ...DEFAULT_SETTINGS, ...previous11, ...previous12, ...previous13, ...previous19, ...current };
     } catch { return { ...DEFAULT_SETTINGS }; }
   }
 
@@ -36,6 +39,38 @@
     if (level <= 3) return "Beginner";
     if (level <= 7) return "Intermediate";
     return "Expert";
+  }
+  function difficultyDescription(level) {
+    if (level <= 2) return "A friendly beginner that makes believable mistakes.";
+    if (level <= 4) return "A casual opponent that spots some simple opportunities.";
+    if (level <= 6) return "A balanced opponent that sees immediate wins and obvious danger.";
+    if (level <= 8) return "A strong opponent that plans ahead and avoids risky gifts.";
+    return "The strongest available search with very few deliberate mistakes.";
+  }
+
+  let audioContext = null;
+  function playTone(kind) {
+    if (!gameState.settings.soundEffects) return;
+    try {
+      audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const presets = {
+        select: [520, .045, "sine"], place: [330, .06, "triangle"], win: [660, .16, "sine"]
+      };
+      const [frequency, duration, type] = presets[kind] || presets.select;
+      oscillator.type = type; oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(.0001, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.08, audioContext.currentTime + .01);
+      gain.gain.exponentialRampToValueAtTime(.0001, audioContext.currentTime + duration);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start(); oscillator.stop(audioContext.currentTime + duration + .02);
+      if (kind === "win") window.setTimeout(() => playTone("select"), 120);
+    } catch {}
+  }
+
+  function applyMotionPreference() {
+    document.body.classList.toggle("animations-disabled", !gameState.settings.animations);
   }
   function chooseStarter(mode) {
     if (mode === "0" || mode === "1") return Number(mode);
@@ -193,7 +228,7 @@
     completePieceSelection(piece, slot);
   }
   function completePieceSelection(piece, slot) {
-    animatePieceToCurrent(slot); gameState.selectedPiece = piece;
+    animatePieceToCurrent(slot); playTone("select"); gameState.selectedPiece = piece;
     gameState.remainingPieceIds = gameState.remainingPieceIds.filter(id => id !== piece.id);
     gameState.currentPlayer = gameState.receivingPlayer; gameState.receivingPlayer = gameState.currentPlayer === 0 ? 1 : 0; gameState.phase = "place-piece";
     renderGame(); resetMoveTimer(); document.getElementById("status").textContent = phaseInstruction(); scheduleComputerTurn();
@@ -202,15 +237,22 @@
     if (gameState.phase !== "place-piece" || !gameState.selectedPiece || gameState.board[index] !== null || isComputer(gameState.currentPlayer)) return;
     completePlacement(index);
   }
+  function showGameOverDialog(title, detail) {
+    const dialog = document.getElementById("game-over-dialog");
+    document.getElementById("game-over-title").textContent = title;
+    document.getElementById("game-over-detail").textContent = detail;
+    window.setTimeout(() => { if (dialog && !dialog.open) dialog.showModal(); }, 650);
+  }
   function completePlacement(index) {
-    gameState.board[index] = gameState.selectedPiece.id; gameState.selectedPiece = null;
+    gameState.board[index] = gameState.selectedPiece.id; gameState.selectedPiece = null; playTone("place");
     const result = window.QuartoRules.checkForQuarto(gameState.board);
     if (result) {
       gameState.phase="game-over"; gameState.winner=gameState.currentPlayer; gameState.winningCells=result.line; gameState.winningAttributes=result.attributes; stopTimer();
-      renderGame(); document.getElementById("status").textContent=`${playerName(gameState.winner)} wins (${formatWinningAttributes(result.attributes)})`; return;
+      const resultText = `${playerName(gameState.winner)} wins (${formatWinningAttributes(result.attributes)})`;
+      renderGame(); document.getElementById("status").textContent=resultText; playTone("win"); showGameOverDialog("Quarto!", resultText); return;
     }
     if (gameState.board.every(value=>value!==null)) {
-      gameState.phase="game-over"; stopTimer(); renderGame(); document.getElementById("status").textContent="The game is a draw."; return;
+      gameState.phase="game-over"; stopTimer(); renderGame(); document.getElementById("status").textContent="The game is a draw."; showGameOverDialog("Draw", "The board is full with no Quarto."); return;
     }
     gameState.phase="choose-piece"; gameState.receivingPlayer=gameState.currentPlayer===0?1:0;
     renderGame(); resetMoveTimer(); document.getElementById("status").textContent=phaseInstruction(); scheduleComputerTurn();
@@ -232,20 +274,49 @@
   }
 
   function resetGame(starterMode = gameState.settings.starterMode) {
-    stopTimer(); stopAi(); applyTheme();
+    stopTimer(); stopAi(); applyTheme(); applyMotionPreference();
     const starter=chooseStarter(starterMode); gameState.settings.lastStarter=starter; saveSettings();
     Object.assign(gameState,{currentPlayer:starter,receivingPlayer:starter===0?1:0,selectedPiece:null,phase:"choose-piece",board:Array(16).fill(null),remainingPieceIds:window.QuartoPieces.PIECES.map(piece=>piece.id),winner:null,winningCells:[],winningAttributes:[]});
     renderGame(); resetMoveTimer(); document.getElementById("status").textContent=phaseInstruction(); scheduleComputerTurn();
   }
 
+  let wizardStep = 0;
   function updateSetupMode() {
     const mode = document.querySelector('input[name="gameMode"]:checked')?.value || "computer";
     document.getElementById("difficulty-field").hidden = mode !== "computer";
     document.getElementById("player-2-field").hidden = mode === "computer";
+    updateSetupSummary();
   }
   function updateDifficultyLabel() {
     const level=Number(document.getElementById("difficulty-input").value);
     document.getElementById("difficulty-name").textContent=`Level ${level} · ${difficultyName(level)}`;
+    document.getElementById("difficulty-description").textContent=difficultyDescription(level);
+    updateSetupSummary();
+  }
+  function showWizardStep(step) {
+    wizardStep=Math.max(0,Math.min(2,step));
+    document.querySelectorAll("[data-wizard-step]").forEach(section=>{
+      const active=Number(section.dataset.wizardStep)===wizardStep;
+      section.hidden=!active; section.classList.toggle("wizard-step--active",active);
+    });
+    document.querySelectorAll("[data-step-indicator]").forEach(indicator=>{
+      const value=Number(indicator.dataset.stepIndicator);
+      indicator.classList.toggle("wizard-progress-step--active",value===wizardStep);
+      indicator.classList.toggle("wizard-progress-step--complete",value<wizardStep);
+    });
+    document.getElementById("wizard-back").hidden=wizardStep===0;
+    document.getElementById("wizard-next").hidden=wizardStep===2;
+    document.getElementById("wizard-start").hidden=wizardStep!==2;
+    if (wizardStep===2) updateSetupSummary();
+  }
+  function updateSetupSummary() {
+    const summary=document.getElementById("setup-summary"); if(!summary) return;
+    const mode=document.querySelector('input[name="gameMode"]:checked')?.value || "computer";
+    const level=Number(document.getElementById("difficulty-input")?.value||5);
+    const timer=Number(document.querySelector('input[name="timer"]:checked')?.value||30);
+    const player1=document.getElementById("player-1-input")?.value.trim()||"Player 1";
+    const opponent=mode==="computer" ? `Computer · Level ${level}` : (document.getElementById("player-2-input")?.value.trim()||"Player 2");
+    summary.innerHTML=`<strong>${player1} vs ${opponent}</strong><span>${timer ? `${timer}-second turns` : "No move timer"}</span>`;
   }
   function populateSetupDialog() {
     document.getElementById("player-1-input").value=gameState.settings.playerNames[0]||"Player 1";
@@ -254,7 +325,9 @@
     document.querySelector(`input[name="starter"][value="${gameState.settings.starterMode}"]`)?.click();
     document.querySelector(`input[name="timer"][value="${gameState.settings.timerSeconds}"]`)?.click();
     document.getElementById("difficulty-input").value=String(gameState.settings.difficulty);
-    updateSetupMode(); updateDifficultyLabel();
+    document.getElementById("sound-effects-input").checked=gameState.settings.soundEffects!==false;
+    document.getElementById("animations-input").checked=gameState.settings.animations!==false;
+    updateSetupMode(); updateDifficultyLabel(); showWizardStep(0);
   }
   function startFromDialog(event) {
     event.preventDefault(); const data=new FormData(event.currentTarget);
@@ -262,6 +335,8 @@
     gameState.settings.difficulty=Number(data.get("difficulty")||5);
     gameState.settings.playerNames=[document.getElementById("player-1-input").value.trim()||"Player 1",document.getElementById("player-2-input").value.trim()||"Player 2"];
     gameState.settings.starterMode=String(data.get("starter")||"random"); gameState.settings.timerSeconds=Number(data.get("timer")||30);
+    gameState.settings.soundEffects=document.getElementById("sound-effects-input").checked;
+    gameState.settings.animations=document.getElementById("animations-input").checked;
     saveSettings(); document.getElementById("new-game-dialog").close(); resetGame(gameState.settings.starterMode);
   }
   async function renderApplicationVersion() {
@@ -381,6 +456,11 @@
     document.getElementById("cancel-new-game")?.addEventListener("click",()=>setup.close()); document.getElementById("new-game-form")?.addEventListener("submit",startFromDialog);
     document.querySelectorAll('input[name="gameMode"]').forEach(input=>input.addEventListener("change",updateSetupMode));
     document.getElementById("difficulty-input")?.addEventListener("input",updateDifficultyLabel);
+    document.getElementById("wizard-next")?.addEventListener("click",()=>showWizardStep(wizardStep+1));
+    document.getElementById("wizard-back")?.addEventListener("click",()=>showWizardStep(wizardStep-1));
+    document.querySelectorAll('#new-game-form input').forEach(input=>input.addEventListener("change",updateSetupSummary));
+    document.querySelectorAll('#new-game-form input[type="text"]').forEach(input=>input.addEventListener("input",updateSetupSummary));
+    document.getElementById("game-over-new-game")?.addEventListener("click",()=>{document.getElementById("game-over-dialog")?.close();openSetup();});
     document.getElementById("how-to-play-button")?.addEventListener("click",()=>document.getElementById("how-to-play-dialog")?.showModal());
     document.getElementById("open-piece-picker")?.addEventListener("click",()=>document.getElementById("piece-picker-dialog")?.showModal());
     document.getElementById("phone-turn-action")?.addEventListener("click",()=>{

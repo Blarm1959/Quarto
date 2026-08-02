@@ -1,6 +1,14 @@
 # Changelog
 
-## v0.0.19
+## v0.0.20
+
+- Replaced the single long setup form with a three-step New Game wizard.
+- Added clearer difficulty descriptions for levels 1–10.
+- Added optional sound effects and animation controls.
+- Added a polished Quarto/draw result dialog while preserving the visible winning board.
+- Included the planned v0.0.20 game-polish work and v0.0.21 setup-wizard work in this single v0.0.20 release.
+
+## v0.0.20
 
 - Recalculates the phone play surface from the live visual viewport rather than relying on a fixed `100dvh` assumption.
 - Keeps the board, turn dock, player strip and bottom controls visible after pull-to-refresh, app resume and browser UI changes.
@@ -106,7 +114,7 @@
 
 # Changelog
 
-## v0.0.19
+## v0.0.20
 
 - Recalculates the phone play surface from the live visual viewport rather than relying on a fixed `100dvh` assumption.
 - Keeps the board, turn dock, player strip and bottom controls visible after pull-to-refresh, app resume and browser UI changes.
