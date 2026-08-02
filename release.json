@@ -1,0 +1,9 @@
+{
+  "project": "Quarto",
+  "version": "v0.0.9",
+  "githubSource": "v0.0.8.g1",
+  "zipPrefix": "Quarto-",
+  "port": 8004,
+  "packageChanges": false,
+  "commit": "Optimise layout for 13-inch laptops"
+}

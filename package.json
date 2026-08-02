@@ -1,10 +1,10 @@
 {
   "name": "quarto",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "description": "A responsive Progressive Web App implementation of Quarto",
   "private": true,
   "scripts": {
-    "start": "http-server -c-1 ."
+    "start": "http-server -p 8004 -c-1 ."
   },
   "devDependencies": {
     "http-server": "14.1.1"
