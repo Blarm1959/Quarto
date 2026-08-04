@@ -105,7 +105,7 @@
 
   function updateUndoButton() {
     const visible = undoAllowedBySettings();
-    const disabled = !gameState.undoSnapshot || gameState.phase === "game-over";
+    const disabled = !gameState.undoSnapshot;
     ["undo-button", "phone-undo-button"].forEach(id => {
       const button = document.getElementById(id);
       if (!button) return;
@@ -116,7 +116,7 @@
 
   function undoLastAction() {
     const snapshot = gameState.undoSnapshot;
-    if (!snapshot || !undoAllowedBySettings() || gameState.phase === "game-over") return;
+    if (!snapshot || !undoAllowedBySettings()) return;
     stopAi(); stopTimer(); setPiecePickerOpen(false);
     Object.assign(gameState, {
       currentPlayer: snapshot.currentPlayer,
