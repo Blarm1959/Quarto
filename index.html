@@ -153,6 +153,23 @@
           <div class="difficulty-scale"><span>1 Beginner</span><span>2 Standard</span><span>3 Expert</span></div>
           <p id="difficulty-description" class="setup-help">A reliable tactical player that sees immediate wins, threats and safer piece choices.</p>
         </div>
+
+        <fieldset class="setup-fieldset">
+          <legend>Winning Features</legend>
+          <div class="winning-features-list">
+            <label><input type="radio" name="winningFeatures" value="1"> <span><strong>1. Colour</strong></span></label>
+            <label><input type="radio" name="winningFeatures" value="2"> <span><strong>2. Colour + Height</strong></span></label>
+            <label><input type="radio" name="winningFeatures" value="3"> <span><strong>3. Colour + Height + Shape</strong></span></label>
+            <label><input type="radio" name="winningFeatures" value="4" checked> <span><strong>4. Classic</strong><small>Colour + Height + Shape + Hollow</small></span></label>
+          </div>
+        </fieldset>
+        <fieldset class="setup-fieldset">
+          <legend>Allow 2×2 square wins?</legend>
+          <div class="choice-grid two-by-two-choice-grid">
+            <label><input type="radio" name="allow2x2" value="no" checked> No</label>
+            <label><input type="radio" name="allow2x2" value="yes"> Yes</label>
+          </div>
+        </fieldset>
       </section>
 
       <section class="wizard-step" data-wizard-step="1" hidden>
@@ -238,9 +255,17 @@
         <span><strong id="stat-longest-game">—</strong><small>Longest game</small></span>
         <span><strong id="stat-average-moves">—</strong><small>Average game</small></span>
         <span><strong id="stat-two-player">0</strong><small>Two-player games</small></span>
+        <span><strong id="stat-two-by-two-games">0</strong><small>2×2 games</small></span>
       </div>
       <h3>By computer level</h3>
       <div id="statistics-levels" class="statistics-levels"></div>
+      <h3>By winning features</h3>
+      <div class="statistics-detail-grid statistics-feature-grid">
+        <span><strong id="stat-features-1">0</strong><small>1. Colour</small></span>
+        <span><strong id="stat-features-2">0</strong><small>2. Colour + Height</small></span>
+        <span><strong id="stat-features-3">0</strong><small>3. Colour + Height + Shape</small></span>
+        <span><strong id="stat-features-4">0</strong><small>4. Classic</small></span>
+      </div>
       <h3>Human winning patterns</h3>
       <div id="statistics-breakdown" class="statistics-breakdown"></div>
       <div class="dialog-actions">
@@ -257,8 +282,10 @@
         <button class="dialog-close" value="close" aria-label="Close">×</button>
       </div>
       <p>Choose a piece for your opponent. They place it on any empty square, then choose the next piece for you.</p>
-      <p>Make a row, column or diagonal of four pieces sharing at least one attribute: tall, short, round, square, either of the two colours, solid or hollow.</p>
-      <p class="dialog-note">This version automatically detects Quarto wins in every row, column and diagonal.</p>
+      <p>Choose how many features can create a win. The fixed progression is:</p>
+      <p><strong>1.</strong> Colour<br><strong>2.</strong> Colour + Height<br><strong>3.</strong> Colour + Height + Shape<br><strong>4. Classic.</strong> Colour + Height + Shape + Hollow</p>
+      <p>Make a row, column or diagonal of four pieces sharing one of the enabled features. You can also optionally allow matching 2×2 squares as wins.</p>
+      <p class="dialog-note">Classic rules use all four features and do not include 2×2 square wins.</p>
       <p id="help-version" class="help-version">Quarto · v0.3.0</p>
       <button class="button button--primary" value="close">Close</button>
     </form>

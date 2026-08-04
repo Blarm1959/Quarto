@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.4.7
+
+- Added four fixed Winning Features options, from Colour only through Classic Quarto.
+- Added an independent Yes/No option for 2×2 square wins.
+- Updated win detection, AI evaluation, setup summary, Help and statistics for the selected rules.
+- Classic remains the default, with 2×2 wins disabled.
+
 ## v0.4.6 - User-controlled PWA updates
 - Display the current version in the centre of the phone header.
 

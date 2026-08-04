@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const ATTRIBUTES = ["tall", "round", "dark", "hole"];
+  const FEATURE_ATTRIBUTE_KEYS = { colour: "dark", height: "tall", shape: "round", hollow: "hole" };
   const CENTRES = new Set([5, 6, 9, 10]);
   const CORNERS = new Set([0, 3, 12, 15]);
   const WIN_SCORE = 1000000;
@@ -57,7 +57,7 @@
       allOnes &= bits;
       allZeroes &= (~bits) & 15;
     }
-    let mask = allOnes | allZeroes;
+    let mask = (allOnes | allZeroes) & window.QuartoRules.getActiveBitMask();
     let count = 0;
     while (mask) {
       count += mask & 1;
@@ -68,7 +68,7 @@
 
   function lineStrength(board) {
     let score = 0;
-    for (const line of window.QuartoRules.WINNING_LINES) {
+    for (const line of window.QuartoRules.getWinningPatterns()) {
       const ids = line.map(index => board[index]).filter(id => id !== null);
       if (!ids.length || ids.length === 4) continue;
       const common = commonAttributeCount(ids);
@@ -111,7 +111,8 @@
     for (const placedId of board) {
       if (placedId === null) continue;
       const placed = window.QuartoPieces.getPiece(placedId);
-      for (const attribute of ATTRIBUTES) {
+      for (const feature of window.QuartoRules.getActiveFeatures()) {
+        const attribute = FEATURE_ATTRIBUTE_KEYS[feature.key];
         if (placed[attribute] !== piece[attribute]) score += 1;
       }
     }
@@ -155,7 +156,8 @@
   function boardKey(board, remainingPieceIds, pieceId, depth) {
     const boardPart = board.map(value => value === null ? "_" : value.toString(16)).join("");
     const piecesPart = [...remainingPieceIds].sort((a, b) => a - b).map(id => id.toString(16)).join("");
-    return `${boardPart}|${piecesPart}|${Number(pieceId).toString(16)}|${depth}`;
+    const rules = window.QuartoRules.getConfiguration();
+    return `${boardPart}|${piecesPart}|${Number(pieceId).toString(16)}|${depth}|${rules.winningFeatures}|${Number(rules.allow2x2)}`;
   }
 
   function staticScore(board, remainingPieceIds, pieceId) {

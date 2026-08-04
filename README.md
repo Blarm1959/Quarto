@@ -40,7 +40,8 @@ http://127.0.0.1:8004
 - Large touch targets and phone-first user interface.
 - Automatic piece selection panel with full board visibility.
 - Single-move Undo (configurable for computer games, two-player games or disabled).
-- Automatic Quarto detection for rows, columns and diagonals.
+- Configurable Winning Features: 1 Colour, 2 Colour + Height, 3 Colour + Height + Shape, or 4 Classic.
+- Automatic win detection for rows, columns and diagonals, with optional 2×2 square wins.
 - Winning line remains highlighted with alternating red/blue flashing.
 - Configurable player names, starting player and move timer.
 - Fixed high-visibility red and blue playing pieces with contrasting hollow centres.

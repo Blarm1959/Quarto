@@ -1,12 +1,14 @@
 (function () {
   "use strict";
 
-  const STATISTICS_KEY = "quarto.statistics.v0.4.3";
-  const PREVIOUS_STATISTICS_KEY = "quarto.statistics.v0.4.0";
+  const STATISTICS_KEY = "quarto.statistics.v0.4.7";
+  const PREVIOUS_STATISTICS_KEY = "quarto.statistics.v0.4.3";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
     difficulty: 2,
+    winningFeatures: 4,
+    allow2x2: false,
     starterMode: "random",
     timerSeconds: 30,
     lastStarter: 1,
@@ -47,7 +49,9 @@
         currentStreak: 0, bestStreak: 0,
         totalMoves: 0, fastestWin: null, longestGame: 0,
         byLevel,
-        lineTypes: { row: 0, column: 0, diagonal: 0 },
+        lineTypes: { row: 0, column: 0, diagonal: 0, square: 0 },
+        byWinningFeatures: { 1: 0, 2: 0, 3: 0, 4: 0 },
+        twoByTwoGames: 0,
         attributes: { Tall: 0, Short: 0, Round: 0, Square: 0, Red: 0, Blue: 0, Hollow: 0, Solid: 0 }
       },
       twoPlayer: { played: 0, draws: 0 }
@@ -86,7 +90,8 @@
       if (!saved) {
         const previous = JSON.parse(localStorage.getItem(PREVIOUS_STATISTICS_KEY) || "null");
         if (previous) {
-          saved = migratePreviousStatistics(previous);
+          const hasLegacyTenLevels = Object.keys(previous.computer?.byLevel || {}).some(level => Number(level) > 3);
+          saved = hasLegacyTenLevels ? migratePreviousStatistics(previous) : previous;
           localStorage.setItem(STATISTICS_KEY, JSON.stringify(saved));
         }
       }
@@ -97,6 +102,7 @@
           ...defaults.computer, ...saved.computer,
           byLevel: { ...defaults.computer.byLevel, ...(saved.computer?.byLevel || {}) },
           lineTypes: { ...defaults.computer.lineTypes, ...(saved.computer?.lineTypes || {}) },
+          byWinningFeatures: { ...defaults.computer.byWinningFeatures, ...(saved.computer?.byWinningFeatures || {}) },
           attributes: { ...defaults.computer.attributes, ...(saved.computer?.attributes || {}) }
         },
         twoPlayer: { ...defaults.twoPlayer, ...(saved.twoPlayer || {}) }
@@ -174,7 +180,8 @@
     const key = cells.join(",");
     if (["0,1,2,3","4,5,6,7","8,9,10,11","12,13,14,15"].includes(key)) return "row";
     if (["0,4,8,12","1,5,9,13","2,6,10,14","3,7,11,15"].includes(key)) return "column";
-    return "diagonal";
+    if (["0,5,10,15","3,6,9,12"].includes(key)) return "diagonal";
+    return "square";
   }
 
   function recordStatistics() {
@@ -190,6 +197,9 @@
     const level = String(gameState.settings.difficulty);
     const levelStats = stats.byLevel[level] || (stats.byLevel[level] = { played: 0, wins: 0, losses: 0, draws: 0 });
     stats.played += 1; levelStats.played += 1;
+    const featureCount = String(gameState.settings.winningFeatures);
+    stats.byWinningFeatures[featureCount] = (stats.byWinningFeatures[featureCount] || 0) + 1;
+    if (gameState.settings.allow2x2) stats.twoByTwoGames += 1;
     stats.totalMoves += gameState.moveCount;
     stats.longestGame = Math.max(stats.longestGame, gameState.moveCount);
     if (gameState.winner === null) {
@@ -221,6 +231,8 @@
     value("stat-longest-game", stats.longestGame ? `${stats.longestGame} placements` : "—");
     value("stat-average-moves", averageMoves === "—" ? averageMoves : `${averageMoves} placements`);
     value("stat-two-player", statistics.twoPlayer.played);
+    value("stat-two-by-two-games", stats.twoByTwoGames || 0);
+    for (let feature = 1; feature <= 4; feature += 1) value(`stat-features-${feature}`, stats.byWinningFeatures?.[feature] || 0);
     const levels = document.getElementById("statistics-levels");
     if (levels) {
       levels.replaceChildren();
@@ -234,7 +246,7 @@
     const breakdown = document.getElementById("statistics-breakdown");
     if (breakdown) {
       const entries = [
-        ["Rows", stats.lineTypes.row], ["Columns", stats.lineTypes.column], ["Diagonals", stats.lineTypes.diagonal],
+        ["Rows", stats.lineTypes.row], ["Columns", stats.lineTypes.column], ["Diagonals", stats.lineTypes.diagonal], ["2×2 squares", stats.lineTypes.square],
         ...Object.entries(stats.attributes)
       ];
       breakdown.innerHTML = entries.map(([label,count]) => `<span><strong>${count}</strong><small>${label}</small></span>`).join("");
@@ -548,7 +560,9 @@
   }
 
   function resetGame(starterMode = gameState.settings.starterMode) {
-    stopTimer(); stopAi(); applyTheme(); applyMotionPreference();
+    stopTimer(); stopAi();
+    window.QuartoRules.configure(gameState.settings);
+    applyTheme(); applyMotionPreference();
     const starter=chooseStarter(starterMode); gameState.settings.lastStarter=starter; saveSettings();
     Object.assign(gameState,{currentPlayer:starter,receivingPlayer:starter===0?1:0,selectedPiece:null,phase:"choose-piece",board:Array(16).fill(null),remainingPieceIds:window.QuartoPieces.PIECES.map(piece=>piece.id),winner:null,winningCells:[],winningAttributes:[],chooseTurnId:gameState.chooseTurnId+1,aiStage:null,aiPreviewPieceId:null,aiPreviewCell:null,undoSnapshot:null,moveCount:0,statisticsRecorded:false});
     autoOpenedPickerTurnId = -1;
@@ -594,9 +608,12 @@
     const mode=document.querySelector('input[name="gameMode"]:checked')?.value || "computer";
     const level=Number(document.getElementById("difficulty-input")?.value||2);
     const timer=Number(document.querySelector('input[name="timer"]:checked')?.value||30);
+    const winningFeatures=Number(document.querySelector('input[name="winningFeatures"]:checked')?.value||4);
+    const allow2x2=document.querySelector('input[name="allow2x2"]:checked')?.value === "yes";
     const player1=document.getElementById("player-1-input")?.value.trim()||"Player 1";
     const opponent=mode==="computer" ? `Computer · ${difficultyName(level)}` : (document.getElementById("player-2-input")?.value.trim()||"Player 2");
-    summary.innerHTML=`<strong>${player1} vs ${opponent}</strong><span>${timer ? `${timer}-second turns` : "No move timer"}</span>`;
+    const rules = winningFeatures === 4 ? "4. Classic" : `${winningFeatures} winning feature${winningFeatures === 1 ? "" : "s"}`;
+    summary.innerHTML=`<strong>${player1} vs ${opponent}</strong><span>${rules} · ${allow2x2 ? "2×2 wins on" : "2×2 wins off"} · ${timer ? `${timer}-second turns` : "No move timer"}</span>`;
   }
   function startNewGameWithCurrentSettings(event) {
     event?.preventDefault();
@@ -613,6 +630,8 @@
     document.querySelector(`input[name="starter"][value="${gameState.settings.starterMode}"]`)?.click();
     document.querySelector(`input[name="timer"][value="${gameState.settings.timerSeconds}"]`)?.click();
     document.getElementById("difficulty-input").value=String(gameState.settings.difficulty);
+    document.querySelector(`input[name="winningFeatures"][value="${gameState.settings.winningFeatures || 4}"]`)?.click();
+    document.querySelector(`input[name="allow2x2"][value="${gameState.settings.allow2x2 ? "yes" : "no"}"]`)?.click();
     document.getElementById("sound-effects-input").checked=gameState.settings.soundEffects!==false;
     document.getElementById("animations-input").checked=gameState.settings.animations!==false;
     const undoInput = document.querySelector(`input[name="undoMode"][value="${gameState.settings.undoMode || "single-player"}"]`);
@@ -623,6 +642,8 @@
     event.preventDefault(); const data=new FormData(event.currentTarget);
     gameState.settings.gameMode=String(data.get("gameMode")||"computer");
     gameState.settings.difficulty=Number(data.get("difficulty")||2);
+    gameState.settings.winningFeatures=Math.max(1,Math.min(4,Number(data.get("winningFeatures"))||4));
+    gameState.settings.allow2x2=String(data.get("allow2x2")||"no")==="yes";
     gameState.settings.playerNames=[document.getElementById("player-1-input").value.trim()||"Player 1",document.getElementById("player-2-input").value.trim()||"Player 2"];
     gameState.settings.starterMode=String(data.get("starter")||"random"); gameState.settings.timerSeconds=Number(data.get("timer")||30);
     gameState.settings.soundEffects=document.getElementById("sound-effects-input").checked;

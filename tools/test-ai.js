@@ -21,6 +21,7 @@ for (const file of ["js/pieces.js", "js/rules.js", "js/ai.js"]) {
 }
 
 const { QuartoAI, QuartoRules } = context.window;
+QuartoRules.configure({ winningFeatures: 4, allow2x2: false });
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
@@ -99,4 +100,38 @@ function remainingFor(board, currentPiece = null) {
   assert(!QuartoRules.checkForQuarto(noWin), "False Quarto detected");
 }
 
+// Winning Features are fixed in the order Colour, Height, Shape, Hollow.
+{
+  const colourOnly = [0, 1, 4, 5, ...Array(12).fill(null)]; // all blue, mixed height/shape/hollow
+  QuartoRules.configure({ winningFeatures: 1, allow2x2: false });
+  assert(Boolean(QuartoRules.checkForQuarto(colourOnly)), "Colour-only win was not detected");
+
+  const heightOnly = [0, 1, 2, 3, ...Array(12).fill(null)]; // all short, mixed hollow/colour
+  QuartoRules.configure({ winningFeatures: 1, allow2x2: false });
+  assert(!QuartoRules.checkForQuarto(heightOnly), "Height incorrectly counted when only Colour is enabled");
+  QuartoRules.configure({ winningFeatures: 2, allow2x2: false });
+  assert(Boolean(QuartoRules.checkForQuarto(heightOnly)), "Height win was not enabled at Winning Features 2");
+
+  const shapeOnly = [0, 2, 8, 10, ...Array(12).fill(null)];
+  QuartoRules.configure({ winningFeatures: 2, allow2x2: false });
+  assert(!QuartoRules.checkForQuarto(shapeOnly), "Shape incorrectly counted before Winning Features 3");
+  QuartoRules.configure({ winningFeatures: 3, allow2x2: false });
+  assert(Boolean(QuartoRules.checkForQuarto(shapeOnly)), "Shape win was not enabled at Winning Features 3");
+
+  const hollowOnly = [1, 3, 13, 15, ...Array(12).fill(null)];
+  QuartoRules.configure({ winningFeatures: 3, allow2x2: false });
+  assert(!QuartoRules.checkForQuarto(hollowOnly), "Hollow incorrectly counted before Classic");
+  QuartoRules.configure({ winningFeatures: 4, allow2x2: false });
+  assert(Boolean(QuartoRules.checkForQuarto(hollowOnly)), "Hollow win was not enabled in Classic");
+
+  const squareBoard = Array(16).fill(null);
+  [0, 1, 4, 5].forEach((cell, index) => { squareBoard[cell] = [0, 1, 4, 5][index]; });
+  QuartoRules.configure({ winningFeatures: 1, allow2x2: false });
+  assert(!QuartoRules.checkForQuarto(squareBoard), "2×2 win detected while disabled");
+  QuartoRules.configure({ winningFeatures: 1, allow2x2: true });
+  const squareWin = QuartoRules.checkForQuarto(squareBoard);
+  assert(squareWin && squareWin.pattern === "square", "Enabled 2×2 win was not detected");
+}
+
+QuartoRules.configure({ winningFeatures: 4, allow2x2: false });
 console.log("AI and rules tests passed.");

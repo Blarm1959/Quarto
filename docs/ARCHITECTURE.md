@@ -14,3 +14,7 @@ Piece properties:
 - `round`: round or square
 - `dark`: dark or light
 - `hole`: hole or solid
+
+## Configurable rules
+
+`rules.js` owns the fixed Winning Features progression (Colour, Height, Shape, Hollow) and the optional 2×2 square patterns. The UI stores only `winningFeatures` (1–4) and `allow2x2`; both gameplay and AI use the same configured rule engine.
