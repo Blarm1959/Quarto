@@ -583,7 +583,7 @@
     updateSetupSummary();
   }
   function showWizardStep(step) {
-    wizardStep=Math.max(0,Math.min(2,step));
+    wizardStep=Math.max(0,Math.min(3,step));
     const setupDialog=document.getElementById("new-game-dialog");
     if (setupDialog) setupDialog.dataset.wizardStep=String(wizardStep);
     document.querySelectorAll("[data-wizard-step]").forEach(section=>{
@@ -596,9 +596,9 @@
       indicator.classList.toggle("wizard-progress-step--complete",value<wizardStep);
     });
     document.getElementById("wizard-back").hidden=wizardStep===0;
-    document.getElementById("wizard-next").hidden=wizardStep===2;
-    document.getElementById("wizard-start").hidden=wizardStep!==2;
-    if (wizardStep===2) updateSetupSummary();
+    document.getElementById("wizard-next").hidden=wizardStep===3;
+    document.getElementById("wizard-start").hidden=wizardStep!==3;
+    if (wizardStep===3) updateSetupSummary();
     const activeStep=document.querySelector(`[data-wizard-step="${wizardStep}"]`);
     if (activeStep) activeStep.scrollTop=0;
     document.getElementById("new-game-form")?.scrollTo?.({top:0,behavior:"instant"});

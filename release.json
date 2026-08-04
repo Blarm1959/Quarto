@@ -1,9 +1,9 @@
 {
     "project":  "Quarto",
-    "version":  "0.4.7",
-    "githubSource":  "v0.4.7",
+    "version":  "0.4.8",
+    "githubSource":  "v0.4.8",
     "zipPrefix":  "Quarto-",
     "port":  8004,
     "packageChanges":  false,
-    "commit":  "Add Winning Features progression and optional 2x2 wins"
+    "commit":  "Split game setup into four focused wizard pages"
 }

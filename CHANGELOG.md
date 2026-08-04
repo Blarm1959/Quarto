@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.8
+
+- Split the setup wizard into four focused pages: Game, Rules, Players and Options.
+- Moved Winning Features and 2×2 square wins to their own Rules page.
+- Updated wizard progress, navigation and responsive final-page styling.
+
 ## v0.4.7
 
 - Added four fixed Winning Features options, from Colour only through Classic Quarto.

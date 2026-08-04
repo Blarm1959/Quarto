@@ -132,9 +132,11 @@
       <div class="wizard-progress" aria-label="Setup progress">
         <span class="wizard-progress-step wizard-progress-step--active" data-step-indicator="0">1 <small>Game</small></span>
         <span class="wizard-progress-line"></span>
-        <span class="wizard-progress-step" data-step-indicator="1">2 <small>Players</small></span>
+        <span class="wizard-progress-step" data-step-indicator="1">2 <small>Rules</small></span>
         <span class="wizard-progress-line"></span>
-        <span class="wizard-progress-step" data-step-indicator="2">3 <small>Options</small></span>
+        <span class="wizard-progress-step" data-step-indicator="2">3 <small>Players</small></span>
+        <span class="wizard-progress-line"></span>
+        <span class="wizard-progress-step" data-step-indicator="3">4 <small>Options</small></span>
       </div>
 
       <section class="wizard-step wizard-step--active" data-wizard-step="0">
@@ -154,6 +156,10 @@
           <p id="difficulty-description" class="setup-help">A reliable tactical player that sees immediate wins, threats and safer piece choices.</p>
         </div>
 
+      </section>
+
+      <section class="wizard-step" data-wizard-step="1" hidden>
+        <h3>Choose the rules</h3>
         <fieldset class="setup-fieldset">
           <legend>Winning Features</legend>
           <div class="winning-features-list">
@@ -172,7 +178,7 @@
         </fieldset>
       </section>
 
-      <section class="wizard-step" data-wizard-step="1" hidden>
+      <section class="wizard-step" data-wizard-step="2" hidden>
         <h3>Who is playing?</h3>
         <div class="setup-grid setup-grid--players">
           <label class="field-label" for="player-1-input">Player 1 name
@@ -193,7 +199,7 @@
         </fieldset>
       </section>
 
-      <section class="wizard-step" data-wizard-step="2" hidden>
+      <section class="wizard-step" data-wizard-step="3" hidden>
         <h3>Final options</h3>
         <fieldset class="setup-fieldset">
           <legend>Move timer</legend>
