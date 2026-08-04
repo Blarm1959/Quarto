@@ -97,6 +97,14 @@
     return { dangerousPieces, winningSquares };
   }
 
+  function tacticalSafetyScore(summary, totalPieces) {
+    const safePieces = Math.max(0, totalPieces - summary.dangerousPieces);
+    if (totalPieces > 0 && safePieces === 0) {
+      return -250000 - summary.winningSquares * 250;
+    }
+    return safePieces * 220 - summary.dangerousPieces * 165 - summary.winningSquares * 42;
+  }
+
   function pieceVariety(board, pieceId) {
     const piece = window.QuartoPieces.getPiece(pieceId);
     let score = 0;
@@ -169,8 +177,7 @@
       const danger = dangerSummary(nextBoard, remainingPieceIds);
       const score = lineStrength(nextBoard)
         + positionalBonus(index)
-        - danger.dangerousPieces * 120
-        - danger.winningSquares * 28;
+        + tacticalSafetyScore(danger, remainingPieceIds.length);
       if (score > best) best = score;
     }
     return Number.isFinite(best) ? best : DRAW_SCORE;
@@ -262,7 +269,7 @@
       } else if (depth <= 0) {
         const danger = dangerSummary(nextBoard, remainingPieceIds);
         score = lineStrength(nextBoard) + positionalBonus(placement.index)
-          - danger.dangerousPieces * 135 - danger.winningSquares * 32;
+          + tacticalSafetyScore(danger, remainingPieceIds.length);
       } else {
         score = -Infinity;
         for (const gift of orderedGifts(nextBoard, remainingPieceIds)) {
@@ -386,6 +393,7 @@
       emptyCells,
       lineStrength,
       dangerSummary,
+      tacticalSafetyScore,
       search,
       iterativePlacementSearch,
       iterativeGiftSearch

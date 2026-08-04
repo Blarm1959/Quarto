@@ -54,6 +54,23 @@ function remainingFor(board, currentPiece = null) {
   }
 }
 
+
+// Tactical placement: strong levels must not choose a square that leaves every
+// remaining piece as an immediate winning gift when safer placements exist.
+{
+  const board = [4, null, 14, 2, null, 12, 6, 15, 10, 9, null, null, null, null, null, null];
+  const current = 3;
+  const remaining = [7, 1, 5, 0, 8, 11, 13];
+  for (const level of [5, 6, 7, 8, 9, 10]) {
+    const move = QuartoAI.choosePlacement(board, current, level, remaining);
+    const nextBoard = [...board];
+    nextBoard[move] = current;
+    const danger = QuartoAI._test.dangerSummary(nextBoard, remaining);
+    assert(danger.dangerousPieces < remaining.length,
+      `Level ${level} chose a forced-loss placement at ${move}`);
+  }
+}
+
 // Legality over a set of deterministic mid-game positions.
 {
   const positions = [

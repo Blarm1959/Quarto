@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.4.0
+
+- Started the dedicated AI development release without changing the existing interface.
+- Added explicit tactical safety scoring for the complete place-and-gift turn.
+- Strong AI now heavily rejects placements that leave no safe piece to hand to the opponent.
+- Improved shallow-search placement choices by rewarding positions that preserve several safe gifts.
+- Retained immediate-win detection, iterative deepening, alpha-beta pruning and exact endgame analysis.
+- Added a forced-loss placement regression test alongside the existing win, safe-gift, legality and rules tests.
+
 ## v0.3.0
 
 - Reworked the computer engine with iterative deepening, alpha-beta search and transposition caching.
