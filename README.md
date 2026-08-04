@@ -1,10 +1,21 @@
 # Quarto
 
-A responsive Progressive Web App implementation of the strategy game Quarto.
+A modern, responsive **Progressive Web App (PWA)** implementation of the classic strategy game **Quarto**.
 
-## Current version
+The application has been designed to work well on **phones, tablets, laptops and desktop computers**, with a touch-friendly interface, installable PWA support and a configurable computer opponent.
 
-v0.3.0
+---
+
+## Release information
+
+The current release information is maintained automatically in:
+
+- `release.json`
+- `build-info.json`
+
+These files are the single source of truth for version, build and release metadata. :contentReference[oaicite:0]{index=0}
+
+---
 
 ## Run locally
 
@@ -13,34 +24,92 @@ npm install
 npm start
 ```
 
-Open `http://127.0.0.1:8004`.
+Open:
 
-## Current features
+```
+http://127.0.0.1:8004
+```
 
-- One-player games against a computer opponent with difficulty levels 1–10.
+---
+
+## Features
+
+- One-player games against a configurable computer opponent with **10 AI difficulty levels**.
 - Two-player games on the same device.
-- Dedicated phone, tablet, laptop and desktop layouts.
-- Phone-first piece-selection dialog and large touch targets.
+- Responsive layouts optimised for phones, tablets, laptops and desktops.
+- Large touch targets and phone-first user interface.
+- Automatic piece selection panel with full board visibility.
+- Single-move Undo (configurable for computer games, two-player games or disabled).
 - Automatic Quarto detection for rows, columns and diagonals.
+- Winning line remains highlighted with alternating red/blue flashing.
 - Configurable player names, starting player and move timer.
-- A fixed, high-visibility red and blue piece set with solid white hollow centres.
-- Installable Progressive Web App support.
+- Fixed high-visibility red and blue playing pieces with contrasting hollow centres.
+- Installable Progressive Web App (PWA).
+- Offline support after first installation.
+- Printable A4 board, rules and combined print pack included.
 
+---
 
-## Installable web app
+## Install as an app
 
-Serve the project over HTTPS (or use localhost), open it in a compatible browser, and use **Install app** when offered. After the first successful load, the game shell is available offline.
+Serve the project from **localhost** or HTTPS.
 
-## Publish on GitHub Pages
+Open the application in a supported browser and choose **Install App** when prompted.
 
-The repository contains an automatic deployment workflow. After the one-time GitHub setup, every push to `main` publishes the current app.
+Once installed, Quarto behaves like a native application and is available offline after the initial load.
 
-1. Open the repository on GitHub.
-2. Select **Settings > Pages**.
-3. Under **Build and deployment**, set **Source** to **GitHub Actions**.
-4. Push normally by running `./Update.ps1`.
-5. Check the **Actions** tab for the `Deploy Quarto to GitHub Pages` run.
+---
 
-The live project URL will normally be `https://<account>.github.io/<repository>/`. All app URLs are relative, so installation and offline use work from a repository subfolder.
+## Publish to GitHub Pages
 
-See `docs/GITHUB_PAGES.md` for testing and troubleshooting.
+The repository includes an automated GitHub Actions deployment workflow.
+
+After the one-time GitHub Pages configuration, simply run:
+
+```powershell
+.\Update.ps1
+```
+
+The updater will build, commit, push and publish the latest version.
+
+The live site will normally be available at:
+
+```
+https://<account>.github.io/<repository>/
+```
+
+All URLs are relative, allowing the application to run correctly from a repository subfolder.
+
+For deployment notes see:
+
+```
+docs/GITHUB_PAGES.md
+```
+
+---
+
+## Documentation
+
+Additional documentation is included in the repository:
+
+- `docs/ARCHITECTURE.md`
+- `docs/GITHUB_PAGES.md`
+- `docs/PRINTING.md`
+
+The printable pack contains:
+
+- Quarto A4 board
+- Quarto A4 rules
+- Combined print pack
+
+---
+
+## Roadmap
+
+The next planned development stages are:
+
+- Stronger computer AI.
+- Additional accessibility improvements.
+- Language support.
+- Google Play Store packaging.
+- Continued UI polish and gameplay refinements.
