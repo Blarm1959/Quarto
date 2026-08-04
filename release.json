@@ -1,9 +1,9 @@
 {
-  "project": "Quarto",
-  "version": "0.3.1",
-  "githubSource": "v0.3.1.g1",
-  "zipPrefix": "Quarto-",
-  "port": 8004,
-  "packageChanges": false,
-  "commit": "Stronger AI engine with tuned levels 1-10"
+    "project":  "Quarto",
+    "version":  "0.3.1",
+    "githubSource":  "v0.3.1.g1",
+    "zipPrefix":  "Quarto-",
+    "port":  8004,
+    "packageChanges":  false,
+    "commit":  "Stronger AI engine with tuned levels 1-10"
 }

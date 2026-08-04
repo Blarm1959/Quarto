@@ -1,8 +1,8 @@
 {
-  "project": "Quarto",
-  "version": "0.3.1",
-  "tag": "v0.3.1",
-  "commit": "",
-  "builtAt": "",
-  "environment": "local"
+    "environment":  "local",
+    "project":  "Quarto",
+    "version":  "0.3.1",
+    "tag":  "v0.3.1",
+    "commit":  "",
+    "builtAt":  "2026-08-04T18:27:37.8343250Z"
 }
