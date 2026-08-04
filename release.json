@@ -1,9 +1,9 @@
 {
     "project":  "Quarto",
-    "version":  "0.4.0",
-    "githubSource":  "v0.4.0",
+    "version":  "0.4.1",
+    "githubSource":  "v0.4.1",
     "zipPrefix":  "Quarto-",
     "port":  8004,
     "packageChanges":  false,
-    "commit":  "Initial v0.4.0 AI release: tactical safety and forced-loss avoidance"
+    "commit":  "Fix default settings initialisation"
 }

@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.4.0
+## v0.4.1
 
 - Started the dedicated AI development release without changing the existing interface.
 - Added explicit tactical safety scoring for the complete place-and-gift turn.
