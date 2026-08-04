@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.4.5 - User-controlled PWA updates
+## v0.4.6 - User-controlled PWA updates
 - Display the current version in the centre of the phone header.
 
 - Replaced the temporary update banner with a responsive modal dialog.

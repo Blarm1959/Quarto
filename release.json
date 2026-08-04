@@ -1,7 +1,7 @@
 {
     "project":  "Quarto",
-    "version":  "0.4.5",
-    "githubSource":  "v0.4.5",
+    "version":  "0.4.6",
+    "githubSource":  "v0.4.6",
     "zipPrefix":  "Quarto-",
     "port":  8004,
     "packageChanges":  false,
