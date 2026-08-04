@@ -1,7 +1,7 @@
 # Build Information
 
 Project: Quarto
-Version: v0.2.0
+Version: v0.2.1
 Source code release: v0.0.15
 Development Port: 8004
 Package changes: No
@@ -14,6 +14,6 @@ npm start
 
 GitHub Pages deployment is performed automatically by `.github/workflows/deploy-pages.yml` after a push to `main`.
 
-## v0.2.0
+## v0.2.1
 
 Adds configurable single-step Undo and persistent player statistics.

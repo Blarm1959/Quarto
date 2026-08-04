@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.1
+
+- Condensed all three setup-wizard pages for 13-inch and 15-inch laptops.
+- Moved the phone setup sheet higher and reduced header/progress spacing.
+- Reserved a non-overlapping footer for Cancel, Back, Next and Start Game.
+- Corrected Back navigation: page 2 returns to page 1, page 3 returns to page 2, and page 1 has no Back button.
+- Preserved existing settings and statistics during the upgrade.
+
 ## v0.2.0
 
 - Added configurable single-step Undo: Off, Single player only, or Always on.

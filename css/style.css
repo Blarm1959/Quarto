@@ -1658,3 +1658,89 @@ body[data-computer-turn="true"] .turn-badge::after { content:""; display:inline-
   .statistics-level-row span { text-align:left; font-size:.82rem; }
   .action-bar #undo-button { flex:0 0 auto; }
 }
+
+/* v0.2.1: compact, non-overlapping setup wizard for phones and laptops. */
+.setup-wizard-dialog {
+  max-height:calc(100dvh - 20px);
+}
+.setup-wizard-dialog form {
+  min-height:0;
+  max-height:calc(100dvh - 44px);
+  overflow:hidden;
+}
+.setup-wizard-heading,
+.wizard-progress,
+.wizard-actions {
+  flex-shrink:0;
+}
+.wizard-step {
+  min-height:0;
+  overflow:auto;
+  overscroll-behavior:contain;
+}
+.setup-wizard-dialog[data-wizard-step="2"] .wizard-step h3 { margin-bottom:7px; }
+.setup-wizard-dialog[data-wizard-step="2"] .setup-fieldset { margin-top:8px; padding:8px 11px 9px; }
+.setup-wizard-dialog[data-wizard-step="2"] .choice-grid { gap:3px 12px; }
+.setup-wizard-dialog[data-wizard-step="2"] .choice-grid label { min-height:27px; }
+.setup-wizard-dialog[data-wizard-step="2"] .toggle-list { gap:5px; }
+.setup-wizard-dialog[data-wizard-step="2"] .toggle-row { min-height:47px; padding:6px 10px; }
+.setup-wizard-dialog[data-wizard-step="2"] .toggle-row small { font-size:.76rem; line-height:1.18; }
+.setup-wizard-dialog[data-wizard-step="2"] .setup-help { margin-top:4px; font-size:.74rem; line-height:1.22; }
+.setup-wizard-dialog[data-wizard-step="2"] .settings-statistics-button { min-height:36px; margin-top:8px; }
+.setup-wizard-dialog[data-wizard-step="2"] .setup-summary { margin-top:8px; padding:8px 11px; }
+.setup-wizard-dialog[data-wizard-step="2"] .wizard-actions { padding-top:8px; }
+
+@media (max-height:820px) and (min-width:561px) {
+  .rules-dialog form { padding:16px 20px; }
+  .setup-wizard-heading { margin-bottom:4px; }
+  .dialog-heading h2 { margin-block:2px 0; }
+  .wizard-progress { margin-bottom:10px; }
+  .wizard-step h3 { margin-bottom:7px; }
+  .setup-fieldset { margin-top:9px; padding:9px 11px 10px; }
+  .wizard-actions { padding-top:8px; margin-top:auto; }
+}
+
+@media (max-width:560px) {
+  .setup-wizard-dialog {
+    width:100%;
+    max-width:none;
+    max-height:calc(100dvh - max(4px,env(safe-area-inset-top)));
+    margin:max(4px,env(safe-area-inset-top)) 0 0;
+    border-radius:20px 20px 0 0;
+  }
+  .setup-wizard-dialog form {
+    height:calc(100dvh - max(4px,env(safe-area-inset-top)));
+    min-height:0;
+    max-height:none;
+    overflow:hidden;
+    padding:10px max(12px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+  }
+  .setup-wizard-heading { margin-bottom:3px; }
+  .setup-wizard-heading .dialog-eyebrow { font-size:.62rem; margin-bottom:0; }
+  .setup-wizard-heading h2 { margin:0; font-size:1.28rem; }
+  .setup-wizard-heading .dialog-close { font-size:1.75rem; padding:0 4px; }
+  .wizard-progress { gap:6px; margin-bottom:8px; }
+  .wizard-progress-step { min-width:30px; height:30px; padding:0 7px; }
+  .wizard-step { flex:1 1 auto; overflow:auto; padding-bottom:2px; }
+  .wizard-step h3 { margin-bottom:7px; font-size:1rem; }
+  .setup-fieldset { margin-top:8px; padding:8px 10px 9px; }
+  .setup-fieldset legend { font-size:.79rem; }
+  .choice-grid label { min-height:28px; font-size:.86rem; }
+  .setup-help { font-size:.74rem; }
+  .wizard-actions {
+    position:static;
+    bottom:auto;
+    margin:0;
+    padding:8px 0 0;
+    background:#fff;
+    border-top:1px solid var(--line);
+  }
+  .wizard-actions .button { min-height:42px; padding-inline:8px; }
+  .setup-wizard-dialog[data-wizard-step="2"] .timer-choice-grid { grid-template-columns:1fr 1fr; }
+  .setup-wizard-dialog[data-wizard-step="2"] .undo-choice-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:3px 5px; }
+  .setup-wizard-dialog[data-wizard-step="2"] .undo-choice-grid label { justify-content:center; gap:4px; font-size:.73rem; text-align:center; }
+  .setup-wizard-dialog[data-wizard-step="2"] .toggle-row { min-height:43px; }
+  .setup-wizard-dialog[data-wizard-step="2"] .toggle-row strong { font-size:.88rem; }
+  .setup-wizard-dialog[data-wizard-step="2"] .toggle-row small { font-size:.68rem; }
+  .setup-wizard-dialog[data-wizard-step="2"] .setup-summary { font-size:.77rem; }
+}

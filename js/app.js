@@ -537,6 +537,8 @@
   }
   function showWizardStep(step) {
     wizardStep=Math.max(0,Math.min(2,step));
+    const setupDialog=document.getElementById("new-game-dialog");
+    if (setupDialog) setupDialog.dataset.wizardStep=String(wizardStep);
     document.querySelectorAll("[data-wizard-step]").forEach(section=>{
       const active=Number(section.dataset.wizardStep)===wizardStep;
       section.hidden=!active; section.classList.toggle("wizard-step--active",active);
@@ -550,6 +552,9 @@
     document.getElementById("wizard-next").hidden=wizardStep===2;
     document.getElementById("wizard-start").hidden=wizardStep!==2;
     if (wizardStep===2) updateSetupSummary();
+    const activeStep=document.querySelector(`[data-wizard-step="${wizardStep}"]`);
+    if (activeStep) activeStep.scrollTop=0;
+    document.getElementById("new-game-form")?.scrollTo?.({top:0,behavior:"instant"});
   }
   function updateSetupSummary() {
     const summary=document.getElementById("setup-summary"); if(!summary) return;
@@ -597,7 +602,7 @@
     const helpVersion=document.getElementById("help-version");
     if (!element && !helpVersion) return;
     const showVersion=(version, commit="", builtAt="")=>{
-      const cleanVersion=String(version || "0.2.0").replace(/^v/i, "");
+      const cleanVersion=String(version || "0.2.1").replace(/^v/i, "");
       if (element) {
         element.textContent=`Version ${cleanVersion}${commit}`;
         element.title=builtAt ? `Published ${new Date(builtAt).toLocaleString()}` : "";
@@ -616,7 +621,7 @@
       const response=await fetch("package.json",{cache:"no-store"});
       const info=await response.json();
       showVersion(info.version);
-    } catch { showVersion("0.2.0"); }
+    } catch { showVersion("0.2.1"); }
   }
 
   let deferredInstallPrompt = null;
@@ -732,8 +737,13 @@
     document.getElementById("cancel-new-game")?.addEventListener("click",()=>setup.close()); document.getElementById("new-game-form")?.addEventListener("submit",startFromDialog);
     document.querySelectorAll('input[name="gameMode"]').forEach(input=>input.addEventListener("change",updateSetupMode));
     document.getElementById("difficulty-input")?.addEventListener("input",updateDifficultyLabel);
-    document.getElementById("wizard-next")?.addEventListener("click",()=>showWizardStep(wizardStep+1));
-    document.getElementById("wizard-back")?.addEventListener("click",()=>showWizardStep(wizardStep-1));
+    document.getElementById("wizard-next")?.addEventListener("click",event=>{
+      event.preventDefault(); event.stopPropagation(); showWizardStep(wizardStep+1);
+    });
+    document.getElementById("wizard-back")?.addEventListener("click",event=>{
+      event.preventDefault(); event.stopPropagation();
+      if (wizardStep>0) showWizardStep(wizardStep-1);
+    });
     document.querySelectorAll('#new-game-form input').forEach(input=>input.addEventListener("change",updateSetupSummary));
     document.querySelectorAll('#new-game-form input[type="text"]').forEach(input=>input.addEventListener("input",updateSetupSummary));
     document.getElementById("how-to-play-button")?.addEventListener("click",()=>document.getElementById("how-to-play-dialog")?.showModal());
