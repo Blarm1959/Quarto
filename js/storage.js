@@ -1,19 +1,15 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings";
-
   function loadSettings(defaults) {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? { ...defaults, ...JSON.parse(stored) } : { ...defaults };
-    } catch {
-      return { ...defaults };
-    }
+    return {
+      ...defaults,
+      playerNames: Array.isArray(defaults.playerNames) ? [...defaults.playerNames] : defaults.playerNames
+    };
   }
 
-  function saveSettings(settings) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  function saveSettings() {
+    // Game setup settings are intentionally retained only for the current page session.
   }
 
   window.QuartoStorage = { loadSettings, saveSettings };

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.4.2
+
+- Made game setup settings session-only rather than storing them in localStorage.
+- A browser launch, normal reload or Ctrl+F5 now always starts with the standard defaults.
+- Standard defaults are One Player, AI Level 6 and a 30-second move timer.
+- New Game continues to reuse settings selected during the current page session.
+- Statistics remain stored persistently and are unaffected.
+
 ## v0.4.1
 
 - Started the dedicated AI development release without changing the existing interface.

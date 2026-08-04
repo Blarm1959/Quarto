@@ -1,9 +1,9 @@
 {
     "project":  "Quarto",
-    "version":  "0.4.1",
-    "githubSource":  "v0.4.1",
+    "version":  "0.4.2",
+    "githubSource":  "v0.4.2",
     "zipPrefix":  "Quarto-",
     "port":  8004,
     "packageChanges":  false,
-    "commit":  "Fix default settings initialisation"
+    "commit":  "Make game setup defaults session-only and consistent"
 }

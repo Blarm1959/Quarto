@@ -1,7 +1,6 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.4.0";
   const STATISTICS_KEY = "quarto.statistics.v0.4.0";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
@@ -26,20 +25,18 @@
   };
 
   function loadSettings() {
-    try {
-      const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem("quarto.settings.v0.1.20") || "{}");
-      const previous14 = JSON.parse(localStorage.getItem("quarto.settings.v0.1.5") || localStorage.getItem("quarto.settings.v0.1.4") || localStorage.getItem("quarto.settings.v0.1.3") || localStorage.getItem("quarto.settings.v0.1.2") || "{}");
-      const previous10 = JSON.parse(localStorage.getItem("quarto.settings.v0.1.0") || "{}");
-      const previous20 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.20") || "{}");
-      const previous19 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.14") || "{}");
-      const previous013 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.13") || "{}");
-      const previous12 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.12") || "{}");
-      const previous11 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.11") || "{}");
-      return { ...DEFAULT_SETTINGS, ...previous11, ...previous12, ...previous19, ...previous20, ...previous10, ...previous14, ...current };
-    } catch { return { ...DEFAULT_SETTINGS }; }
+    // Game setup is deliberately session-only. A browser launch, reload or
+    // Ctrl+F5 always starts from the same standard defaults on every device.
+    return {
+      ...DEFAULT_SETTINGS,
+      playerNames: [...DEFAULT_SETTINGS.playerNames]
+    };
   }
 
-  function saveSettings() { localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState.settings)); }
+  function saveSettings() {
+    // Settings remain in gameState for New Game during this page session only.
+    // Long-term data such as statistics continues to use localStorage.
+  }
   function emptyStatistics() {
     const byLevel = {};
     for (let level = 1; level <= 10; level += 1) byLevel[level] = { played: 0, wins: 0, losses: 0, draws: 0 };
@@ -564,7 +561,7 @@
   function updateSetupSummary() {
     const summary=document.getElementById("setup-summary"); if(!summary) return;
     const mode=document.querySelector('input[name="gameMode"]:checked')?.value || "computer";
-    const level=Number(document.getElementById("difficulty-input")?.value||5);
+    const level=Number(document.getElementById("difficulty-input")?.value||6);
     const timer=Number(document.querySelector('input[name="timer"]:checked')?.value||30);
     const player1=document.getElementById("player-1-input")?.value.trim()||"Player 1";
     const opponent=mode==="computer" ? `Computer · Level ${level}` : (document.getElementById("player-2-input")?.value.trim()||"Player 2");
@@ -594,7 +591,7 @@
   function startFromDialog(event) {
     event.preventDefault(); const data=new FormData(event.currentTarget);
     gameState.settings.gameMode=String(data.get("gameMode")||"computer");
-    gameState.settings.difficulty=Number(data.get("difficulty")||5);
+    gameState.settings.difficulty=Number(data.get("difficulty")||6);
     gameState.settings.playerNames=[document.getElementById("player-1-input").value.trim()||"Player 1",document.getElementById("player-2-input").value.trim()||"Player 2"];
     gameState.settings.starterMode=String(data.get("starter")||"random"); gameState.settings.timerSeconds=Number(data.get("timer")||30);
     gameState.settings.soundEffects=document.getElementById("sound-effects-input").checked;
