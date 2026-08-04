@@ -1,12 +1,12 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.2.0";
-  const STATISTICS_KEY = "quarto.statistics.v0.2.0";
+  const STORAGE_KEY = "quarto.settings.v0.4.0";
+  const STATISTICS_KEY = "quarto.statistics.v0.4.0";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
-    difficulty: 5,
+    difficulty: 6,
     starterMode: "random",
     timerSeconds: 30,
     lastStarter: 1,
