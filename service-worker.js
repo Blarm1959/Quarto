@@ -1,4 +1,4 @@
-const VERSION = "0.4.4";
+const VERSION = "0.4.5";
 const STATIC_CACHE = `quarto-static-v${VERSION}`;
 const RUNTIME_CACHE = `quarto-runtime-v${VERSION}`;
 const APP_SHELL = [
@@ -10,8 +10,8 @@ const APP_SHELL = [
   "./icons/quarto-maskable-192.png", "./icons/quarto-maskable-512.png"
 ];
 self.addEventListener("install", event => {
+  // Stay waiting until the user explicitly chooses Update.
   event.waitUntil(caches.open(STATIC_CACHE).then(cache => cache.addAll(APP_SHELL)));
-  self.skipWaiting();
 });
 self.addEventListener("activate", event => {
   event.waitUntil(Promise.all([

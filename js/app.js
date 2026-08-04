@@ -460,6 +460,7 @@
     status?.classList.toggle("status-message--winner", gameState.phase === "game-over" && gameState.winner !== null);
     status?.classList.toggle("status-message--draw", gameState.phase === "game-over" && gameState.winner === null);
     renderPlayers(); renderCurrentPiece(); renderTray(); renderBoard(); renderPhoneTurnDock(); updateUndoButton(); schedulePhoneLayoutUpdate(); maybeAutoOpenPiecePicker();
+    maybeShowUpdateDialog();
   }
 
   function animatePieceToCurrent(slot) {
@@ -632,7 +633,8 @@
   async function renderApplicationVersion() {
     const element=document.getElementById("app-version");
     const helpVersion=document.getElementById("help-version");
-    if (!element && !helpVersion) return;
+    const headerVersion=document.getElementById("header-version");
+    if (!element && !helpVersion && !headerVersion) return;
     const showVersion=(version, commit="", builtAt="")=>{
       const cleanVersion=String(version || "0.3.0").replace(/^v/i, "");
       if (element) {
@@ -640,6 +642,7 @@
         element.title=builtAt ? `Published ${new Date(builtAt).toLocaleString()}` : "";
       }
       if (helpVersion) helpVersion.textContent=`Quarto · v${cleanVersion}`;
+      if (headerVersion) headerVersion.textContent=`v${cleanVersion}`;
     };
     try {
       const response=await fetch("build-info.json",{cache:"no-store"});
@@ -668,26 +671,57 @@
     await deferredInstallPrompt.userChoice;
     deferredInstallPrompt=null; setInstallButtonsVisible(false);
   }
-  function showUpdateBanner(registration) {
-    const banner=document.getElementById("pwa-update-banner");
-    if (!banner || !registration.waiting) return;
-    banner.hidden=false;
-    document.getElementById("pwa-update-button")?.addEventListener("click",()=>registration.waiting?.postMessage({type:"SKIP_WAITING"}),{once:true});
-    document.getElementById("pwa-update-dismiss")?.addEventListener("click",()=>banner.hidden=true,{once:true});
+  let pendingUpdateRegistration = null;
+
+  function gameIsInProgress() {
+    return gameState.moveCount > 0 && gameState.phase !== "game-over";
   }
+
+  function maybeShowUpdateDialog() {
+    const registration = pendingUpdateRegistration;
+    const dialog = document.getElementById("pwa-update-dialog");
+    if (!registration?.waiting || !dialog || dialog.open || gameIsInProgress()) return;
+
+    const laterButton = document.getElementById("pwa-update-later");
+    const updateButton = document.getElementById("pwa-update-button");
+    const closeDialog = () => { if (dialog.open) dialog.close(); };
+
+    laterButton.onclick = closeDialog;
+    updateButton.onclick = () => {
+      updateButton.disabled = true;
+      updateButton.textContent = "Updating…";
+      registration.waiting?.postMessage({ type: "SKIP_WAITING" });
+    };
+    dialog.oncancel = event => {
+      event.preventDefault();
+      closeDialog();
+    };
+    dialog.showModal();
+  }
+
+  function queueUpdate(registration) {
+    if (!registration.waiting) return;
+    pendingUpdateRegistration = registration;
+    maybeShowUpdateDialog();
+  }
+
   async function registerPwa() {
     window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();deferredInstallPrompt=event;setInstallButtonsVisible(true);});
     window.addEventListener("appinstalled",()=>{deferredInstallPrompt=null;setInstallButtonsVisible(false);});
     if (!("serviceWorker" in navigator)) return;
     try {
       const registration=await navigator.serviceWorker.register("service-worker.js",{scope:"./"});
-      if (registration.waiting) showUpdateBanner(registration);
+      if (registration.waiting) queueUpdate(registration);
       registration.addEventListener("updatefound",()=>{
         const worker=registration.installing;
-        worker?.addEventListener("statechange",()=>{if(worker.state==="installed" && navigator.serviceWorker.controller) showUpdateBanner(registration);});
+        worker?.addEventListener("statechange",()=>{
+          if(worker.state==="installed" && navigator.serviceWorker.controller) queueUpdate(registration);
+        });
       });
       let refreshing=false;
-      navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!refreshing){refreshing=true;location.reload();}});
+      navigator.serviceWorker.addEventListener("controllerchange",()=>{
+        if(!refreshing){refreshing=true;location.reload();}
+      });
     } catch (error) { console.warn("Quarto service worker registration failed",error); }
   }
 

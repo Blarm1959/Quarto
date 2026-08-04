@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.4.5 - User-controlled PWA updates
+- Display the current version in the centre of the phone header.
+
+- Replaced the temporary update banner with a responsive modal dialog.
+- Added fully visible Later and Update buttons on phones, tablets and desktops.
+- Removed automatic service-worker activation and reload.
+- Updates install only after the user chooses Update.
+- Deferred update prompts while a game is in progress.
+
+
 ## v0.4.3
 
 - Simplified computer difficulty from ten numeric levels to three clear choices: Beginner, Standard and Expert.

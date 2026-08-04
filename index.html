@@ -25,6 +25,7 @@
         <p class="eyebrow">Classic strategy game</p>
         <h1>Quarto</h1>
       </div>
+      <span id="header-version" class="header-version" aria-label="Application version"></span>
       <div class="header-actions">
       <button id="install-app-button" class="icon-button install-app-button" type="button" aria-label="Install Quarto" title="Install Quarto" hidden><span aria-hidden="true">⇩</span></button>
       <button id="how-to-play-button" class="icon-button" type="button" aria-label="Open help" title="How to play">
@@ -263,11 +264,22 @@
     </form>
   </dialog>
 
-  <div id="pwa-update-banner" class="pwa-banner" role="status" hidden>
-    <span>A new version of Quarto is available.<br>Update now or later.</span>
-    <button id="pwa-update-button" class="button button--primary" type="button">Update</button>
-    <button id="pwa-update-dismiss" class="dialog-close" type="button" aria-label="Dismiss update">×</button>
-  </div>
+  <dialog id="pwa-update-dialog" class="rules-dialog pwa-update-dialog" aria-labelledby="pwa-update-title">
+    <form method="dialog">
+      <div class="dialog-heading">
+        <div>
+          <p class="dialog-eyebrow">Quarto update</p>
+          <h2 id="pwa-update-title">New version available</h2>
+        </div>
+      </div>
+      <p>A new version of Quarto has been downloaded and is ready to install.</p>
+      <p class="dialog-note">Update now to reload the app, or choose Later to continue with the current version.</p>
+      <div class="dialog-actions pwa-update-actions">
+        <button id="pwa-update-later" class="button button--secondary" type="button">Later</button>
+        <button id="pwa-update-button" class="button button--primary" type="button">Update</button>
+      </div>
+    </form>
+  </dialog>
 
   <script src="js/pieces.js"></script>
   <script src="js/board.js"></script>

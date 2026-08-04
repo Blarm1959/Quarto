@@ -1069,22 +1069,37 @@ html { min-height: 100%; background: var(--page, #eef3f8); }
 body { min-height: 100vh; min-height: 100svh; overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent; }
 .app-shell { padding-top: max(20px, env(safe-area-inset-top)); padding-right: max(20px, env(safe-area-inset-right)); padding-bottom: max(24px, env(safe-area-inset-bottom)); padding-left: max(20px, env(safe-area-inset-left)); }
 .header-actions { display:flex; align-items:center; gap:8px; }
+.header-version { display:none; }
 .install-app-button span { font-size:1.45rem; line-height:1; font-weight:800; }
 .install-app-action { white-space:nowrap; }
-.pwa-banner { position:fixed; z-index:1000; left:50%; bottom:max(16px, env(safe-area-inset-bottom)); transform:translateX(-50%); width:min(92vw,560px); display:flex; align-items:center; gap:12px; padding:12px; border:1px solid var(--line,#d4dee8); border-radius:18px; background:#fff; box-shadow:0 18px 55px rgba(14,57,99,.24); color:var(--navy,#0e3963); font-weight:700; }
-.pwa-banner[hidden] { display:none; }
-.pwa-banner span { flex:1; line-height:1.4; }
-.pwa-banner{box-sizing:border-box;}
-.pwa-banner button{white-space:nowrap;}
-.pwa-banner .button { padding:10px 14px; }
-.pwa-banner .dialog-close { position:static; flex:0 0 auto; }
+.pwa-update-dialog {
+  width:min(440px,calc(100% - 28px));
+  max-width:440px;
+  overflow:hidden;
+}
+.pwa-update-dialog form { box-sizing:border-box; width:100%; }
+.pwa-update-dialog .dialog-heading { margin-bottom:12px; }
+.pwa-update-dialog .dialog-heading h2 { margin:0; }
+.pwa-update-actions { width:100%; }
+.pwa-update-actions .button { min-width:110px; }
 @media (display-mode: standalone) { .install-app-button,.install-app-action { display:none !important; } }
 @media (max-width:740px) {
   .app-shell { padding-top:max(12px,env(safe-area-inset-top)); padding-right:max(10px,env(safe-area-inset-right)); padding-bottom:max(12px,env(safe-area-inset-bottom)); padding-left:max(10px,env(safe-area-inset-left)); }
-  .pwa-banner { bottom:max(8px,env(safe-area-inset-bottom)); flex-wrap:wrap; width:calc(100vw - 20px); max-width:420px; }
-  .pwa-banner .button{flex:1;}
-  .pwa-banner .dialog-close{order:3;}
-  .pwa-banner span { flex-basis:calc(100% - 44px); }
+  .pwa-update-dialog {
+    width:calc(100% - 20px);
+    max-width:none;
+    margin:auto 10px max(10px,env(safe-area-inset-bottom));
+    border-radius:22px;
+  }
+  .pwa-update-dialog form {
+    padding:20px max(16px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+  }
+  .pwa-update-actions {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .pwa-update-actions .button { min-width:0; width:100%; }
 }
 @media (orientation:landscape) and (max-height:520px) { .app-shell { padding-top:max(6px,env(safe-area-inset-top)); } }
 
@@ -1103,10 +1118,24 @@ body { min-height: 100vh; min-height: 100svh; overscroll-behavior-y: none; -webk
     padding-bottom: max(7px, env(safe-area-inset-bottom));
   }
   .app-header {
+    position: relative;
     min-height: 34px;
     margin-bottom: 3px;
   }
   .app-header h1 { font-size: 1.45rem; }
+  .header-version {
+    display:block;
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    color:var(--muted);
+    font-size:.78rem;
+    font-weight:700;
+    line-height:1;
+    white-space:nowrap;
+    pointer-events:none;
+  }
   .header-actions { gap: 5px; }
   .icon-button { width: 34px; height: 34px; flex-basis: 34px; }
   .game-layout { flex: 1; min-height: 0; gap: 5px; }

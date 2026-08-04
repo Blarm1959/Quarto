@@ -1,9 +1,9 @@
 {
     "project":  "Quarto",
-    "version":  "0.4.4",
-    "githubSource":  "v0.4.4",
+    "version":  "0.4.5",
+    "githubSource":  "v0.4.5",
     "zipPrefix":  "Quarto-",
     "port":  8004,
     "packageChanges":  false,
-    "commit":  "Replace ten AI levels with Beginner, Standard and Expert"
+    "commit":  "Add user-controlled responsive PWA update dialog"
 }
