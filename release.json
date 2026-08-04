@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "0.2.2",
-  "githubSource": "v0.2.1.g1",
+  "version": "0.3.0",
+  "githubSource": "v0.2.2.g1",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Keep phone Undo visible above piece chooser"
+  "commit": "Stronger AI engine with tuned levels 1-10"
 }

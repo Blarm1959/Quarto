@@ -29,12 +29,13 @@ jobs:
         with:
           node-version: 22
 
-      - name: Validate project files
+      - name: Validate project files and AI
         shell: bash
         run: |
           set -euo pipefail
-          for file in js/*.js service-worker.js; do node --check "$file"; done
+          for file in js/*.js service-worker.js tools/test-ai.js; do node --check "$file"; done
           node -e 'for (const file of ["package.json","package-lock.json","manifest.json","release.json"]) JSON.parse(require("fs").readFileSync(file,"utf8"));'
+          npm test
 
       - name: Prepare website artifact
         shell: bash

@@ -4,7 +4,12 @@
   const ATTRIBUTES = ["tall", "round", "dark", "hole"];
   const CENTRES = new Set([5, 6, 9, 10]);
   const CORNERS = new Set([0, 3, 12, 15]);
-  const WIN_SCORE = 100000;
+  const WIN_SCORE = 1000000;
+  const DRAW_SCORE = 0;
+
+  function now() {
+    return typeof performance !== "undefined" && performance.now ? performance.now() : Date.now();
+  }
 
   function randomItem(items) {
     return items[Math.floor(Math.random() * items.length)];
@@ -39,40 +44,57 @@
     });
   }
 
-  function linePotential(board, index, pieceId) {
-    const testBoard = [...board];
-    testBoard[index] = pieceId;
-    const piece = window.QuartoPieces.getPiece(pieceId);
-    let score = 0;
+  function pieceBits(pieceId) {
+    return Number(pieceId) & 15;
+  }
 
-    for (const line of window.QuartoRules.WINNING_LINES) {
-      if (!line.includes(index)) continue;
-      const pieces = line
-        .map(cell => testBoard[cell])
-        .filter(value => value !== null)
-        .map(value => window.QuartoPieces.getPiece(value));
-      if (!pieces.length) continue;
-
-      for (const attribute of ATTRIBUTES) {
-        const same = pieces.every(other => other[attribute] === pieces[0][attribute]);
-        if (same) score += pieces.length * pieces.length * 1.8;
-      }
+  function commonAttributeCount(pieceIds) {
+    if (!pieceIds.length) return 0;
+    let allOnes = 15;
+    let allZeroes = 15;
+    for (const id of pieceIds) {
+      const bits = pieceBits(id);
+      allOnes &= bits;
+      allZeroes &= (~bits) & 15;
     }
+    let mask = allOnes | allZeroes;
+    let count = 0;
+    while (mask) {
+      count += mask & 1;
+      mask >>= 1;
+    }
+    return count;
+  }
 
-    if (CENTRES.has(index)) score += 3;
-    if (CORNERS.has(index)) score += 1.5;
+  function lineStrength(board) {
+    let score = 0;
+    for (const line of window.QuartoRules.WINNING_LINES) {
+      const ids = line.map(index => board[index]).filter(id => id !== null);
+      if (!ids.length || ids.length === 4) continue;
+      const common = commonAttributeCount(ids);
+      if (!common) continue;
+      const occupied = ids.length;
+      const weight = occupied === 3 ? 95 : occupied === 2 ? 16 : 2;
+      score += common * weight;
+    }
     return score;
   }
 
-  function placementRisk(boardAfterPlacement, remainingPieceIds) {
+  function positionalBonus(index) {
+    if (CENTRES.has(index)) return 8;
+    if (CORNERS.has(index)) return 3;
+    return 1;
+  }
+
+  function dangerSummary(board, remainingPieceIds) {
     let dangerousPieces = 0;
-    let totalWinningSquares = 0;
+    let winningSquares = 0;
     for (const pieceId of remainingPieceIds) {
-      const count = winningPlacements(boardAfterPlacement, pieceId).length;
-      if (count) dangerousPieces += 1;
-      totalWinningSquares += count;
+      const count = winningPlacements(board, pieceId).length;
+      if (count > 0) dangerousPieces += 1;
+      winningSquares += count;
     }
-    return dangerousPieces * 30 + totalWinningSquares * 8;
+    return { dangerousPieces, winningSquares };
   }
 
   function pieceVariety(board, pieceId) {
@@ -81,7 +103,9 @@
     for (const placedId of board) {
       if (placedId === null) continue;
       const placed = window.QuartoPieces.getPiece(placedId);
-      score += ATTRIBUTES.filter(attribute => placed[attribute] !== piece[attribute]).length;
+      for (const attribute of ATTRIBUTES) {
+        if (placed[attribute] !== piece[attribute]) score += 1;
+      }
     }
     return score;
   }
@@ -89,163 +113,230 @@
   function difficultyProfile(level) {
     const clamped = Math.max(1, Math.min(10, Number(level) || 1));
     const profiles = {
-      1: { winChance: .35, safeChance: .20, searchDepth: 0, nodes: 0, candidates: 10 },
-      2: { winChance: .60, safeChance: .38, searchDepth: 0, nodes: 0, candidates: 8 },
-      3: { winChance: .85, safeChance: .62, searchDepth: 0, nodes: 0, candidates: 6 },
-      4: { winChance: 1, safeChance: .82, searchDepth: 0, nodes: 0, candidates: 4 },
-      5: { winChance: 1, safeChance: 1, searchDepth: 1, nodes: 12000, candidates: 3 },
-      6: { winChance: 1, safeChance: 1, searchDepth: 1, nodes: 24000, candidates: 2 },
-      7: { winChance: 1, safeChance: 1, searchDepth: 2, nodes: 45000, candidates: 2 },
-      8: { winChance: 1, safeChance: 1, searchDepth: 2, nodes: 90000, candidates: 1 },
-      9: { winChance: 1, safeChance: 1, searchDepth: 3, nodes: 180000, candidates: 1 },
-      10: { winChance: 1, safeChance: 1, searchDepth: 4, nodes: 320000, candidates: 1 }
+      1: { depth: 0, timeMs: 25, nodes: 1500, winChance: .45, safeChance: .25, errorRate: .38, nearBest: 130 },
+      2: { depth: 0, timeMs: 35, nodes: 2500, winChance: .68, safeChance: .45, errorRate: .27, nearBest: 95 },
+      3: { depth: 1, timeMs: 55, nodes: 5000, winChance: .90, safeChance: .72, errorRate: .17, nearBest: 65 },
+      4: { depth: 1, timeMs: 90, nodes: 10000, winChance: 1, safeChance: .88, errorRate: .10, nearBest: 42 },
+      5: { depth: 2, timeMs: 150, nodes: 24000, winChance: 1, safeChance: 1, errorRate: .05, nearBest: 24 },
+      6: { depth: 2, timeMs: 240, nodes: 50000, winChance: 1, safeChance: 1, errorRate: .02, nearBest: 14 },
+      7: { depth: 3, timeMs: 380, nodes: 100000, winChance: 1, safeChance: 1, errorRate: 0, nearBest: 8 },
+      8: { depth: 4, timeMs: 650, nodes: 220000, winChance: 1, safeChance: 1, errorRate: 0, nearBest: 3 },
+      9: { depth: 5, timeMs: 1100, nodes: 500000, winChance: 1, safeChance: 1, errorRate: 0, nearBest: 0 },
+      10: { depth: 6, timeMs: 1800, nodes: 1000000, winChance: 1, safeChance: 1, errorRate: 0, nearBest: 0 }
     };
     return { level: clamped, ...profiles[clamped] };
   }
 
-  function createSearchContext(profile, emptyCount) {
-    let depth = profile.searchDepth;
-    if (profile.level >= 9 && emptyCount <= 7) depth = emptyCount;
-    if (profile.level === 10 && emptyCount <= 8) depth = emptyCount;
+  function createContext(profile, emptyCount) {
+    let maxDepth = profile.depth;
+    if (profile.level >= 8 && emptyCount <= 7) maxDepth = emptyCount;
+    if (profile.level >= 9 && emptyCount <= 8) maxDepth = emptyCount;
     return {
-      depth,
+      profile,
+      maxDepth,
       nodes: 0,
       maxNodes: profile.nodes,
-      deadline: performance.now() + (profile.level >= 9 ? 700 : profile.level >= 7 ? 350 : 180),
+      deadline: now() + profile.timeMs,
+      aborted: false,
       memo: new Map(),
-      aborted: false
+      bestCompletedDepth: 0
     };
-  }
-
-  function boardKey(board, remainingPieceIds, pieceId, depth) {
-    return `${board.map(value => value === null ? "_" : value.toString(16)).join("")}|${remainingPieceIds.map(id => id.toString(16)).join("")}|${pieceId.toString(16)}|${depth}`;
   }
 
   function shouldAbort(context) {
     context.nodes += 1;
-    if (context.nodes > context.maxNodes || performance.now() > context.deadline) {
+    if (context.nodes > context.maxNodes || now() >= context.deadline) {
       context.aborted = true;
       return true;
     }
     return false;
   }
 
-  function staticPositionScore(board, remainingPieceIds, pieceId) {
-    const wins = winningPlacements(board, pieceId);
-    if (wins.length) return 4500 + wins.length * 500;
+  function boardKey(board, remainingPieceIds, pieceId, depth) {
+    const boardPart = board.map(value => value === null ? "_" : value.toString(16)).join("");
+    const piecesPart = [...remainingPieceIds].sort((a, b) => a - b).map(id => id.toString(16)).join("");
+    return `${boardPart}|${piecesPart}|${Number(pieceId).toString(16)}|${depth}`;
+  }
+
+  function staticScore(board, remainingPieceIds, pieceId) {
+    const immediate = winningPlacements(board, pieceId).length;
+    if (immediate) return 150000 + immediate * 5000;
 
     let best = -Infinity;
     for (const index of emptyCells(board)) {
-      const after = [...board];
-      after[index] = pieceId;
-      const risk = placementRisk(after, remainingPieceIds);
-      best = Math.max(best, linePotential(board, index, pieceId) - risk * .35);
+      const nextBoard = [...board];
+      nextBoard[index] = pieceId;
+      const danger = dangerSummary(nextBoard, remainingPieceIds);
+      const score = lineStrength(nextBoard)
+        + positionalBonus(index)
+        - danger.dangerousPieces * 120
+        - danger.winningSquares * 28;
+      if (score > best) best = score;
     }
-    return Number.isFinite(best) ? best : 0;
+    return Number.isFinite(best) ? best : DRAW_SCORE;
   }
 
-  // Negamax over complete Quarto turns: place the supplied piece, then choose
-  // the piece the opponent must place. This models both strategic decisions.
+  function orderedPlacements(board, pieceId) {
+    return emptyCells(board)
+      .map(index => {
+        const nextBoard = [...board];
+        nextBoard[index] = pieceId;
+        return {
+          index,
+          immediateWin: isWinningBoard(nextBoard),
+          order: lineStrength(nextBoard) + positionalBonus(index)
+        };
+      })
+      .sort((a, b) => Number(b.immediateWin) - Number(a.immediateWin) || b.order - a.order);
+  }
+
+  function orderedGifts(board, remainingPieceIds) {
+    return remainingPieceIds
+      .map(pieceId => {
+        const wins = winningPlacements(board, pieceId).length;
+        return { pieceId, wins, variety: pieceVariety(board, pieceId) };
+      })
+      .sort((a, b) => a.wins - b.wins || b.variety - a.variety);
+  }
+
+  // Returns the score for the player who must place pieceId now. A complete
+  // turn is modelled: place the supplied piece, then choose the opponent's
+  // next piece. The opponent's result is negated (negamax).
   function search(board, remainingPieceIds, pieceId, depth, alpha, beta, context) {
-    if (shouldAbort(context)) return staticPositionScore(board, remainingPieceIds, pieceId);
+    if (shouldAbort(context)) return staticScore(board, remainingPieceIds, pieceId);
 
     const key = boardKey(board, remainingPieceIds, pieceId, depth);
     const cached = context.memo.get(key);
     if (cached !== undefined) return cached;
 
     const open = emptyCells(board);
-    if (!open.length) return 0;
+    if (!open.length) return DRAW_SCORE;
 
-    const immediateWins = winningPlacements(board, pieceId);
-    if (immediateWins.length) return WIN_SCORE + depth * 100 + open.length;
-    if (depth <= 0) return staticPositionScore(board, remainingPieceIds, pieceId);
+    const wins = winningPlacements(board, pieceId);
+    if (wins.length) return WIN_SCORE + open.length * 100 + depth;
+    if (depth <= 0) return staticScore(board, remainingPieceIds, pieceId);
 
     let best = -Infinity;
-    const placements = open
-      .map(index => ({ index, score: linePotential(board, index, pieceId) }))
-      .sort((a, b) => b.score - a.score);
+    const placements = orderedPlacements(board, pieceId);
 
     for (const placement of placements) {
       const nextBoard = [...board];
       nextBoard[placement.index] = pieceId;
+
       if (!remainingPieceIds.length) {
-        best = Math.max(best, 0);
-        continue;
+        best = Math.max(best, DRAW_SCORE);
+      } else {
+        let bestTurn = -Infinity;
+        for (const gift of orderedGifts(nextBoard, remainingPieceIds)) {
+          const nextRemaining = remainingPieceIds.filter(id => id !== gift.pieceId);
+          const value = -search(nextBoard, nextRemaining, gift.pieceId, depth - 1, -beta, -alpha, context);
+          if (value > bestTurn) bestTurn = value;
+          if (bestTurn > alpha) alpha = bestTurn;
+          if (alpha >= beta || context.aborted) break;
+        }
+        const strategic = lineStrength(nextBoard) * .035 + positionalBonus(placement.index) * .1;
+        best = Math.max(best, bestTurn + strategic);
       }
 
-      const gifts = remainingPieceIds
-        .map(id => ({ id, danger: winningPlacements(nextBoard, id).length, variety: pieceVariety(nextBoard, id) }))
-        .sort((a, b) => a.danger - b.danger || b.variety - a.variety);
-
-      let bestGift = -Infinity;
-      for (const gift of gifts) {
-        const nextRemaining = remainingPieceIds.filter(id => id !== gift.id);
-        const score = -search(nextBoard, nextRemaining, gift.id, depth - 1, -beta, -alpha, context);
-        bestGift = Math.max(bestGift, score);
-        alpha = Math.max(alpha, score);
-        if (alpha >= beta || context.aborted) break;
-      }
-      best = Math.max(best, bestGift + placement.score * .04);
-      alpha = Math.max(alpha, best);
+      if (best > alpha) alpha = best;
       if (alpha >= beta || context.aborted) break;
     }
 
-    context.memo.set(key, best);
+    if (!context.aborted) context.memo.set(key, best);
     return best;
   }
 
-  function searchPlacement(board, pieceId, remainingPieceIds, profile) {
-    const context = createSearchContext(profile, emptyCells(board).length);
-    const candidates = [];
-
-    for (const index of emptyCells(board)) {
+  function evaluatePlacementsAtDepth(board, pieceId, remainingPieceIds, depth, context) {
+    const results = [];
+    for (const placement of orderedPlacements(board, pieceId)) {
       const nextBoard = [...board];
-      nextBoard[index] = pieceId;
-      if (isWinningBoard(nextBoard)) return { index, score: WIN_SCORE, context };
+      nextBoard[placement.index] = pieceId;
+      if (placement.immediateWin) {
+        results.push({ index: placement.index, score: WIN_SCORE + depth });
+        continue;
+      }
 
       let score;
-      if (!remainingPieceIds.length || context.depth <= 0) {
-        score = linePotential(board, index, pieceId) - placementRisk(nextBoard, remainingPieceIds);
+      if (!remainingPieceIds.length) {
+        score = DRAW_SCORE;
+      } else if (depth <= 0) {
+        const danger = dangerSummary(nextBoard, remainingPieceIds);
+        score = lineStrength(nextBoard) + positionalBonus(placement.index)
+          - danger.dangerousPieces * 135 - danger.winningSquares * 32;
       } else {
-        let bestGift = -Infinity;
-        const gifts = remainingPieceIds
-          .map(id => ({ id, danger: winningPlacements(nextBoard, id).length }))
-          .sort((a, b) => a.danger - b.danger);
-        for (const gift of gifts) {
-          const nextRemaining = remainingPieceIds.filter(id => id !== gift.id);
-          const value = -search(nextBoard, nextRemaining, gift.id, context.depth - 1, -Infinity, Infinity, context);
-          bestGift = Math.max(bestGift, value);
+        score = -Infinity;
+        for (const gift of orderedGifts(nextBoard, remainingPieceIds)) {
+          const nextRemaining = remainingPieceIds.filter(id => id !== gift.pieceId);
+          const value = -search(nextBoard, nextRemaining, gift.pieceId, depth - 1, -Infinity, Infinity, context);
+          if (value > score) score = value;
           if (context.aborted) break;
         }
-        score = bestGift + linePotential(board, index, pieceId) * .05;
+        score += lineStrength(nextBoard) * .04 + positionalBonus(placement.index) * .15;
       }
-      candidates.push({ index, score });
+      results.push({ index: placement.index, score });
       if (context.aborted) break;
     }
-
-    candidates.sort((a, b) => b.score - a.score);
-    return { ...(candidates[0] || { index: null, score: 0 }), context };
+    return results.sort((a, b) => b.score - a.score);
   }
 
-  function searchGift(board, remainingPieceIds, profile) {
-    const context = createSearchContext(profile, emptyCells(board).length);
-    const candidates = [];
-
-    for (const pieceId of remainingPieceIds) {
-      const danger = winningPlacements(board, pieceId).length;
+  function evaluateGiftsAtDepth(board, remainingPieceIds, depth, context) {
+    const results = [];
+    for (const gift of orderedGifts(board, remainingPieceIds)) {
+      const nextRemaining = remainingPieceIds.filter(id => id !== gift.pieceId);
       let score;
-      if (context.depth <= 0) {
-        score = -danger * 1000 + pieceVariety(board, pieceId) * .15;
+      if (depth <= 0) {
+        score = -gift.wins * 10000 + gift.variety * .4;
       } else {
-        const nextRemaining = remainingPieceIds.filter(id => id !== pieceId);
-        score = -search(board, nextRemaining, pieceId, context.depth, -Infinity, Infinity, context);
+        score = -search(board, nextRemaining, gift.pieceId, depth, -Infinity, Infinity, context);
       }
-      candidates.push({ pieceId, danger, score });
+      results.push({ pieceId: gift.pieceId, danger: gift.wins, score });
       if (context.aborted) break;
     }
+    return results.sort((a, b) => b.score - a.score || a.danger - b.danger);
+  }
 
-    candidates.sort((a, b) => b.score - a.score || a.danger - b.danger);
-    return { ...(candidates[0] || { pieceId: null, score: 0 }), context };
+  function iterativePlacementSearch(board, pieceId, remainingPieceIds, profile) {
+    const context = createContext(profile, emptyCells(board).length);
+    let bestResults = evaluatePlacementsAtDepth(board, pieceId, remainingPieceIds, 0, context);
+    context.aborted = false;
+
+    for (let depth = 1; depth <= context.maxDepth; depth += 1) {
+      const before = context.nodes;
+      const results = evaluatePlacementsAtDepth(board, pieceId, remainingPieceIds, depth, context);
+      if (context.aborted || !results.length) break;
+      bestResults = results;
+      context.bestCompletedDepth = depth;
+      if (Math.abs(results[0].score) >= WIN_SCORE) break;
+      if (context.nodes === before) break;
+    }
+    return { results: bestResults, context };
+  }
+
+  function iterativeGiftSearch(board, remainingPieceIds, profile) {
+    const context = createContext(profile, emptyCells(board).length);
+    let bestResults = evaluateGiftsAtDepth(board, remainingPieceIds, 0, context);
+    context.aborted = false;
+
+    for (let depth = 1; depth <= context.maxDepth; depth += 1) {
+      const results = evaluateGiftsAtDepth(board, remainingPieceIds, depth, context);
+      if (context.aborted || !results.length) break;
+      bestResults = results;
+      context.bestCompletedDepth = depth;
+    }
+    return { results: bestResults, context };
+  }
+
+  function chooseWithDifficulty(results, profile, key) {
+    if (!results.length) return null;
+    if (profile.errorRate > 0 && Math.random() < profile.errorRate) {
+      const poolSize = Math.min(results.length, profile.level <= 2 ? 5 : 3);
+      return randomItem(results.slice(0, poolSize))[key];
+    }
+
+    const bestScore = results[0].score;
+    const nearBest = results.filter(item => bestScore - item.score <= profile.nearBest);
+    if (nearBest.length <= 1 || profile.level >= 9) return results[0][key];
+    return randomItem(nearBest)[key];
   }
 
   function choosePlacement(board, pieceId, level, remainingPieceIds) {
@@ -254,67 +345,50 @@
     const profile = difficultyProfile(level);
     const wins = winningPlacements(board, pieceId);
 
-    if (wins.length && Math.random() < profile.winChance) return randomItem(wins);
-    if (profile.level <= 2 && Math.random() > profile.safeChance) return randomItem(open);
+    if (wins.length) {
+      if (Math.random() < profile.winChance) return randomItem(wins);
+      return randomItem(open);
+    }
 
     const remaining = Array.isArray(remainingPieceIds)
       ? [...remainingPieceIds]
       : window.QuartoPieces.PIECES.map(piece => piece.id).filter(id => id !== pieceId && !board.includes(id));
 
-    if (profile.searchDepth > 0) {
-      const result = searchPlacement(board, pieceId, remaining, profile);
-      if (result.index !== null) return result.index;
-    }
-
-    const ranked = open
-      .map(index => {
-        const nextBoard = [...board];
-        nextBoard[index] = pieceId;
-        return {
-          index,
-          score: linePotential(board, index, pieceId) - placementRisk(nextBoard, remaining) * (profile.level >= 5 ? 1 : .35) + Math.random() * (11 - profile.level) * 3
-        };
-      })
-      .sort((a, b) => b.score - a.score);
-
-    return randomItem(ranked.slice(0, Math.max(1, profile.candidates))).index;
+    const searchResult = iterativePlacementSearch(board, pieceId, remaining, profile);
+    return chooseWithDifficulty(searchResult.results, profile, "index");
   }
 
   function choosePiece(board, remainingPieceIds, level) {
     if (!remainingPieceIds.length) return null;
     const profile = difficultyProfile(level);
+    const ordered = orderedGifts(board, remainingPieceIds);
+    const safe = ordered.filter(item => item.wins === 0);
+
+    if (safe.length && profile.depth === 0 && Math.random() < profile.safeChance) {
+      return window.QuartoPieces.getPiece(randomItem(safe.slice(0, Math.min(safe.length, 4))).pieceId);
+    }
 
     if (profile.level <= 2 && Math.random() > profile.safeChance) {
       return window.QuartoPieces.getPiece(randomItem(remainingPieceIds));
     }
 
-    const analysed = remainingPieceIds.map(pieceId => ({
-      pieceId,
-      danger: winningPlacements(board, pieceId).length,
-      variety: pieceVariety(board, pieceId)
-    }));
-    const safe = analysed.filter(item => item.danger === 0);
-
-    if (safe.length && Math.random() < profile.safeChance && profile.searchDepth === 0) {
-      safe.sort((a, b) => b.variety - a.variety);
-      const choice = randomItem(safe.slice(0, Math.max(1, profile.candidates)));
-      return window.QuartoPieces.getPiece(choice.pieceId);
-    }
-
-    if (profile.searchDepth > 0) {
-      const result = searchGift(board, remainingPieceIds, profile);
-      if (result.pieceId !== null) return window.QuartoPieces.getPiece(result.pieceId);
-    }
-
-    analysed.sort((a, b) => a.danger - b.danger || b.variety - a.variety);
-    const pool = analysed.slice(0, Math.max(1, profile.candidates));
-    return window.QuartoPieces.getPiece(randomItem(pool).pieceId);
+    const searchResult = iterativeGiftSearch(board, remainingPieceIds, profile);
+    const pieceId = chooseWithDifficulty(searchResult.results, profile, "pieceId");
+    return pieceId === null ? null : window.QuartoPieces.getPiece(pieceId);
   }
 
   window.QuartoAI = {
     choosePlacement,
     choosePiece,
     winningPlacements,
-    difficultyProfile
+    difficultyProfile,
+    _test: {
+      emptyCells,
+      lineStrength,
+      dangerSummary,
+      search,
+      iterativePlacementSearch,
+      iterativeGiftSearch
+    }
   };
 })();

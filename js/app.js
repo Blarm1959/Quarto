@@ -607,7 +607,7 @@
     const helpVersion=document.getElementById("help-version");
     if (!element && !helpVersion) return;
     const showVersion=(version, commit="", builtAt="")=>{
-      const cleanVersion=String(version || "0.2.2").replace(/^v/i, "");
+      const cleanVersion=String(version || "0.3.0").replace(/^v/i, "");
       if (element) {
         element.textContent=`Version ${cleanVersion}${commit}`;
         element.title=builtAt ? `Published ${new Date(builtAt).toLocaleString()}` : "";
@@ -626,7 +626,7 @@
       const response=await fetch("package.json",{cache:"no-store"});
       const info=await response.json();
       showVersion(info.version);
-    } catch { showVersion("0.2.2"); }
+    } catch { showVersion("0.3.0"); }
   }
 
   let deferredInstallPrompt = null;

@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.0
+
+- Reworked the computer engine with iterative deepening, alpha-beta search and transposition caching.
+- AI now evaluates a complete Quarto turn: where to place the supplied piece and which piece to hand back.
+- Tuned levels 1-10 so beginner levels make controlled mistakes while stronger levels search progressively deeper.
+- Levels 4+ always take an immediate win; stronger levels avoid gifting an immediate win whenever a safe piece exists.
+- Added exact/deeper endgame analysis for the strongest levels when few squares remain.
+- Added automated AI legality, tactical and rules regression tests (`npm test`).
+- Preserved the current UI, Undo, statistics and PWA behaviour.
+
 ## v0.2.2
 
 - Moved the phone Undo control into the turn instruction panel.
