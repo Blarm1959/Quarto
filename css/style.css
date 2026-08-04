@@ -1629,3 +1629,32 @@ body[data-computer-turn="true"] .turn-badge::after { content:""; display:inline-
   /* The old modal chooser is no longer used on phones. */
   .piece-picker-dialog { display: none !important; }
 }
+
+
+/* v0.2.0: single-step undo and player statistics. */
+#undo-button[hidden] { display:none!important; }
+#undo-button:disabled { opacity:.45; cursor:not-allowed; }
+.settings-statistics-button { width:100%; margin-top:12px; }
+.undo-choice-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.statistics-dialog { width:min(760px,calc(100% - 24px)); }
+.statistics-dialog form { max-height:min(86dvh,820px); overflow:auto; }
+.statistics-dialog h3 { margin:20px 0 9px; color:var(--ink); font-size:1rem; }
+.statistics-summary,.statistics-detail-grid,.statistics-breakdown { display:grid; gap:8px; }
+.statistics-summary { grid-template-columns:repeat(5,minmax(0,1fr)); }
+.statistics-detail-grid { grid-template-columns:repeat(3,minmax(0,1fr)); margin-top:10px; }
+.statistics-summary span,.statistics-detail-grid span,.statistics-breakdown span { display:grid; place-items:center; min-height:72px; padding:8px; border:1px solid var(--line); border-radius:12px; background:var(--surface-soft); text-align:center; }
+.statistics-summary strong,.statistics-detail-grid strong,.statistics-breakdown strong { color:var(--navy); font-size:1.2rem; }
+.statistics-summary small,.statistics-detail-grid small,.statistics-breakdown small { color:var(--muted); }
+.statistics-levels { display:grid; gap:6px; }
+.statistics-level-row { display:flex; justify-content:space-between; gap:12px; padding:9px 11px; border:1px solid var(--line); border-radius:10px; background:#fff; }
+.statistics-level-row span { color:var(--muted); text-align:right; }
+.statistics-breakdown { grid-template-columns:repeat(4,minmax(0,1fr)); }
+@media (max-width:740px) {
+  .undo-choice-grid { grid-template-columns:1fr; }
+  .statistics-summary { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .statistics-detail-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .statistics-breakdown { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .statistics-level-row { display:grid; gap:3px; }
+  .statistics-level-row span { text-align:left; font-size:.82rem; }
+  .action-bar #undo-button { flex:0 0 auto; }
+}

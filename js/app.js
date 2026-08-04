@@ -1,7 +1,8 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "quarto.settings.v0.1.20";
+  const STORAGE_KEY = "quarto.settings.v0.2.0";
+  const STATISTICS_KEY = "quarto.statistics.v0.2.0";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
@@ -10,7 +11,8 @@
     timerSeconds: 30,
     lastStarter: 1,
     soundEffects: true,
-    animations: true
+    animations: true,
+    undoMode: "single-player"
   };
 
   const gameState = {
@@ -19,12 +21,13 @@
     remainingPieceIds: window.QuartoPieces.PIECES.map(piece => piece.id),
     timerRemaining: 30, timerHandle: null, aiHandle: null,
     winner: null, winningCells: [], winningAttributes: [], chooseTurnId: 0,
-    aiStage: null, aiPreviewPieceId: null, aiPreviewCell: null
+    aiStage: null, aiPreviewPieceId: null, aiPreviewCell: null,
+    undoSnapshot: null, moveCount: 0, statisticsRecorded: false
   };
 
   function loadSettings() {
     try {
-      const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem("quarto.settings.v0.1.20") || "{}");
       const previous14 = JSON.parse(localStorage.getItem("quarto.settings.v0.1.5") || localStorage.getItem("quarto.settings.v0.1.4") || localStorage.getItem("quarto.settings.v0.1.3") || localStorage.getItem("quarto.settings.v0.1.2") || "{}");
       const previous10 = JSON.parse(localStorage.getItem("quarto.settings.v0.1.0") || "{}");
       const previous20 = JSON.parse(localStorage.getItem("quarto.settings.v0.0.20") || "{}");
@@ -37,6 +40,172 @@
   }
 
   function saveSettings() { localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState.settings)); }
+  function emptyStatistics() {
+    const byLevel = {};
+    for (let level = 1; level <= 10; level += 1) byLevel[level] = { played: 0, wins: 0, losses: 0, draws: 0 };
+    return {
+      computer: {
+        played: 0, wins: 0, losses: 0, draws: 0,
+        currentStreak: 0, bestStreak: 0,
+        totalMoves: 0, fastestWin: null, longestGame: 0,
+        byLevel,
+        lineTypes: { row: 0, column: 0, diagonal: 0 },
+        attributes: { Tall: 0, Short: 0, Round: 0, Square: 0, Red: 0, Blue: 0, Hollow: 0, Solid: 0 }
+      },
+      twoPlayer: { played: 0, draws: 0 }
+    };
+  }
+
+  function loadStatistics() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STATISTICS_KEY) || "null");
+      if (!saved) return emptyStatistics();
+      const defaults = emptyStatistics();
+      return {
+        computer: {
+          ...defaults.computer, ...saved.computer,
+          byLevel: { ...defaults.computer.byLevel, ...(saved.computer?.byLevel || {}) },
+          lineTypes: { ...defaults.computer.lineTypes, ...(saved.computer?.lineTypes || {}) },
+          attributes: { ...defaults.computer.attributes, ...(saved.computer?.attributes || {}) }
+        },
+        twoPlayer: { ...defaults.twoPlayer, ...(saved.twoPlayer || {}) }
+      };
+    } catch { return emptyStatistics(); }
+  }
+
+  let statistics = loadStatistics();
+  function saveStatistics() { localStorage.setItem(STATISTICS_KEY, JSON.stringify(statistics)); }
+
+  function undoAllowedBySettings() {
+    if (gameState.settings.undoMode === "always") return true;
+    return gameState.settings.undoMode === "single-player" && gameState.settings.gameMode === "computer";
+  }
+
+  function createUndoSnapshot() {
+    return {
+      currentPlayer: gameState.currentPlayer,
+      receivingPlayer: gameState.receivingPlayer,
+      selectedPieceId: gameState.selectedPiece?.id ?? null,
+      phase: gameState.phase,
+      board: [...gameState.board],
+      remainingPieceIds: [...gameState.remainingPieceIds],
+      timerRemaining: gameState.timerRemaining,
+      winner: gameState.winner,
+      winningCells: [...gameState.winningCells],
+      winningAttributes: [...gameState.winningAttributes],
+      chooseTurnId: gameState.chooseTurnId,
+      moveCount: gameState.moveCount
+    };
+  }
+
+  function prepareUndoSnapshot() {
+    if (!undoAllowedBySettings() || gameState.phase === "game-over") return;
+    gameState.undoSnapshot = createUndoSnapshot();
+  }
+
+  function updateUndoButton() {
+    const button = document.getElementById("undo-button");
+    if (!button) return;
+    const visible = undoAllowedBySettings();
+    button.hidden = !visible;
+    button.disabled = !gameState.undoSnapshot || gameState.phase === "game-over";
+  }
+
+  function undoLastAction() {
+    const snapshot = gameState.undoSnapshot;
+    if (!snapshot || !undoAllowedBySettings() || gameState.phase === "game-over") return;
+    stopAi(); stopTimer(); setPiecePickerOpen(false);
+    Object.assign(gameState, {
+      currentPlayer: snapshot.currentPlayer,
+      receivingPlayer: snapshot.receivingPlayer,
+      selectedPiece: snapshot.selectedPieceId === null ? null : window.QuartoPieces.getPiece(snapshot.selectedPieceId),
+      phase: snapshot.phase,
+      board: [...snapshot.board],
+      remainingPieceIds: [...snapshot.remainingPieceIds],
+      timerRemaining: snapshot.timerRemaining,
+      winner: snapshot.winner,
+      winningCells: [...snapshot.winningCells],
+      winningAttributes: [...snapshot.winningAttributes],
+      chooseTurnId: snapshot.chooseTurnId,
+      moveCount: snapshot.moveCount,
+      undoSnapshot: null,
+      aiStage: null, aiPreviewPieceId: null, aiPreviewCell: null
+    });
+    autoOpenedPickerTurnId = gameState.chooseTurnId;
+    renderGame(); resetMoveTimer();
+    document.getElementById("status").textContent = "Last action undone.";
+  }
+
+  function winningLineType(cells) {
+    const key = cells.join(",");
+    if (["0,1,2,3","4,5,6,7","8,9,10,11","12,13,14,15"].includes(key)) return "row";
+    if (["0,4,8,12","1,5,9,13","2,6,10,14","3,7,11,15"].includes(key)) return "column";
+    return "diagonal";
+  }
+
+  function recordStatistics() {
+    if (gameState.statisticsRecorded) return;
+    gameState.statisticsRecorded = true;
+    if (gameState.settings.gameMode !== "computer") {
+      statistics.twoPlayer.played += 1;
+      if (gameState.winner === null) statistics.twoPlayer.draws += 1;
+      saveStatistics();
+      return;
+    }
+    const stats = statistics.computer;
+    const level = String(gameState.settings.difficulty);
+    const levelStats = stats.byLevel[level] || (stats.byLevel[level] = { played: 0, wins: 0, losses: 0, draws: 0 });
+    stats.played += 1; levelStats.played += 1;
+    stats.totalMoves += gameState.moveCount;
+    stats.longestGame = Math.max(stats.longestGame, gameState.moveCount);
+    if (gameState.winner === null) {
+      stats.draws += 1; levelStats.draws += 1; stats.currentStreak = 0;
+    } else if (gameState.winner === 0) {
+      stats.wins += 1; levelStats.wins += 1;
+      stats.currentStreak += 1; stats.bestStreak = Math.max(stats.bestStreak, stats.currentStreak);
+      stats.fastestWin = stats.fastestWin === null ? gameState.moveCount : Math.min(stats.fastestWin, gameState.moveCount);
+      stats.lineTypes[winningLineType(gameState.winningCells)] += 1;
+      gameState.winningAttributes.map(displayAttribute).forEach(attribute => {
+        const label = attribute === "Hole" ? "Hollow" : attribute;
+        if (Object.prototype.hasOwnProperty.call(stats.attributes, label)) stats.attributes[label] += 1;
+      });
+    } else {
+      stats.losses += 1; levelStats.losses += 1; stats.currentStreak = 0;
+    }
+    saveStatistics();
+  }
+
+  function renderStatistics() {
+    const stats = statistics.computer;
+    const winRate = stats.played ? Math.round(stats.wins * 100 / stats.played) : 0;
+    const averageMoves = stats.played ? (stats.totalMoves / stats.played).toFixed(1) : "—";
+    const value = (id, text) => { const element = document.getElementById(id); if (element) element.textContent = text; };
+    value("stat-played", stats.played); value("stat-wins", stats.wins); value("stat-losses", stats.losses);
+    value("stat-draws", stats.draws); value("stat-win-rate", `${winRate}%`);
+    value("stat-current-streak", stats.currentStreak); value("stat-best-streak", stats.bestStreak);
+    value("stat-fastest-win", stats.fastestWin === null ? "—" : `${stats.fastestWin} placements`);
+    value("stat-longest-game", stats.longestGame ? `${stats.longestGame} placements` : "—");
+    value("stat-average-moves", averageMoves === "—" ? averageMoves : `${averageMoves} placements`);
+    value("stat-two-player", statistics.twoPlayer.played);
+    const levels = document.getElementById("statistics-levels");
+    if (levels) {
+      levels.replaceChildren();
+      for (let level = 1; level <= 10; level += 1) {
+        const item = stats.byLevel[level];
+        const row = document.createElement("div"); row.className = "statistics-level-row";
+        row.innerHTML = `<strong>Level ${level}</strong><span>${item.played} played · ${item.wins} won · ${item.losses} lost · ${item.draws} drawn</span>`;
+        levels.appendChild(row);
+      }
+    }
+    const breakdown = document.getElementById("statistics-breakdown");
+    if (breakdown) {
+      const entries = [
+        ["Rows", stats.lineTypes.row], ["Columns", stats.lineTypes.column], ["Diagonals", stats.lineTypes.diagonal],
+        ...Object.entries(stats.attributes)
+      ];
+      breakdown.innerHTML = entries.map(([label,count]) => `<span><strong>${count}</strong><small>${label}</small></span>`).join("");
+    }
+  }
   function isComputer(index) { return gameState.settings.gameMode === "computer" && index === 1; }
   function playerName(index) { return isComputer(index) ? "Computer" : (gameState.settings.playerNames[index] || `Player ${index + 1}`); }
   function difficultyName(level) {
@@ -258,7 +427,7 @@
     const status = document.getElementById("status");
     status?.classList.toggle("status-message--winner", gameState.phase === "game-over" && gameState.winner !== null);
     status?.classList.toggle("status-message--draw", gameState.phase === "game-over" && gameState.winner === null);
-    renderPlayers(); renderCurrentPiece(); renderTray(); renderBoard(); renderPhoneTurnDock(); schedulePhoneLayoutUpdate(); maybeAutoOpenPiecePicker();
+    renderPlayers(); renderCurrentPiece(); renderTray(); renderBoard(); renderPhoneTurnDock(); updateUndoButton(); schedulePhoneLayoutUpdate(); maybeAutoOpenPiecePicker();
   }
 
   function animatePieceToCurrent(slot) {
@@ -273,6 +442,7 @@
 
   function selectPiece(piece, slot) {
     if (gameState.phase !== "choose-piece" || isComputer(gameState.currentPlayer)) return;
+    prepareUndoSnapshot();
     setPiecePickerOpen(false);
     completePieceSelection(piece, slot);
   }
@@ -285,19 +455,20 @@
   }
   function placePiece(index) {
     if (gameState.phase !== "place-piece" || !gameState.selectedPiece || gameState.board[index] !== null || isComputer(gameState.currentPlayer)) return;
+    prepareUndoSnapshot();
     completePlacement(index);
   }
   function completePlacement(index) {
     gameState.aiStage = null; gameState.aiPreviewPieceId = null; gameState.aiPreviewCell = null;
-    gameState.board[index] = gameState.selectedPiece.id; gameState.selectedPiece = null; playTone("place");
+    gameState.board[index] = gameState.selectedPiece.id; gameState.selectedPiece = null; gameState.moveCount += 1; playTone("place");
     const result = window.QuartoRules.checkForQuarto(gameState.board);
     if (result) {
       gameState.phase="game-over"; gameState.winner=gameState.currentPlayer; gameState.winningCells=result.line; gameState.winningAttributes=result.attributes; stopTimer();
       const resultText = `${playerName(gameState.winner)} wins (${formatWinningAttributes(result.attributes)})`;
-      stopAi(); renderGame(); document.getElementById("status").textContent=`Quarto! ${resultText}.`; playTone("win"); return;
+      stopAi(); recordStatistics(); renderGame(); document.getElementById("status").textContent=`Quarto! ${resultText}.`; playTone("win"); return;
     }
     if (gameState.board.every(value=>value!==null)) {
-      gameState.phase="game-over"; stopTimer(); stopAi(); renderGame(); document.getElementById("status").textContent="Draw — the board is full with no Quarto."; return;
+      gameState.phase="game-over"; stopTimer(); stopAi(); recordStatistics(); renderGame(); document.getElementById("status").textContent="Draw — the board is full with no Quarto."; return;
     }
     gameState.phase="choose-piece"; gameState.receivingPlayer=gameState.currentPlayer===0?1:0; gameState.chooseTurnId += 1;
     renderGame(); resetMoveTimer(); document.getElementById("status").textContent=phaseInstruction(); scheduleComputerTurn();
@@ -346,7 +517,7 @@
   function resetGame(starterMode = gameState.settings.starterMode) {
     stopTimer(); stopAi(); applyTheme(); applyMotionPreference();
     const starter=chooseStarter(starterMode); gameState.settings.lastStarter=starter; saveSettings();
-    Object.assign(gameState,{currentPlayer:starter,receivingPlayer:starter===0?1:0,selectedPiece:null,phase:"choose-piece",board:Array(16).fill(null),remainingPieceIds:window.QuartoPieces.PIECES.map(piece=>piece.id),winner:null,winningCells:[],winningAttributes:[],chooseTurnId:gameState.chooseTurnId+1,aiStage:null,aiPreviewPieceId:null,aiPreviewCell:null});
+    Object.assign(gameState,{currentPlayer:starter,receivingPlayer:starter===0?1:0,selectedPiece:null,phase:"choose-piece",board:Array(16).fill(null),remainingPieceIds:window.QuartoPieces.PIECES.map(piece=>piece.id),winner:null,winningCells:[],winningAttributes:[],chooseTurnId:gameState.chooseTurnId+1,aiStage:null,aiPreviewPieceId:null,aiPreviewCell:null,undoSnapshot:null,moveCount:0,statisticsRecorded:false});
     autoOpenedPickerTurnId = -1;
     renderGame(); resetMoveTimer(); document.getElementById("status").textContent=phaseInstruction(); scheduleComputerTurn();
   }
@@ -406,6 +577,8 @@
     document.getElementById("difficulty-input").value=String(gameState.settings.difficulty);
     document.getElementById("sound-effects-input").checked=gameState.settings.soundEffects!==false;
     document.getElementById("animations-input").checked=gameState.settings.animations!==false;
+    const undoInput = document.querySelector(`input[name="undoMode"][value="${gameState.settings.undoMode || "single-player"}"]`);
+    if (undoInput) undoInput.checked = true;
     updateSetupMode(); updateDifficultyLabel(); showWizardStep(0);
   }
   function startFromDialog(event) {
@@ -416,6 +589,7 @@
     gameState.settings.starterMode=String(data.get("starter")||"random"); gameState.settings.timerSeconds=Number(data.get("timer")||30);
     gameState.settings.soundEffects=document.getElementById("sound-effects-input").checked;
     gameState.settings.animations=document.getElementById("animations-input").checked;
+    gameState.settings.undoMode=String(data.get("undoMode")||"single-player");
     saveSettings(); document.getElementById("new-game-dialog").close(); resetGame(gameState.settings.starterMode);
   }
   async function renderApplicationVersion() {
@@ -423,7 +597,7 @@
     const helpVersion=document.getElementById("help-version");
     if (!element && !helpVersion) return;
     const showVersion=(version, commit="", builtAt="")=>{
-      const cleanVersion=String(version || "0.1.20").replace(/^v/i, "");
+      const cleanVersion=String(version || "0.2.0").replace(/^v/i, "");
       if (element) {
         element.textContent=`Version ${cleanVersion}${commit}`;
         element.title=builtAt ? `Published ${new Date(builtAt).toLocaleString()}` : "";
@@ -442,7 +616,7 @@
       const response=await fetch("package.json",{cache:"no-store"});
       const info=await response.json();
       showVersion(info.version);
-    } catch { showVersion("0.1.20"); }
+    } catch { showVersion("0.2.0"); }
   }
 
   let deferredInstallPrompt = null;
@@ -553,6 +727,7 @@
       setup.showModal();
     };
     document.getElementById("new-game-button")?.addEventListener("click",startNewGameWithCurrentSettings);
+    document.getElementById("undo-button")?.addEventListener("click",undoLastAction);
     document.getElementById("settings-button")?.addEventListener("click",openSetup);
     document.getElementById("cancel-new-game")?.addEventListener("click",()=>setup.close()); document.getElementById("new-game-form")?.addEventListener("submit",startFromDialog);
     document.querySelectorAll('input[name="gameMode"]').forEach(input=>input.addEventListener("change",updateSetupMode));
@@ -562,6 +737,8 @@
     document.querySelectorAll('#new-game-form input').forEach(input=>input.addEventListener("change",updateSetupSummary));
     document.querySelectorAll('#new-game-form input[type="text"]').forEach(input=>input.addEventListener("input",updateSetupSummary));
     document.getElementById("how-to-play-button")?.addEventListener("click",()=>document.getElementById("how-to-play-dialog")?.showModal());
+    document.getElementById("view-statistics-button")?.addEventListener("click",()=>{ renderStatistics(); document.getElementById("statistics-dialog")?.showModal(); });
+    document.getElementById("reset-statistics-button")?.addEventListener("click",()=>{ if (window.confirm("Reset all Quarto statistics? This cannot be undone.")) { statistics=emptyStatistics(); saveStatistics(); renderStatistics(); } });
     document.getElementById("open-piece-picker")?.addEventListener("click",openPiecePicker);
     document.getElementById("phone-turn-action")?.addEventListener("click",()=>{
       if (gameState.phase === "choose-piece" && !isComputer(gameState.currentPlayer)) openPiecePicker();

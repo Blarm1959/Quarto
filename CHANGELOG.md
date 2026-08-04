@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.0
+
+- Added configurable single-step Undo: Off, Single player only, or Always on.
+- Added overall and per-level computer statistics, streaks, move counts, winning-line types and winning attributes.
+- Added statistics reset with confirmation.
+
 ## v0.1.20
 
 - Replaced the phone piece-picker modal with a compact in-page chooser beneath the board.
