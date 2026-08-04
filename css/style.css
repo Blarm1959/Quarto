@@ -1744,3 +1744,40 @@ body[data-computer-turn="true"] .turn-badge::after { content:""; display:inline-
   .setup-wizard-dialog[data-wizard-step="2"] .toggle-row small { font-size:.68rem; }
   .setup-wizard-dialog[data-wizard-step="2"] .setup-summary { font-size:.77rem; }
 }
+
+
+/* v0.2.2: contextual phone Undo remains visible above the open piece chooser. */
+.phone-turn-controls { display:flex; align-items:center; gap:6px; }
+.phone-undo-button[hidden] { display:none !important; }
+.phone-undo-button:disabled { opacity:.45; cursor:not-allowed; }
+
+@media (max-width:740px) and (orientation:portrait) {
+  .phone-turn-controls { justify-self:end; }
+  .phone-undo-button {
+    min-width:74px;
+    min-height:42px;
+    padding-inline:10px;
+    font-size:.78rem;
+    white-space:nowrap;
+  }
+
+  /* Keep the contextual instruction/Undo row visible while choosing. */
+  body.piece-picker-open .phone-turn-dock {
+    display:grid !important;
+  }
+
+  body.piece-picker-open .phone-turn-action {
+    display:none !important;
+  }
+
+  body.piece-picker-open .phone-turn-dock {
+    margin-top:4px;
+  }
+
+  body.piece-picker-open .phone-inline-piece-picker {
+    margin-top:4px;
+  }
+
+  /* The desktop/action-bar Undo remains available off-phone only. */
+  .action-bar #undo-button { display:none !important; }
+}

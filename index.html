@@ -84,7 +84,10 @@
               <strong id="phone-turn-title">Choose a piece</strong>
               <span id="phone-turn-detail">Give any remaining piece to your opponent.</span>
             </div>
-            <button id="phone-turn-action" class="button button--primary phone-turn-action" type="button">Choose</button>
+            <div class="phone-turn-controls">
+              <button id="phone-undo-button" class="button button--secondary phone-undo-button" type="button" hidden disabled aria-label="Undo last action">↶ Undo</button>
+              <button id="phone-turn-action" class="button button--primary phone-turn-action" type="button">Choose</button>
+            </div>
           </div>
           <section id="phone-piece-picker" class="phone-inline-piece-picker" aria-label="Choose opponent's piece" hidden>
             <div class="phone-inline-piece-picker__heading">
@@ -255,7 +258,7 @@
       <p>Choose a piece for your opponent. They place it on any empty square, then choose the next piece for you.</p>
       <p>Make a row, column or diagonal of four pieces sharing at least one attribute: tall, short, round, square, either of the two colours, solid or hollow.</p>
       <p class="dialog-note">This version automatically detects Quarto wins in every row, column and diagonal.</p>
-      <p id="help-version" class="help-version">Quarto · v0.2.1</p>
+      <p id="help-version" class="help-version">Quarto · v0.2.2</p>
       <button class="button button--primary" value="close">Close</button>
     </form>
   </dialog>

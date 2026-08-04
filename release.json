@@ -1,9 +1,9 @@
 {
   "project": "Quarto",
-  "version": "0.2.1",
-  "githubSource": "v0.1.20.g1",
+  "version": "0.2.2",
+  "githubSource": "v0.2.1.g1",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
-  "commit": "Add single undo and player statistics"
+  "commit": "Keep phone Undo visible above piece chooser"
 }

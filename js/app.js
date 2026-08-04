@@ -104,11 +104,14 @@
   }
 
   function updateUndoButton() {
-    const button = document.getElementById("undo-button");
-    if (!button) return;
     const visible = undoAllowedBySettings();
-    button.hidden = !visible;
-    button.disabled = !gameState.undoSnapshot || gameState.phase === "game-over";
+    const disabled = !gameState.undoSnapshot || gameState.phase === "game-over";
+    ["undo-button", "phone-undo-button"].forEach(id => {
+      const button = document.getElementById(id);
+      if (!button) return;
+      button.hidden = !visible;
+      button.disabled = disabled;
+    });
   }
 
   function undoLastAction() {
@@ -375,7 +378,7 @@
       title.textContent = `${playerName(gameState.currentPlayer)}, choose a piece`;
       detail.textContent = `For ${playerName(gameState.receivingPlayer)} · ${gameState.remainingPieceIds.length} remaining`;
       action.textContent = "Choose";
-      action.hidden = false;
+      action.hidden = document.body.classList.contains("piece-picker-open");
       preview.hidden = true;
       return;
     }
@@ -392,6 +395,8 @@
     document.body.classList.toggle("piece-picker-open", isOpen);
     const picker = document.getElementById("phone-piece-picker");
     if (picker) picker.hidden = !isOpen;
+    renderPhoneTurnDock();
+    updateUndoButton();
     schedulePhoneLayoutUpdate();
   }
 
@@ -602,7 +607,7 @@
     const helpVersion=document.getElementById("help-version");
     if (!element && !helpVersion) return;
     const showVersion=(version, commit="", builtAt="")=>{
-      const cleanVersion=String(version || "0.2.1").replace(/^v/i, "");
+      const cleanVersion=String(version || "0.2.2").replace(/^v/i, "");
       if (element) {
         element.textContent=`Version ${cleanVersion}${commit}`;
         element.title=builtAt ? `Published ${new Date(builtAt).toLocaleString()}` : "";
@@ -621,7 +626,7 @@
       const response=await fetch("package.json",{cache:"no-store"});
       const info=await response.json();
       showVersion(info.version);
-    } catch { showVersion("0.2.1"); }
+    } catch { showVersion("0.2.2"); }
   }
 
   let deferredInstallPrompt = null;
@@ -695,7 +700,7 @@
       root.style.setProperty("--piece-picker-height", `${desiredPickerHeight || 208}px`);
       const pickerHeight = pickerOpen ? Math.max(desiredPickerHeight, picker?.offsetHeight || 0) : 0;
       const fixedHeight = pickerOpen
-        ? header.offsetHeight + pickerHeight
+        ? header.offsetHeight + dock.offsetHeight + pickerHeight
         : header.offsetHeight + dock.offsetHeight + players.offsetHeight + actions.offsetHeight;
       const verticalGaps = pickerOpen ? 12 : 18;
       const heightAvailable = Math.floor(viewportHeight - shellPadding - fixedHeight - verticalGaps);
@@ -733,6 +738,7 @@
     };
     document.getElementById("new-game-button")?.addEventListener("click",startNewGameWithCurrentSettings);
     document.getElementById("undo-button")?.addEventListener("click",undoLastAction);
+    document.getElementById("phone-undo-button")?.addEventListener("click",undoLastAction);
     document.getElementById("settings-button")?.addEventListener("click",openSetup);
     document.getElementById("cancel-new-game")?.addEventListener("click",()=>setup.close()); document.getElementById("new-game-form")?.addEventListener("submit",startFromDialog);
     document.querySelectorAll('input[name="gameMode"]').forEach(input=>input.addEventListener("change",updateSetupMode));

@@ -1,6 +1,11 @@
 # Changelog
 
-## v0.2.1
+## v0.2.2
+
+- Moved the phone Undo control into the turn instruction panel.
+- Undo remains visible while the opponent-piece chooser is open.
+- The chooser now starts directly beneath the instruction panel.
+- The Choose button hides while the chooser is already open and returns after it is closed.
 
 - Condensed all three setup-wizard pages for 13-inch and 15-inch laptops.
 - Moved the phone setup sheet higher and reduced header/progress spacing.
