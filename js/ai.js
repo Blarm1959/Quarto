@@ -119,26 +119,18 @@
   }
 
   function difficultyProfile(level) {
-    const clamped = Math.max(1, Math.min(10, Number(level) || 1));
+    const clamped = Math.max(1, Math.min(3, Number(level) || 2));
     const profiles = {
-      1: { depth: 0, timeMs: 25, nodes: 1500, winChance: .45, safeChance: .25, errorRate: .38, nearBest: 130 },
-      2: { depth: 0, timeMs: 35, nodes: 2500, winChance: .68, safeChance: .45, errorRate: .27, nearBest: 95 },
-      3: { depth: 1, timeMs: 55, nodes: 5000, winChance: .90, safeChance: .72, errorRate: .17, nearBest: 65 },
-      4: { depth: 1, timeMs: 90, nodes: 10000, winChance: 1, safeChance: .88, errorRate: .10, nearBest: 42 },
-      5: { depth: 2, timeMs: 150, nodes: 24000, winChance: 1, safeChance: 1, errorRate: .05, nearBest: 24 },
-      6: { depth: 2, timeMs: 240, nodes: 50000, winChance: 1, safeChance: 1, errorRate: .02, nearBest: 14 },
-      7: { depth: 3, timeMs: 380, nodes: 100000, winChance: 1, safeChance: 1, errorRate: 0, nearBest: 8 },
-      8: { depth: 4, timeMs: 650, nodes: 220000, winChance: 1, safeChance: 1, errorRate: 0, nearBest: 3 },
-      9: { depth: 5, timeMs: 1100, nodes: 500000, winChance: 1, safeChance: 1, errorRate: 0, nearBest: 0 },
-      10: { depth: 6, timeMs: 1800, nodes: 1000000, winChance: 1, safeChance: 1, errorRate: 0, nearBest: 0 }
+      1: { depth: 0, timeMs: 35, nodes: 2500, winChance: .68, safeChance: .45, errorRate: .27, nearBest: 95 },
+      2: { depth: 2, timeMs: 240, nodes: 50000, winChance: 1, safeChance: 1, errorRate: .02, nearBest: 14 },
+      3: { depth: 6, timeMs: 1800, nodes: 1000000, winChance: 1, safeChance: 1, errorRate: 0, nearBest: 0 }
     };
     return { level: clamped, ...profiles[clamped] };
   }
 
   function createContext(profile, emptyCount) {
     let maxDepth = profile.depth;
-    if (profile.level >= 8 && emptyCount <= 7) maxDepth = emptyCount;
-    if (profile.level >= 9 && emptyCount <= 8) maxDepth = emptyCount;
+    if (profile.level === 3 && emptyCount <= 8) maxDepth = emptyCount;
     return {
       profile,
       maxDepth,
@@ -336,13 +328,13 @@
   function chooseWithDifficulty(results, profile, key) {
     if (!results.length) return null;
     if (profile.errorRate > 0 && Math.random() < profile.errorRate) {
-      const poolSize = Math.min(results.length, profile.level <= 2 ? 5 : 3);
+      const poolSize = Math.min(results.length, profile.level === 1 ? 5 : 3);
       return randomItem(results.slice(0, poolSize))[key];
     }
 
     const bestScore = results[0].score;
     const nearBest = results.filter(item => bestScore - item.score <= profile.nearBest);
-    if (nearBest.length <= 1 || profile.level >= 9) return results[0][key];
+    if (nearBest.length <= 1 || profile.level === 3) return results[0][key];
     return randomItem(nearBest)[key];
   }
 
@@ -375,7 +367,7 @@
       return window.QuartoPieces.getPiece(randomItem(safe.slice(0, Math.min(safe.length, 4))).pieceId);
     }
 
-    if (profile.level <= 2 && Math.random() > profile.safeChance) {
+    if (profile.level === 1 && Math.random() > profile.safeChance) {
       return window.QuartoPieces.getPiece(randomItem(remainingPieceIds));
     }
 

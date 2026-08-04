@@ -1,9 +1,9 @@
 {
     "project":  "Quarto",
-    "version":  "0.4.2",
-    "githubSource":  "v0.4.2",
+    "version":  "0.4.3",
+    "githubSource":  "v0.4.3",
     "zipPrefix":  "Quarto-",
     "port":  8004,
     "packageChanges":  false,
-    "commit":  "Make game setup defaults session-only and consistent"
+    "commit":  "Replace ten AI levels with Beginner, Standard and Expert"
 }

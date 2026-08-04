@@ -34,7 +34,7 @@ http://127.0.0.1:8004
 
 ## Features
 
-- One-player games against a configurable computer opponent with **10 AI difficulty levels**.
+- One-player games against a configurable computer opponent with three clearly defined AI levels: **Beginner, Standard and Expert**.
 - Two-player games on the same device.
 - Responsive layouts optimised for phones, tablets, laptops and desktops.
 - Large touch targets and phone-first user interface.

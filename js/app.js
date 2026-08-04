@@ -1,11 +1,12 @@
 (function () {
   "use strict";
 
-  const STATISTICS_KEY = "quarto.statistics.v0.4.0";
+  const STATISTICS_KEY = "quarto.statistics.v0.4.3";
+  const PREVIOUS_STATISTICS_KEY = "quarto.statistics.v0.4.0";
   const DEFAULT_SETTINGS = {
     playerNames: ["Player 1", "Computer"],
     gameMode: "computer",
-    difficulty: 6,
+    difficulty: 2,
     starterMode: "random",
     timerSeconds: 30,
     lastStarter: 1,
@@ -39,7 +40,7 @@
   }
   function emptyStatistics() {
     const byLevel = {};
-    for (let level = 1; level <= 10; level += 1) byLevel[level] = { played: 0, wins: 0, losses: 0, draws: 0 };
+    for (let level = 1; level <= 3; level += 1) byLevel[level] = { played: 0, wins: 0, losses: 0, draws: 0 };
     return {
       computer: {
         played: 0, wins: 0, losses: 0, draws: 0,
@@ -53,9 +54,42 @@
     };
   }
 
+  function combineLevelStatistics(source, levels) {
+    return levels.reduce((total, level) => {
+      const item = source?.[level] || source?.[String(level)] || {};
+      total.played += Number(item.played) || 0;
+      total.wins += Number(item.wins) || 0;
+      total.losses += Number(item.losses) || 0;
+      total.draws += Number(item.draws) || 0;
+      return total;
+    }, { played: 0, wins: 0, losses: 0, draws: 0 });
+  }
+
+  function migratePreviousStatistics(saved) {
+    if (!saved?.computer) return saved;
+    return {
+      ...saved,
+      computer: {
+        ...saved.computer,
+        byLevel: {
+          1: combineLevelStatistics(saved.computer.byLevel, [1, 2, 3]),
+          2: combineLevelStatistics(saved.computer.byLevel, [4, 5, 6, 7]),
+          3: combineLevelStatistics(saved.computer.byLevel, [8, 9, 10])
+        }
+      }
+    };
+  }
+
   function loadStatistics() {
     try {
-      const saved = JSON.parse(localStorage.getItem(STATISTICS_KEY) || "null");
+      let saved = JSON.parse(localStorage.getItem(STATISTICS_KEY) || "null");
+      if (!saved) {
+        const previous = JSON.parse(localStorage.getItem(PREVIOUS_STATISTICS_KEY) || "null");
+        if (previous) {
+          saved = migratePreviousStatistics(previous);
+          localStorage.setItem(STATISTICS_KEY, JSON.stringify(saved));
+        }
+      }
       if (!saved) return emptyStatistics();
       const defaults = emptyStatistics();
       return {
@@ -190,10 +224,10 @@
     const levels = document.getElementById("statistics-levels");
     if (levels) {
       levels.replaceChildren();
-      for (let level = 1; level <= 10; level += 1) {
+      for (let level = 1; level <= 3; level += 1) {
         const item = stats.byLevel[level];
         const row = document.createElement("div"); row.className = "statistics-level-row";
-        row.innerHTML = `<strong>Level ${level}</strong><span>${item.played} played · ${item.wins} won · ${item.losses} lost · ${item.draws} drawn</span>`;
+        row.innerHTML = `<strong>${level} · ${difficultyName(level)}</strong><span>${item.played} played · ${item.wins} won · ${item.losses} lost · ${item.draws} drawn</span>`;
         levels.appendChild(row);
       }
     }
@@ -209,18 +243,14 @@
   function isComputer(index) { return gameState.settings.gameMode === "computer" && index === 1; }
   function playerName(index) { return isComputer(index) ? "Computer" : (gameState.settings.playerNames[index] || `Player ${index + 1}`); }
   function difficultyName(level) {
-    if (level <= 3) return "Beginner";
-    if (level <= 7) return "Intermediate";
-    return "Expert";
+    return ({ 1: "Beginner", 2: "Standard", 3: "Expert" })[Number(level)] || "Standard";
   }
   function difficultyDescription(level) {
-    if (level === 1) return "A true beginner: legal moves, simple ideas and believable missed chances.";
-    if (level <= 3) return "A learning opponent that increasingly notices wins and dangerous pieces.";
-    if (level <= 4) return "A casual player that takes immediate wins and usually avoids obvious gifts.";
-    if (level <= 6) return "A reliable tactical player that sees wins, threats and safer piece choices.";
-    if (level <= 8) return "A strong opponent that searches complete place-and-gift turns ahead.";
-    return "Expert search with deeper look-ahead and exact endgame analysis where practical.";
+    if (Number(level) === 1) return "A learning opponent that makes believable mistakes and sometimes misses tactical chances.";
+    if (Number(level) === 3) return "The strongest search, with deeper look-ahead and exact endgame analysis where practical.";
+    return "A reliable tactical player that sees immediate wins, threats and safer piece choices.";
   }
+
 
   let audioContext = null;
   let autoOpenedPickerTurnId = -1;
@@ -359,7 +389,7 @@
 
     if (computerTurn) {
       title.textContent = gameState.aiStage === "preview-place" ? "Computer is placing" : gameState.aiStage === "preview-choice" ? "Computer chose your piece" : "Computer is thinking";
-      detail.textContent = gameState.aiStage === "preview-place" ? "Watch the highlighted square" : gameState.aiStage === "preview-choice" ? "The highlighted piece is coming to you" : `Level ${gameState.settings.difficulty} · ${difficultyName(gameState.settings.difficulty)}`;
+      detail.textContent = gameState.aiStage === "preview-place" ? "Watch the highlighted square" : gameState.aiStage === "preview-choice" ? "The highlighted piece is coming to you" : `${difficultyName(gameState.settings.difficulty)} difficulty`;
       action.hidden = true;
       if (gameState.aiStage === "preview-choice" && gameState.aiPreviewPieceId !== null) {
         const chosenPiece = window.QuartoPieces.getPiece(gameState.aiPreviewPieceId);
@@ -477,7 +507,7 @@
   }
 
   function computerThinkingDelay() {
-    const level = Math.max(1, Math.min(10, Number(gameState.settings.difficulty) || 1));
+    const level = Math.max(1, Math.min(3, Number(gameState.settings.difficulty) || 2));
     const base = 320 + level * 55;
     return base + Math.floor(Math.random() * 260);
   }
@@ -489,7 +519,7 @@
     gameState.aiPreviewPieceId = null;
     gameState.aiPreviewCell = null;
     renderGame();
-    document.getElementById("status").textContent = `Computer is thinking — level ${gameState.settings.difficulty} ${difficultyName(gameState.settings.difficulty)}.`;
+    document.getElementById("status").textContent = `Computer is thinking — ${difficultyName(gameState.settings.difficulty)} difficulty.`;
 
     gameState.aiHandle = setTimeout(() => {
       if (gameState.phase === "game-over" || !isComputer(gameState.currentPlayer)) return;
@@ -533,7 +563,7 @@
   }
   function updateDifficultyLabel() {
     const level=Number(document.getElementById("difficulty-input").value);
-    document.getElementById("difficulty-name").textContent=`Level ${level} · ${difficultyName(level)}`;
+    document.getElementById("difficulty-name").textContent=`${level} · ${difficultyName(level)}`;
     document.getElementById("difficulty-description").textContent=difficultyDescription(level);
     updateSetupSummary();
   }
@@ -561,10 +591,10 @@
   function updateSetupSummary() {
     const summary=document.getElementById("setup-summary"); if(!summary) return;
     const mode=document.querySelector('input[name="gameMode"]:checked')?.value || "computer";
-    const level=Number(document.getElementById("difficulty-input")?.value||6);
+    const level=Number(document.getElementById("difficulty-input")?.value||2);
     const timer=Number(document.querySelector('input[name="timer"]:checked')?.value||30);
     const player1=document.getElementById("player-1-input")?.value.trim()||"Player 1";
-    const opponent=mode==="computer" ? `Computer · Level ${level}` : (document.getElementById("player-2-input")?.value.trim()||"Player 2");
+    const opponent=mode==="computer" ? `Computer · ${difficultyName(level)}` : (document.getElementById("player-2-input")?.value.trim()||"Player 2");
     summary.innerHTML=`<strong>${player1} vs ${opponent}</strong><span>${timer ? `${timer}-second turns` : "No move timer"}</span>`;
   }
   function startNewGameWithCurrentSettings(event) {
@@ -591,7 +621,7 @@
   function startFromDialog(event) {
     event.preventDefault(); const data=new FormData(event.currentTarget);
     gameState.settings.gameMode=String(data.get("gameMode")||"computer");
-    gameState.settings.difficulty=Number(data.get("difficulty")||6);
+    gameState.settings.difficulty=Number(data.get("difficulty")||2);
     gameState.settings.playerNames=[document.getElementById("player-1-input").value.trim()||"Player 1",document.getElementById("player-2-input").value.trim()||"Player 2"];
     gameState.settings.starterMode=String(data.get("starter")||"random"); gameState.settings.timerSeconds=Number(data.get("timer")||30);
     gameState.settings.soundEffects=document.getElementById("sound-effects-input").checked;

@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.4.3
+
+- Simplified computer difficulty from ten numeric levels to three clear choices: Beginner, Standard and Expert.
+- Made Standard the default difficulty.
+- Retained the existing AI engine by mapping the new levels to distinct beginner, tactical and strongest-search profiles.
+- Updated computer status text, setup summaries and statistics to use the named levels.
+- Migrated existing per-level statistics into the three new groups.
+- Updated AI regression tests for the new difficulty model.
+
 ## v0.4.2
 
 - Made game setup settings session-only rather than storing them in localStorage.
@@ -212,6 +221,15 @@
 - Fixed the bottom-left to top-right square diagonal case.
 
 # Changelog
+
+## v0.4.3
+
+- Simplified computer difficulty from ten numeric levels to three clear choices: Beginner, Standard and Expert.
+- Made Standard the default difficulty.
+- Retained the existing AI engine by mapping the new levels to distinct beginner, tactical and strongest-search profiles.
+- Updated computer status text, setup summaries and statistics to use the named levels.
+- Migrated existing per-level statistics into the three new groups.
+- Updated AI regression tests for the new difficulty model.
 
 ## v0.1.0
 

@@ -16,4 +16,4 @@ GitHub Pages deployment is performed automatically by `.github/workflows/deploy-
 
 ## v0.3.0
 
-Introduces the stronger AI engine, tuned difficulty levels 1–10, deeper endgame analysis and automated AI regression tests.
+Introduces the stronger AI engine, three named difficulty levels (Beginner, Standard and Expert), deeper endgame analysis and automated AI regression tests.
