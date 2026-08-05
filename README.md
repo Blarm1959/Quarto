@@ -115,6 +115,7 @@ The next planned development stages are:
 - Google Play Store packaging.
 - Continued UI polish and gameplay refinements.
 
+---
 
 <!-- PROJECTCREATERELEASE:BEGIN -->
 
