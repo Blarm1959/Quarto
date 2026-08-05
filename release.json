@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
     "project":  "Quarto",
-    "version":  "0.5.1",
+    "version":  "0.5.2",
     "githubSource":  "v0.5.1",
     "zipPrefix":  "Quarto-",
     "port":  8004,

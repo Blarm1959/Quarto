@@ -1,8 +1,8 @@
 {
     "environment":  "replacement-zip",
     "project":  "Quarto",
-    "version":  "0.5.1",
-    "tag":  "v0.5.1",
-    "commit":  "00f43053c2d28915208d54cb17d9dd02c1e6fac5",
-    "builtAt":  "2026-08-05T11:04:33.1792045Z"
+    "version":  "0.5.2",
+    "tag":  "v0.5.2",
+    "commit":  "",
+    "builtAt":  "2026-08-05T11:09:26.8805223Z"
 }
