@@ -39,7 +39,7 @@ http://127.0.0.1:8004
 - Responsive layouts optimised for phones, tablets, laptops and desktops.
 - Large touch targets and phone-first user interface.
 - Automatic piece selection panel with full board visibility.
-- Single-move Undo (configurable for computer games, two-player games or disabled).
+- Optional single-move Undo helper, disabled by default for standard play.
 - Configurable Winning Features: 1 Colour, 2 Colour + Height, 3 Colour + Height + Shape, or 4 Classic.
 - Automatic win detection for rows, columns and diagonals, with optional 2×2 square wins.
 - Winning line remains highlighted with alternating red/blue flashing.

@@ -1,12 +1,12 @@
 {
     "schemaVersion":  1,
     "project":  "Quarto",
-    "version":  "0.5.0",
-    "githubSource":  "v0.5.0",
+    "version":  "0.5.1",
+    "githubSource":  "v0.5.1",
     "zipPrefix":  "Quarto-",
     "port":  8004,
     "packageChanges":  false,
-    "commit":  "Prepare Quarto for internationalisation with en-GB resources",
+    "commit":  "Add optional last move Undo setting, disabled by default",
     "i18n":  {
                  "enabled":  true,
                  "folder":  "src/i18n",

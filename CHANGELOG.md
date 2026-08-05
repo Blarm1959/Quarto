@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.5.1
+
+- Replaced the previous three-way Undo mode with a simple **Allow last move Undo** Yes/No option on setup page 1.
+- Undo now defaults to **No**, matching standard Quarto play.
+- When disabled, Undo controls are completely hidden and the undo action cannot be used.
+- When enabled, the existing single last-action Undo behaviour is preserved.
+
 ## v0.5.0
 
 - Added the internationalisation foundation with `en-GB` as the master and default language.

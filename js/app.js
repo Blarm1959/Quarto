@@ -16,7 +16,7 @@
     lastStarter: 1,
     soundEffects: true,
     animations: true,
-    undoMode: "single-player"
+    allowLastMoveUndo: false
   };
 
   const gameState = {
@@ -116,8 +116,7 @@
   function saveStatistics() { localStorage.setItem(STATISTICS_KEY, JSON.stringify(statistics)); }
 
   function undoAllowedBySettings() {
-    if (gameState.settings.undoMode === "always") return true;
-    return gameState.settings.undoMode === "single-player" && gameState.settings.gameMode === "computer";
+    return gameState.settings.allowLastMoveUndo === true;
   }
 
   function createUndoSnapshot() {
@@ -615,7 +614,8 @@
     const player1=document.getElementById("player-1-input")?.value.trim()||t("player.player1", {}, "Player 1");
     const opponent=mode==="computer" ? `Computer · ${difficultyName(level)}` : (document.getElementById("player-2-input")?.value.trim()||t("player.player2", {}, "Player 2"));
     const rules = winningFeatures === 4 ? t("features.classicShort", {}, "4. Classic") : t(winningFeatures === 1 ? "features.count" : "features.countPlural", { count: winningFeatures }, `${winningFeatures} winning feature${winningFeatures === 1 ? "" : "s"}`);
-    summary.innerHTML=`<strong>${t("summary.vs", { player1, opponent }, `${player1} vs ${opponent}`)}</strong><span>${t("summary.rules", { rules, twoByTwo: allow2x2 ? t("summary.twoByTwoOn", {}, "2×2 wins on") : t("summary.twoByTwoOff", {}, "2×2 wins off"), timer: timer ? t("summary.turnSeconds", { seconds: timer }, `${timer}-second turns`) : t("summary.noTimer", {}, "No move timer") }, `${rules} · ${allow2x2 ? "2×2 wins on" : "2×2 wins off"} · ${timer ? `${timer}-second turns` : "No move timer"}`)}</span>`;
+    const allowUndo=document.querySelector('input[name="allowLastMoveUndo"]:checked')?.value === "yes";
+    summary.innerHTML=`<strong>${t("summary.vs", { player1, opponent }, `${player1} vs ${opponent}`)}</strong><span>${t("summary.rules", { rules, twoByTwo: allow2x2 ? t("summary.twoByTwoOn", {}, "2×2 wins on") : t("summary.twoByTwoOff", {}, "2×2 wins off"), timer: timer ? t("summary.turnSeconds", { seconds: timer }, `${timer}-second turns`) : t("summary.noTimer", {}, "No move timer") }, `${rules} · ${allow2x2 ? "2×2 wins on" : "2×2 wins off"} · ${timer ? `${timer}-second turns` : "No move timer"}`)}</span><span>${allowUndo ? t("summary.undoOn", {}, "Last move Undo on") : t("summary.undoOff", {}, "Last move Undo off")}</span>`;
   }
   function startNewGameWithCurrentSettings(event) {
     event?.preventDefault();
@@ -636,8 +636,7 @@
     document.querySelector(`input[name="allow2x2"][value="${gameState.settings.allow2x2 ? "yes" : "no"}"]`)?.click();
     document.getElementById("sound-effects-input").checked=gameState.settings.soundEffects!==false;
     document.getElementById("animations-input").checked=gameState.settings.animations!==false;
-    const undoInput = document.querySelector(`input[name="undoMode"][value="${gameState.settings.undoMode || "single-player"}"]`);
-    if (undoInput) undoInput.checked = true;
+    document.querySelector(`input[name="allowLastMoveUndo"][value="${gameState.settings.allowLastMoveUndo ? "yes" : "no"}"]`)?.click();
     updateSetupMode(); updateDifficultyLabel(); showWizardStep(0);
   }
   function startFromDialog(event) {
@@ -650,7 +649,7 @@
     gameState.settings.starterMode=String(data.get("starter")||"random"); gameState.settings.timerSeconds=Number(data.get("timer")||30);
     gameState.settings.soundEffects=document.getElementById("sound-effects-input").checked;
     gameState.settings.animations=document.getElementById("animations-input").checked;
-    gameState.settings.undoMode=String(data.get("undoMode")||"single-player");
+    gameState.settings.allowLastMoveUndo=String(data.get("allowLastMoveUndo")||"no")==="yes";
     saveSettings(); document.getElementById("new-game-dialog").close(); resetGame(gameState.settings.starterMode);
   }
   async function renderApplicationVersion() {

@@ -145,6 +145,14 @@
 <div class="difficulty-scale"><span data-i18n="difficulty.scale.beginner">1 Beginner</span><span data-i18n="difficulty.scale.standard">2 Standard</span><span data-i18n="difficulty.scale.expert">3 Expert</span></div>
 <p class="setup-help" data-i18n="difficulty.standardDescription" id="difficulty-description">A reliable tactical player that sees immediate wins, threats and safer piece choices.</p>
 </div>
+<fieldset class="setup-fieldset">
+<legend data-i18n="wizard.allowLastMoveUndo">Allow last move Undo?</legend>
+<div class="choice-grid undo-choice-grid">
+<label><input checked="" name="allowLastMoveUndo" type="radio" value="no"/><span data-i18n="wizard.no">No</span></label>
+<label><input name="allowLastMoveUndo" type="radio" value="yes"/><span data-i18n="wizard.yes">Yes</span></label>
+</div>
+<p class="setup-help" data-i18n="wizard.allowLastMoveUndoHelp">Enables a single Undo for the most recent genuine action. Standard play leaves this off.</p>
+</fieldset>
 </section>
 <section class="wizard-step" data-wizard-step="1" hidden="">
 <h3 data-i18n="wizard.chooseRules">Choose the rules</h3>
@@ -200,15 +208,6 @@
 <label class="toggle-row"><span><strong data-i18n="wizard.soundEffects">Sound effects</strong><small data-i18n="wizard.soundHelp">Subtle sounds for selecting, placing and winning</small></span><input checked="" id="sound-effects-input" name="soundEffects" type="checkbox"/></label>
 <label class="toggle-row"><span><strong data-i18n="wizard.animations">Animations</strong><small data-i18n="wizard.animationHelp">Piece movement and winning highlights</small></span><input checked="" id="animations-input" name="animations" type="checkbox"/></label>
 </div>
-</fieldset>
-<fieldset class="setup-fieldset">
-<legend data-i18n="action.undo">Undo</legend>
-<div class="choice-grid undo-choice-grid">
-<label><input name="undoMode" type="radio" value="off"/><span data-i18n="common.off">Off</span></label>
-<label><input checked="" name="undoMode" type="radio" value="single-player"/><span data-i18n="wizard.singlePlayerOnly">Single player only</span></label>
-<label><input name="undoMode" type="radio" value="always"/><span data-i18n="wizard.alwaysOn">Always on</span></label>
-</div>
-<p class="setup-help" data-i18n="wizard.undoHelp">Undo restores one genuine mistaken action. In a computer game it also stops any computer response in progress.</p>
 </fieldset>
 <fieldset class="setup-fieldset"><legend data-i18n="wizard.language">Language</legend><label class="field-label" for="language-select"><select class="text-input" id="language-select" name="language"><option data-i18n="wizard.englishGB" selected="" value="en-GB">English (United Kingdom)</option></select></label></fieldset><button class="button button--secondary settings-statistics-button" data-i18n="action.viewStatistics" id="view-statistics-button" type="button">View statistics</button>
 <div aria-live="polite" class="setup-summary" id="setup-summary"></div>
