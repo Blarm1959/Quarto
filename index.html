@@ -1,324 +1,302 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html dir="ltr" lang="en-GB">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0e3963">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Quarto">
-  <meta name="application-name" content="Quarto">
-  <meta name="format-detection" content="telephone=no">
-  <meta name="description" content="A clean, responsive Quarto board game Progressive Web App.">
-  <title>Quarto</title>
-  <link rel="icon" href="favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/quarto-192.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="icons/quarto-180.png">
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<meta content="#0e3963" name="theme-color"/>
+<meta content="yes" name="mobile-web-app-capable"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="Quarto" name="apple-mobile-web-app-title"/>
+<meta content="Quarto" name="application-name"/>
+<meta content="telephone=no" name="format-detection"/>
+<meta content="A clean, responsive Quarto board game Progressive Web App." data-i18n-content="meta.description" name="description"/>
+<title data-i18n="app.title">Quarto</title>
+<link href="favicon.ico" rel="icon" sizes="any"/>
+<link href="icons/quarto-192.png" rel="icon" sizes="192x192" type="image/png"/>
+<link href="icons/quarto-180.png" rel="apple-touch-icon" sizes="180x180"/>
+<link href="manifest.json" rel="manifest"/>
+<link href="css/style.css" rel="stylesheet"/>
 </head>
 <body>
-  <div class="app-shell">
-    <header class="app-header">
-      <div>
-        <p class="eyebrow">Classic strategy game</p>
-        <h1>Quarto</h1>
-      </div>
-      <span id="header-version" class="header-version" aria-label="Application version"></span>
-      <div class="header-actions">
-      <button id="install-app-button" class="icon-button install-app-button" type="button" aria-label="Install Quarto" title="Install Quarto" hidden><span aria-hidden="true">⇩</span></button>
-      <button id="how-to-play-button" class="icon-button" type="button" aria-label="Open help" title="How to play">
-        <span aria-hidden="true">?</span>
-      </button>
-      <button id="settings-button" class="icon-button" type="button" aria-label="Open game settings" title="Game settings">
-        <span aria-hidden="true">⚙</span>
-      </button>
-      </div>
-    </header>
-
-    <main class="game-layout">
-      <section class="player-strip" aria-label="Players and timer">
-        <article id="player-card-1" class="player-card player-card--active">
-          <span class="player-label">Player 1</span>
-          <strong id="player-name-1">Player 1</strong>
-          <span id="player-state-1" class="turn-badge">Choosing a piece</span>
-        </article>
-
-        <div class="timer-card" aria-label="Move timer">
-          <span>Move timer</span>
-          <strong id="timer">00:30</strong>
-        </div>
-
-        <article id="player-card-2" class="player-card">
-          <span class="player-label">Player 2</span>
-          <strong id="player-name-2">Player 2</strong>
-          <span id="player-state-2" class="waiting-label">Waiting</span>
-        </article>
-      </section>
-
-      <section class="game-stage">
-        <aside class="side-panel current-panel">
-          <div class="panel-heading">
-            <h2>Current piece</h2>
-            <span id="current-piece-for" class="panel-kicker">For Player 2</span>
-          </div>
-          <div id="current-piece" class="current-piece" aria-label="Current piece" aria-live="polite">
-            <div class="empty-piece-message">
-              <span class="empty-piece-icon" aria-hidden="true">?</span>
-              <span>No piece selected</span>
-            </div>
-          </div>
-          <p id="current-piece-help" class="panel-help">Player 1 chooses a piece for Player 2 to place.</p>
-        </aside>
-
-        <section class="board-section" aria-label="Quarto board">
-          <div class="board-frame">
-            <div id="board" class="board" role="grid" aria-label="Empty four by four Quarto board"></div>
-          </div>
-          <div id="status" class="status-message" role="status" aria-live="polite">
+<div class="app-shell">
+<header class="app-header">
+<div>
+<p class="eyebrow" data-i18n="app.tagline">Classic strategy game</p>
+<h1 data-i18n="app.title">Quarto</h1>
+</div>
+<span aria-label="Application version" class="header-version" data-i18n-aria-label="aria.applicationVersion" id="header-version"></span>
+<div class="header-actions">
+<button aria-label="Install Quarto" class="icon-button install-app-button" data-i18n-aria-label="aria.installQuarto" data-i18n-title="aria.installQuarto" hidden="" id="install-app-button" title="Install Quarto" type="button"><span aria-hidden="true">⇩</span></button>
+<button aria-label="Open help" class="icon-button" data-i18n-aria-label="aria.openHelp" data-i18n-title="help.title" id="how-to-play-button" title="How to play" type="button">
+<span aria-hidden="true">?</span>
+</button>
+<button aria-label="Open game settings" class="icon-button" data-i18n-aria-label="aria.openSettings" data-i18n-title="aria.openSettings" id="settings-button" title="Game settings" type="button">
+<span aria-hidden="true">⚙</span>
+</button>
+</div>
+</header>
+<main class="game-layout">
+<section aria-label="Players and timer" class="player-strip" data-i18n-aria-label="aria.playersAndTimer">
+<article class="player-card player-card--active" id="player-card-1">
+<span class="player-label" data-i18n="player.player1">Player 1</span>
+<strong data-i18n="player.player1" id="player-name-1">Player 1</strong>
+<span class="turn-badge" data-i18n="game.choosingPiece" id="player-state-1">Choosing a piece</span>
+</article>
+<div aria-label="Move timer" class="timer-card" data-i18n-aria-label="wizard.moveTimer">
+<span data-i18n="wizard.moveTimer">Move timer</span>
+<strong id="timer">00:30</strong>
+</div>
+<article class="player-card" id="player-card-2">
+<span class="player-label" data-i18n="player.player2">Player 2</span>
+<strong data-i18n="player.player2" id="player-name-2">Player 2</strong>
+<span class="waiting-label" data-i18n="game.waiting" id="player-state-2">Waiting</span>
+</article>
+</section>
+<section class="game-stage">
+<aside class="side-panel current-panel">
+<div class="panel-heading">
+<h2 data-i18n="game.currentPiece">Current piece</h2>
+<span class="panel-kicker" data-i18n="game.forPlayer2" id="current-piece-for">For Player 2</span>
+</div>
+<div aria-label="Current piece" aria-live="polite" class="current-piece" data-i18n-aria-label="game.currentPiece" id="current-piece">
+<div class="empty-piece-message">
+<span aria-hidden="true" class="empty-piece-icon">?</span>
+<span data-i18n="game.noPieceSelected">No piece selected</span>
+</div>
+</div>
+<p class="panel-help" data-i18n="game.initialHelp" id="current-piece-help">Player 1 chooses a piece for Player 2 to place.</p>
+</aside>
+<section aria-label="Quarto board" class="board-section" data-i18n-aria-label="aria.board">
+<div class="board-frame">
+<div aria-label="Empty four by four Quarto board" class="board" data-i18n-aria-label="aria.emptyBoard" id="board" role="grid"></div>
+</div>
+<div aria-live="polite" class="status-message" data-i18n="game.initialStatus" id="status" role="status">
             Player 1: choose any piece for Player 2.
           </div>
-          <div id="phone-turn-dock" class="phone-turn-dock" aria-live="polite">
-            <div id="phone-current-piece" class="phone-current-piece" aria-hidden="true"></div>
-            <div class="phone-turn-copy">
-              <strong id="phone-turn-title">Choose a piece</strong>
-              <span id="phone-turn-detail">Give any remaining piece to your opponent.</span>
-            </div>
-            <div class="phone-turn-controls">
-              <button id="phone-undo-button" class="button button--secondary phone-undo-button" type="button" hidden disabled aria-label="Undo last action">↶ Undo</button>
-              <button id="phone-turn-action" class="button button--primary phone-turn-action" type="button">Choose</button>
-            </div>
-          </div>
-          <section id="phone-piece-picker" class="phone-inline-piece-picker" aria-label="Choose opponent's piece" hidden>
-            <div class="phone-inline-piece-picker__heading">
-              <h2>Choose opponent's piece</h2>
-              <button id="close-piece-picker" class="dialog-close phone-inline-piece-picker__close" type="button" aria-label="Close piece chooser">×</button>
-            </div>
-            <div id="phone-piece-tray" class="piece-tray piece-tray--inline" aria-label="Available Quarto pieces"></div>
-          </section>
-        </section>
-
-        <aside class="side-panel pieces-panel">
-          <div class="panel-heading">
-            <h2>Available pieces</h2>
-            <span id="piece-count" class="piece-count">16 remaining</span>
-          </div>
-          <div id="remaining-pieces" class="piece-tray" aria-label="Available Quarto pieces"></div>
-          <button id="open-piece-picker" class="button button--primary phone-piece-picker-button" type="button">Choose a piece</button>
-          <p id="piece-attributes-help" class="panel-help">Each piece is tall or short, round or square, blue or red, and solid or hollow.</p>
-        </aside>
-      </section>
-
-      <section class="action-bar" aria-label="Game controls">
-        <button id="new-game-button" class="button button--primary" type="button">New game</button>
-        <button id="undo-button" class="button button--secondary" type="button" hidden disabled>Undo</button>
-        <button id="install-app-action" class="button button--secondary install-app-action" type="button" hidden>Install app</button>
-        <p id="app-version" class="version">Version loading…</p>
-      </section>
-    </main>
-  </div>
-
-  <dialog id="new-game-dialog" class="rules-dialog setup-dialog setup-wizard-dialog">
-    <form id="new-game-form" method="dialog">
-      <div class="dialog-heading setup-wizard-heading">
-        <div>
-          <p class="dialog-eyebrow">Game setup</p>
-          <h2>New game</h2>
-        </div>
-        <button class="dialog-close" value="cancel" aria-label="Close">×</button>
-      </div>
-
-      <div class="wizard-progress" aria-label="Setup progress">
-        <span class="wizard-progress-step wizard-progress-step--active" data-step-indicator="0">1 <small>Game</small></span>
-        <span class="wizard-progress-line"></span>
-        <span class="wizard-progress-step" data-step-indicator="1">2 <small>Rules</small></span>
-        <span class="wizard-progress-line"></span>
-        <span class="wizard-progress-step" data-step-indicator="2">3 <small>Players</small></span>
-        <span class="wizard-progress-line"></span>
-        <span class="wizard-progress-step" data-step-indicator="3">4 <small>Options</small></span>
-      </div>
-
-      <section class="wizard-step wizard-step--active" data-wizard-step="0">
-        <h3>How would you like to play?</h3>
-        <fieldset class="setup-fieldset setup-fieldset--mode">
-          <legend>Game mode</legend>
-          <div class="mode-choice-grid">
-            <label class="mode-choice"><input type="radio" name="gameMode" value="computer" checked><span><strong>One player</strong><small>Play against the computer</small></span></label>
-            <label class="mode-choice"><input type="radio" name="gameMode" value="two-player"><span><strong>Two players</strong><small>Share this device</small></span></label>
-          </div>
-        </fieldset>
-
-        <div id="difficulty-field" class="difficulty-field">
-          <div><strong>Computer difficulty</strong><span id="difficulty-name">2 · Standard</span></div>
-          <input id="difficulty-input" name="difficulty" type="range" min="1" max="3" step="1" value="2">
-          <div class="difficulty-scale"><span>1 Beginner</span><span>2 Standard</span><span>3 Expert</span></div>
-          <p id="difficulty-description" class="setup-help">A reliable tactical player that sees immediate wins, threats and safer piece choices.</p>
-        </div>
-
-      </section>
-
-      <section class="wizard-step" data-wizard-step="1" hidden>
-        <h3>Choose the rules</h3>
-        <fieldset class="setup-fieldset">
-          <legend>Winning Features</legend>
-          <div class="winning-features-list">
-            <label><input type="radio" name="winningFeatures" value="1"> <span><strong>1. Colour</strong></span></label>
-            <label><input type="radio" name="winningFeatures" value="2"> <span><strong>2. Colour + Height</strong></span></label>
-            <label><input type="radio" name="winningFeatures" value="3"> <span><strong>3. Colour + Height + Shape</strong></span></label>
-            <label><input type="radio" name="winningFeatures" value="4" checked> <span><strong>4. Classic</strong><small>Colour + Height + Shape + Hollow</small></span></label>
-          </div>
-        </fieldset>
-        <fieldset class="setup-fieldset">
-          <legend>Allow 2×2 square wins?</legend>
-          <div class="choice-grid two-by-two-choice-grid">
-            <label><input type="radio" name="allow2x2" value="no" checked> No</label>
-            <label><input type="radio" name="allow2x2" value="yes"> Yes</label>
-          </div>
-        </fieldset>
-      </section>
-
-      <section class="wizard-step" data-wizard-step="2" hidden>
-        <h3>Who is playing?</h3>
-        <div class="setup-grid setup-grid--players">
-          <label class="field-label" for="player-1-input">Player 1 name
-            <input id="player-1-input" class="text-input" type="text" maxlength="24" autocomplete="off" placeholder="Player 1">
-          </label>
-          <label class="field-label" id="player-2-field" for="player-2-input">Player 2 name
-            <input id="player-2-input" class="text-input" type="text" maxlength="24" autocomplete="off" placeholder="Player 2">
-          </label>
-        </div>
-        <fieldset class="setup-fieldset">
-          <legend>Who starts?</legend>
-          <div class="choice-grid">
-            <label><input type="radio" name="starter" value="random" checked> Random</label>
-            <label><input type="radio" name="starter" value="alternate"> Alternate each game</label>
-            <label><input type="radio" name="starter" value="0"> Player 1</label>
-            <label><input type="radio" name="starter" value="1"> Player 2 / Computer</label>
-          </div>
-        </fieldset>
-      </section>
-
-      <section class="wizard-step" data-wizard-step="3" hidden>
-        <h3>Final options</h3>
-        <fieldset class="setup-fieldset">
-          <legend>Move timer</legend>
-          <div class="choice-grid timer-choice-grid">
-            <label><input type="radio" name="timer" value="30" checked> 30 seconds</label>
-            <label><input type="radio" name="timer" value="45"> 45 seconds</label>
-            <label><input type="radio" name="timer" value="60"> 60 seconds</label>
-            <label><input type="radio" name="timer" value="0"> Unlimited</label>
-          </div>
-        </fieldset>
-        <fieldset class="setup-fieldset">
-          <legend>Game feel</legend>
-          <div class="toggle-list">
-            <label class="toggle-row"><span><strong>Sound effects</strong><small>Subtle sounds for selecting, placing and winning</small></span><input id="sound-effects-input" name="soundEffects" type="checkbox" checked></label>
-            <label class="toggle-row"><span><strong>Animations</strong><small>Piece movement and winning highlights</small></span><input id="animations-input" name="animations" type="checkbox" checked></label>
-          </div>
-        </fieldset>
-        <fieldset class="setup-fieldset">
-          <legend>Undo</legend>
-          <div class="choice-grid undo-choice-grid">
-            <label><input type="radio" name="undoMode" value="off"> Off</label>
-            <label><input type="radio" name="undoMode" value="single-player" checked> Single player only</label>
-            <label><input type="radio" name="undoMode" value="always"> Always on</label>
-          </div>
-          <p class="setup-help">Undo restores one genuine mistaken action. In a computer game it also stops any computer response in progress.</p>
-        </fieldset>
-        <button id="view-statistics-button" class="button button--secondary settings-statistics-button" type="button">View statistics</button>
-        <div id="setup-summary" class="setup-summary" aria-live="polite"></div>
-      </section>
-
-      <div class="dialog-actions wizard-actions">
-        <button class="button button--secondary" value="cancel" type="button" id="cancel-new-game">Cancel</button>
-        <button class="button button--secondary" type="button" id="wizard-back" hidden>Back</button>
-        <button class="button button--primary" type="button" id="wizard-next">Next</button>
-        <button class="button button--primary" type="submit" id="wizard-start" hidden>Start game</button>
-      </div>
-    </form>
-  </dialog>
-
-
-  <dialog id="statistics-dialog" class="rules-dialog statistics-dialog">
-    <form method="dialog">
-      <div class="dialog-heading">
-        <h2>Statistics</h2>
-        <button class="dialog-close" value="close" aria-label="Close">×</button>
-      </div>
-      <p class="dialog-note">Single-player results are measured from Player 1's point of view.</p>
-      <div class="statistics-summary">
-        <span><strong id="stat-played">0</strong><small>Played</small></span>
-        <span><strong id="stat-wins">0</strong><small>Won</small></span>
-        <span><strong id="stat-losses">0</strong><small>Lost</small></span>
-        <span><strong id="stat-draws">0</strong><small>Drawn</small></span>
-        <span><strong id="stat-win-rate">0%</strong><small>Win rate</small></span>
-      </div>
-      <div class="statistics-detail-grid">
-        <span><strong id="stat-current-streak">0</strong><small>Current streak</small></span>
-        <span><strong id="stat-best-streak">0</strong><small>Best streak</small></span>
-        <span><strong id="stat-fastest-win">—</strong><small>Fastest win</small></span>
-        <span><strong id="stat-longest-game">—</strong><small>Longest game</small></span>
-        <span><strong id="stat-average-moves">—</strong><small>Average game</small></span>
-        <span><strong id="stat-two-player">0</strong><small>Two-player games</small></span>
-        <span><strong id="stat-two-by-two-games">0</strong><small>2×2 games</small></span>
-      </div>
-      <h3>By computer level</h3>
-      <div id="statistics-levels" class="statistics-levels"></div>
-      <h3>By winning features</h3>
-      <div class="statistics-detail-grid statistics-feature-grid">
-        <span><strong id="stat-features-1">0</strong><small>1. Colour</small></span>
-        <span><strong id="stat-features-2">0</strong><small>2. Colour + Height</small></span>
-        <span><strong id="stat-features-3">0</strong><small>3. Colour + Height + Shape</small></span>
-        <span><strong id="stat-features-4">0</strong><small>4. Classic</small></span>
-      </div>
-      <h3>Human winning patterns</h3>
-      <div id="statistics-breakdown" class="statistics-breakdown"></div>
-      <div class="dialog-actions">
-        <button id="reset-statistics-button" class="button button--secondary" type="button">Reset statistics</button>
-        <button class="button button--primary" value="close">Close</button>
-      </div>
-    </form>
-  </dialog>
-
-  <dialog id="how-to-play-dialog" class="rules-dialog">
-    <form method="dialog">
-      <div class="dialog-heading">
-        <h2>How to play</h2>
-        <button class="dialog-close" value="close" aria-label="Close">×</button>
-      </div>
-      <p>Choose a piece for your opponent. They place it on any empty square, then choose the next piece for you.</p>
-      <p>Choose how many features can create a win. The fixed progression is:</p>
-      <p><strong>1.</strong> Colour<br><strong>2.</strong> Colour + Height<br><strong>3.</strong> Colour + Height + Shape<br><strong>4. Classic.</strong> Colour + Height + Shape + Hollow</p>
-      <p>Make a row, column or diagonal of four pieces sharing one of the enabled features. You can also optionally allow matching 2×2 squares as wins.</p>
-      <p class="dialog-note">Classic rules use all four features and do not include 2×2 square wins.</p>
-      <p id="help-version" class="help-version">Quarto · v0.3.0</p>
-      <button class="button button--primary" value="close">Close</button>
-    </form>
-  </dialog>
-
-  <dialog id="pwa-update-dialog" class="rules-dialog pwa-update-dialog" aria-labelledby="pwa-update-title">
-    <form method="dialog">
-      <div class="dialog-heading">
-        <div>
-          <p class="dialog-eyebrow">Quarto update</p>
-          <h2 id="pwa-update-title">New version available</h2>
-        </div>
-      </div>
-      <p>A new version of Quarto has been downloaded and is ready to install.</p>
-      <p class="dialog-note">Update now to reload the app, or choose Later to continue with the current version.</p>
-      <div class="dialog-actions pwa-update-actions">
-        <button id="pwa-update-later" class="button button--secondary" type="button">Later</button>
-        <button id="pwa-update-button" class="button button--primary" type="button">Update</button>
-      </div>
-    </form>
-  </dialog>
-
-  <script src="js/pieces.js"></script>
-  <script src="js/board.js"></script>
-  <script src="js/rules.js"></script>
-  <script src="js/storage.js"></script>
-  <script src="js/ai.js"></script>
-  <script src="js/app.js"></script>
+<div aria-live="polite" class="phone-turn-dock" id="phone-turn-dock">
+<div aria-hidden="true" class="phone-current-piece" id="phone-current-piece"></div>
+<div class="phone-turn-copy">
+<strong data-i18n="game.choosePiece" id="phone-turn-title">Choose a piece</strong>
+<span data-i18n="game.givePiece" id="phone-turn-detail">Give any remaining piece to your opponent.</span>
+</div>
+<div class="phone-turn-controls">
+<button aria-label="Undo last action" class="button button--secondary phone-undo-button" data-i18n-aria-label="aria.undoLastAction" disabled="" hidden="" id="phone-undo-button" type="button">↶ Undo</button>
+<button class="button button--primary phone-turn-action" data-i18n="action.choose" id="phone-turn-action" type="button">Choose</button>
+</div>
+</div>
+<section aria-label="Choose opponent's piece" class="phone-inline-piece-picker" hidden="" id="phone-piece-picker">
+<div class="phone-inline-piece-picker__heading">
+<h2>Choose opponent's piece</h2>
+<button aria-label="Close piece chooser" class="dialog-close phone-inline-piece-picker__close" data-i18n-aria-label="aria.closePieceChooser" id="close-piece-picker" type="button">×</button>
+</div>
+<div aria-label="Available Quarto pieces" class="piece-tray piece-tray--inline" data-i18n-aria-label="aria.availablePieces" id="phone-piece-tray"></div>
+</section>
+</section>
+<aside class="side-panel pieces-panel">
+<div class="panel-heading">
+<h2 data-i18n="game.availablePieces">Available pieces</h2>
+<span class="piece-count" id="piece-count">16 remaining</span>
+</div>
+<div aria-label="Available Quarto pieces" class="piece-tray" data-i18n-aria-label="aria.availablePieces" id="remaining-pieces"></div>
+<button class="button button--primary phone-piece-picker-button" data-i18n="game.choosePiece" id="open-piece-picker" type="button">Choose a piece</button>
+<p class="panel-help" id="piece-attributes-help">Each piece is tall or short, round or square, blue or red, and solid or hollow.</p>
+</aside>
+</section>
+<section aria-label="Game controls" class="action-bar" data-i18n-aria-label="aria.gameControls">
+<button class="button button--primary" data-i18n="wizard.title" id="new-game-button" type="button">New game</button>
+<button class="button button--secondary" data-i18n="action.undo" disabled="" hidden="" id="undo-button" type="button">Undo</button>
+<button class="button button--secondary install-app-action" data-i18n="action.install" hidden="" id="install-app-action" type="button">Install app</button>
+<p class="version" data-i18n="app.version.loading" id="app-version">Version loading…</p>
+</section>
+</main>
+</div>
+<dialog class="rules-dialog setup-dialog setup-wizard-dialog" id="new-game-dialog">
+<form id="new-game-form" method="dialog">
+<div class="dialog-heading setup-wizard-heading">
+<div>
+<p class="dialog-eyebrow" data-i18n="wizard.eyebrow">Game setup</p>
+<h2 data-i18n="wizard.title">New game</h2>
+</div>
+<button aria-label="Close" class="dialog-close" data-i18n-aria-label="action.close" value="cancel">×</button>
+</div>
+<div aria-label="Setup progress" class="wizard-progress" data-i18n-aria-label="aria.setupProgress">
+<span class="wizard-progress-step wizard-progress-step--active" data-step-indicator="0">1 <small data-i18n="wizard.step.game">Game</small></span>
+<span class="wizard-progress-line"></span>
+<span class="wizard-progress-step" data-step-indicator="1">2 <small data-i18n="wizard.step.rules">Rules</small></span>
+<span class="wizard-progress-line"></span>
+<span class="wizard-progress-step" data-step-indicator="2">3 <small data-i18n="wizard.step.players">Players</small></span>
+<span class="wizard-progress-line"></span>
+<span class="wizard-progress-step" data-step-indicator="3">4 <small data-i18n="wizard.step.options">Options</small></span>
+</div>
+<section class="wizard-step wizard-step--active" data-wizard-step="0">
+<h3 data-i18n="wizard.howPlay">How would you like to play?</h3>
+<fieldset class="setup-fieldset setup-fieldset--mode">
+<legend data-i18n="wizard.gameMode">Game mode</legend>
+<div class="mode-choice-grid">
+<label class="mode-choice"><input checked="" name="gameMode" type="radio" value="computer"/><span><strong data-i18n="wizard.onePlayer">One player</strong><small data-i18n="wizard.playComputer">Play against the computer</small></span></label>
+<label class="mode-choice"><input name="gameMode" type="radio" value="two-player"/><span><strong data-i18n="wizard.twoPlayers">Two players</strong><small data-i18n="wizard.shareDevice">Share this device</small></span></label>
+</div>
+</fieldset>
+<div class="difficulty-field" id="difficulty-field">
+<div><strong data-i18n="wizard.computerDifficulty">Computer difficulty</strong><span id="difficulty-name">2 · Standard</span></div>
+<input id="difficulty-input" max="3" min="1" name="difficulty" step="1" type="range" value="2"/>
+<div class="difficulty-scale"><span data-i18n="difficulty.scale.beginner">1 Beginner</span><span data-i18n="difficulty.scale.standard">2 Standard</span><span data-i18n="difficulty.scale.expert">3 Expert</span></div>
+<p class="setup-help" data-i18n="difficulty.standardDescription" id="difficulty-description">A reliable tactical player that sees immediate wins, threats and safer piece choices.</p>
+</div>
+</section>
+<section class="wizard-step" data-wizard-step="1" hidden="">
+<h3 data-i18n="wizard.chooseRules">Choose the rules</h3>
+<fieldset class="setup-fieldset">
+<legend data-i18n="wizard.winningFeatures">Winning Features</legend>
+<div class="winning-features-list">
+<label><input name="winningFeatures" type="radio" value="1"/> <span><strong data-i18n="features.one">1. Colour</strong></span></label>
+<label><input name="winningFeatures" type="radio" value="2"/> <span><strong data-i18n="features.two">2. Colour + Height</strong></span></label>
+<label><input name="winningFeatures" type="radio" value="3"/> <span><strong data-i18n="features.three">3. Colour + Height + Shape</strong></span></label>
+<label><input checked="" name="winningFeatures" type="radio" value="4"/> <span><strong data-i18n="features.classicShort">4. Classic</strong><small data-i18n="features.all">Colour + Height + Shape + Hollow</small></span></label>
+</div>
+</fieldset>
+<fieldset class="setup-fieldset">
+<legend data-i18n="wizard.allow2x2">Allow 2×2 square wins?</legend>
+<div class="choice-grid two-by-two-choice-grid">
+<label><input checked="" name="allow2x2" type="radio" value="no"/><span data-i18n="wizard.no">No</span></label>
+<label><input name="allow2x2" type="radio" value="yes"/><span data-i18n="wizard.yes">Yes</span></label>
+</div>
+</fieldset>
+</section>
+<section class="wizard-step" data-wizard-step="2" hidden="">
+<h3 data-i18n="wizard.whoPlaying">Who is playing?</h3>
+<div class="setup-grid setup-grid--players">
+<label class="field-label" for="player-1-input"><span data-i18n="player.player1Name">Player 1 name</span><input autocomplete="off" class="text-input" data-i18n-placeholder="player.player1" id="player-1-input" maxlength="24" placeholder="Player 1" type="text"/>
+</label>
+<label class="field-label" for="player-2-input" id="player-2-field"><span data-i18n="player.player2Name">Player 2 name</span><input autocomplete="off" class="text-input" data-i18n-placeholder="player.player2" id="player-2-input" maxlength="24" placeholder="Player 2" type="text"/>
+</label>
+</div>
+<fieldset class="setup-fieldset">
+<legend data-i18n="player.whoStarts">Who starts?</legend>
+<div class="choice-grid">
+<label><input checked="" name="starter" type="radio" value="random"/><span data-i18n="player.random">Random</span></label>
+<label><input name="starter" type="radio" value="alternate"/><span data-i18n="player.alternate">Alternate each game</span></label>
+<label><input name="starter" type="radio" value="0"/><span data-i18n="player.player1">Player 1</span></label>
+<label><input name="starter" type="radio" value="1"/><span data-i18n="player.player2OrComputer">Player 2 / Computer</span></label>
+</div>
+</fieldset>
+</section>
+<section class="wizard-step" data-wizard-step="3" hidden="">
+<h3 data-i18n="wizard.finalOptions">Final options</h3>
+<fieldset class="setup-fieldset">
+<legend data-i18n="wizard.moveTimer">Move timer</legend>
+<div class="choice-grid timer-choice-grid">
+<label><input checked="" name="timer" type="radio" value="30"/><span data-i18n="wizard.seconds30">30 seconds</span></label>
+<label><input name="timer" type="radio" value="45"/><span data-i18n="wizard.seconds45">45 seconds</span></label>
+<label><input name="timer" type="radio" value="60"/><span data-i18n="wizard.seconds60">60 seconds</span></label>
+<label><input name="timer" type="radio" value="0"/><span data-i18n="wizard.unlimited">Unlimited</span></label>
+</div>
+</fieldset>
+<fieldset class="setup-fieldset">
+<legend data-i18n="wizard.gameFeel">Game feel</legend>
+<div class="toggle-list">
+<label class="toggle-row"><span><strong data-i18n="wizard.soundEffects">Sound effects</strong><small data-i18n="wizard.soundHelp">Subtle sounds for selecting, placing and winning</small></span><input checked="" id="sound-effects-input" name="soundEffects" type="checkbox"/></label>
+<label class="toggle-row"><span><strong data-i18n="wizard.animations">Animations</strong><small data-i18n="wizard.animationHelp">Piece movement and winning highlights</small></span><input checked="" id="animations-input" name="animations" type="checkbox"/></label>
+</div>
+</fieldset>
+<fieldset class="setup-fieldset">
+<legend data-i18n="action.undo">Undo</legend>
+<div class="choice-grid undo-choice-grid">
+<label><input name="undoMode" type="radio" value="off"/><span data-i18n="common.off">Off</span></label>
+<label><input checked="" name="undoMode" type="radio" value="single-player"/><span data-i18n="wizard.singlePlayerOnly">Single player only</span></label>
+<label><input name="undoMode" type="radio" value="always"/><span data-i18n="wizard.alwaysOn">Always on</span></label>
+</div>
+<p class="setup-help" data-i18n="wizard.undoHelp">Undo restores one genuine mistaken action. In a computer game it also stops any computer response in progress.</p>
+</fieldset>
+<fieldset class="setup-fieldset"><legend data-i18n="wizard.language">Language</legend><label class="field-label" for="language-select"><select class="text-input" id="language-select" name="language"><option data-i18n="wizard.englishGB" selected="" value="en-GB">English (United Kingdom)</option></select></label></fieldset><button class="button button--secondary settings-statistics-button" data-i18n="action.viewStatistics" id="view-statistics-button" type="button">View statistics</button>
+<div aria-live="polite" class="setup-summary" id="setup-summary"></div>
+</section>
+<div class="dialog-actions wizard-actions">
+<button class="button button--secondary" data-i18n="action.cancel" id="cancel-new-game" type="button" value="cancel">Cancel</button>
+<button class="button button--secondary" data-i18n="action.back" hidden="" id="wizard-back" type="button">Back</button>
+<button class="button button--primary" data-i18n="action.next" id="wizard-next" type="button">Next</button>
+<button class="button button--primary" data-i18n="action.startGame" hidden="" id="wizard-start" type="submit">Start game</button>
+</div>
+</form>
+</dialog>
+<dialog class="rules-dialog statistics-dialog" id="statistics-dialog">
+<form method="dialog">
+<div class="dialog-heading">
+<h2 data-i18n="statistics.title">Statistics</h2>
+<button aria-label="Close" class="dialog-close" data-i18n-aria-label="action.close" value="close">×</button>
+</div>
+<p class="dialog-note">Single-player results are measured from Player 1's point of view.</p>
+<div class="statistics-summary">
+<span><strong id="stat-played">0</strong><small data-i18n="statistics.played">Played</small></span>
+<span><strong id="stat-wins">0</strong><small data-i18n="statistics.won">Won</small></span>
+<span><strong id="stat-losses">0</strong><small data-i18n="statistics.lost">Lost</small></span>
+<span><strong id="stat-draws">0</strong><small data-i18n="statistics.drawn">Drawn</small></span>
+<span><strong id="stat-win-rate">0%</strong><small data-i18n="statistics.winRate">Win rate</small></span>
+</div>
+<div class="statistics-detail-grid">
+<span><strong id="stat-current-streak">0</strong><small data-i18n="statistics.currentStreak">Current streak</small></span>
+<span><strong id="stat-best-streak">0</strong><small data-i18n="statistics.bestStreak">Best streak</small></span>
+<span><strong id="stat-fastest-win">—</strong><small data-i18n="statistics.fastestWin">Fastest win</small></span>
+<span><strong id="stat-longest-game">—</strong><small data-i18n="statistics.longestGame">Longest game</small></span>
+<span><strong id="stat-average-moves">—</strong><small data-i18n="statistics.averageGame">Average game</small></span>
+<span><strong id="stat-two-player">0</strong><small data-i18n="statistics.twoPlayerGames">Two-player games</small></span>
+<span><strong id="stat-two-by-two-games">0</strong><small data-i18n="statistics.twoByTwoGames">2×2 games</small></span>
+</div>
+<h3 data-i18n="statistics.byComputerLevel">By computer level</h3>
+<div class="statistics-levels" id="statistics-levels"></div>
+<h3 data-i18n="statistics.byWinningFeatures">By winning features</h3>
+<div class="statistics-detail-grid statistics-feature-grid">
+<span><strong id="stat-features-1">0</strong><small data-i18n="features.one">1. Colour</small></span>
+<span><strong id="stat-features-2">0</strong><small data-i18n="features.two">2. Colour + Height</small></span>
+<span><strong id="stat-features-3">0</strong><small data-i18n="features.three">3. Colour + Height + Shape</small></span>
+<span><strong id="stat-features-4">0</strong><small data-i18n="features.classicShort">4. Classic</small></span>
+</div>
+<h3 data-i18n="statistics.humanWinningPatterns">Human winning patterns</h3>
+<div class="statistics-breakdown" id="statistics-breakdown"></div>
+<div class="dialog-actions">
+<button class="button button--secondary" data-i18n="action.resetStatistics" id="reset-statistics-button" type="button">Reset statistics</button>
+<button class="button button--primary" data-i18n="action.close" value="close">Close</button>
+</div>
+</form>
+</dialog>
+<dialog class="rules-dialog" id="how-to-play-dialog">
+<form method="dialog">
+<div class="dialog-heading">
+<h2 data-i18n="help.title">How to play</h2>
+<button aria-label="Close" class="dialog-close" data-i18n-aria-label="action.close" value="close">×</button>
+</div>
+<p data-i18n="help.intro">Choose a piece for your opponent. They place it on any empty square, then choose the next piece for you.</p>
+<p data-i18n="help.featuresIntro">Choose how many features can create a win. The fixed progression is:</p>
+<p><strong>1.</strong><span data-i18n="attribute.colour">Colour</span><br/><strong>2.</strong> Colour + Height<br/><strong>3.</strong> Colour + Height + Shape<br/><strong>4. Classic.</strong><span data-i18n="features.all">Colour + Height + Shape + Hollow</span></p>
+<p data-i18n="help.winRule">Make a row, column or diagonal of four pieces sharing one of the enabled features. You can also optionally allow matching 2×2 squares as wins.</p>
+<p class="dialog-note" data-i18n="help.classicNote">Classic rules use all four features and do not include 2×2 square wins.</p>
+<p class="help-version" id="help-version">Quarto · v0.3.0</p>
+<button class="button button--primary" data-i18n="action.close" value="close">Close</button>
+</form>
+</dialog>
+<dialog aria-labelledby="pwa-update-title" class="rules-dialog pwa-update-dialog" id="pwa-update-dialog">
+<form method="dialog">
+<div class="dialog-heading">
+<div>
+<p class="dialog-eyebrow" data-i18n="update.eyebrow">Quarto update</p>
+<h2 data-i18n="update.title" id="pwa-update-title">New version available</h2>
+</div>
+</div>
+<p data-i18n="update.ready">A new version of Quarto has been downloaded and is ready to install.</p>
+<p class="dialog-note" data-i18n="update.note">Update now to reload the app, or choose Later to continue with the current version.</p>
+<div class="dialog-actions pwa-update-actions">
+<button class="button button--secondary" data-i18n="action.later" id="pwa-update-later" type="button">Later</button>
+<button class="button button--primary" data-i18n="action.update" id="pwa-update-button" type="button">Update</button>
+</div>
+</form>
+</dialog>
+<script src="src/i18n/index.js"></script><script src="js/pieces.js"></script>
+<script src="js/board.js"></script>
+<script src="js/rules.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>

@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.5.0
+
+- Added the internationalisation foundation with `en-GB` as the master and default language.
+- Added `src/i18n/index.js` and `src/i18n/en-GB.json`.
+- Added BCP 47 language selection, fallback handling and RTL direction preparation.
+- Added `schemaVersion: 1` and the `i18n` configuration to `release.json`.
+- Moved static interface text and key dynamic messages behind stable translation keys.
+- Added an English (United Kingdom) language selector ready for future languages.
+
 ## v0.4.8
 
 - Split the setup wizard into four focused pages: Game, Rules, Players and Options.

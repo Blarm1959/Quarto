@@ -1,9 +1,19 @@
 {
+    "schemaVersion":  1,
     "project":  "Quarto",
-    "version":  "0.4.8",
-    "githubSource":  "v0.4.8",
+    "version":  "0.5.0",
+    "githubSource":  "v0.5.0",
     "zipPrefix":  "Quarto-",
     "port":  8004,
     "packageChanges":  false,
-    "commit":  "Split game setup into four focused wizard pages"
+    "commit":  "Prepare Quarto for internationalisation with en-GB resources",
+    "i18n":  {
+                 "enabled":  true,
+                 "folder":  "src/i18n",
+                 "masterLanguage":  "en-GB",
+                 "defaultLanguage":  "en-GB",
+                 "languages":  [
+                                   "en-GB"
+                               ]
+             }
 }

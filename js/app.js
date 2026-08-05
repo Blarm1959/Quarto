@@ -1,10 +1,12 @@
 (function () {
   "use strict";
 
+  const t = (key, values = {}, fallback = key) => window.QuartoI18n?.t(key, values, fallback) ?? fallback;
+
   const STATISTICS_KEY = "quarto.statistics.v0.4.7";
   const PREVIOUS_STATISTICS_KEY = "quarto.statistics.v0.4.3";
   const DEFAULT_SETTINGS = {
-    playerNames: ["Player 1", "Computer"],
+    playerNames: [t("player.player1", {}, "Player 1"), t("player.computer", {}, "Computer")],
     gameMode: "computer",
     difficulty: 2,
     winningFeatures: 4,
@@ -173,7 +175,7 @@
     });
     autoOpenedPickerTurnId = gameState.chooseTurnId;
     renderGame(); resetMoveTimer();
-    document.getElementById("status").textContent = "Last action undone.";
+    document.getElementById("status").textContent = t("game.lastActionUndone", {}, "Last action undone.");
   }
 
   function winningLineType(cells) {
@@ -227,9 +229,9 @@
     value("stat-played", stats.played); value("stat-wins", stats.wins); value("stat-losses", stats.losses);
     value("stat-draws", stats.draws); value("stat-win-rate", `${winRate}%`);
     value("stat-current-streak", stats.currentStreak); value("stat-best-streak", stats.bestStreak);
-    value("stat-fastest-win", stats.fastestWin === null ? "—" : `${stats.fastestWin} placements`);
-    value("stat-longest-game", stats.longestGame ? `${stats.longestGame} placements` : "—");
-    value("stat-average-moves", averageMoves === "—" ? averageMoves : `${averageMoves} placements`);
+    value("stat-fastest-win", stats.fastestWin === null ? "—" : t("statistics.placements", { count: stats.fastestWin }, `${stats.fastestWin} placements`));
+    value("stat-longest-game", stats.longestGame ? t("statistics.placements", { count: stats.longestGame }, `${stats.longestGame} placements`) : "—");
+    value("stat-average-moves", averageMoves === "—" ? averageMoves : t("statistics.placements", { count: averageMoves }, `${averageMoves} placements`));
     value("stat-two-player", statistics.twoPlayer.played);
     value("stat-two-by-two-games", stats.twoByTwoGames || 0);
     for (let feature = 1; feature <= 4; feature += 1) value(`stat-features-${feature}`, stats.byWinningFeatures?.[feature] || 0);
@@ -239,28 +241,28 @@
       for (let level = 1; level <= 3; level += 1) {
         const item = stats.byLevel[level];
         const row = document.createElement("div"); row.className = "statistics-level-row";
-        row.innerHTML = `<strong>${level} · ${difficultyName(level)}</strong><span>${item.played} played · ${item.wins} won · ${item.losses} lost · ${item.draws} drawn</span>`;
+        row.innerHTML = `<strong>${level} · ${difficultyName(level)}</strong><span>${t("statistics.levelSummary", { played: item.played, wins: item.wins, losses: item.losses, draws: item.draws }, `${item.played} played · ${item.wins} won · ${item.losses} lost · ${item.draws} drawn`)}</span>`;
         levels.appendChild(row);
       }
     }
     const breakdown = document.getElementById("statistics-breakdown");
     if (breakdown) {
       const entries = [
-        ["Rows", stats.lineTypes.row], ["Columns", stats.lineTypes.column], ["Diagonals", stats.lineTypes.diagonal], ["2×2 squares", stats.lineTypes.square],
+        [t("statistics.rows", {}, "Rows"), stats.lineTypes.row], [t("statistics.columns", {}, "Columns"), stats.lineTypes.column], [t("statistics.diagonals", {}, "Diagonals"), stats.lineTypes.diagonal], [t("statistics.squares", {}, "2×2 squares"), stats.lineTypes.square],
         ...Object.entries(stats.attributes)
       ];
       breakdown.innerHTML = entries.map(([label,count]) => `<span><strong>${count}</strong><small>${label}</small></span>`).join("");
     }
   }
   function isComputer(index) { return gameState.settings.gameMode === "computer" && index === 1; }
-  function playerName(index) { return isComputer(index) ? "Computer" : (gameState.settings.playerNames[index] || `Player ${index + 1}`); }
+  function playerName(index) { return isComputer(index) ? t("player.computer", {}, "Computer") : (gameState.settings.playerNames[index] || t(`player.player${index + 1}`, {}, `Player ${index + 1}`)); }
   function difficultyName(level) {
-    return ({ 1: "Beginner", 2: "Standard", 3: "Expert" })[Number(level)] || "Standard";
+    return ({ 1: t("difficulty.beginner", {}, "Beginner"), 2: t("difficulty.standard", {}, "Standard"), 3: t("difficulty.expert", {}, "Expert") })[Number(level)] || t("difficulty.standard", {}, "Standard");
   }
   function difficultyDescription(level) {
-    if (Number(level) === 1) return "A learning opponent that makes believable mistakes and sometimes misses tactical chances.";
-    if (Number(level) === 3) return "The strongest search, with deeper look-ahead and exact endgame analysis where practical.";
-    return "A reliable tactical player that sees immediate wins, threats and safer piece choices.";
+    if (Number(level) === 1) return t("difficulty.beginnerDescription", {}, "A learning opponent that makes believable mistakes and sometimes misses tactical chances.");
+    if (Number(level) === 3) return t("difficulty.expertDescription", {}, "The strongest search, with deeper look-ahead and exact endgame analysis where practical.");
+    return t("difficulty.standardDescription", {}, "A reliable tactical player that sees immediate wins, threats and safer piece choices.");
   }
 
 
@@ -297,7 +299,7 @@
   function applyTheme() {
     const appearance = window.QuartoPieces.configureAppearance(gameState.settings);
     const help = document.getElementById("piece-attributes-help");
-    if (help) help.textContent = `Each piece is tall or short, round or square, ${appearance.colourAName.toLowerCase()} or ${appearance.colourBName.toLowerCase()}, and solid or hollow.`;
+    if (help) help.textContent = t("game.pieceAttributes", { colourA: appearance.colourAName.toLowerCase(), colourB: appearance.colourBName.toLowerCase() }, `Each piece is tall or short, round or square, ${appearance.colourAName.toLowerCase()} or ${appearance.colourBName.toLowerCase()}, and solid or hollow.`);
   }
   function formatTimer(seconds) { return gameState.settings.timerSeconds ? `00:${String(Math.max(0, seconds)).padStart(2, "0")}` : "∞"; }
   function stopTimer() { if (gameState.timerHandle) clearInterval(gameState.timerHandle); gameState.timerHandle = null; }
@@ -317,14 +319,14 @@
       timer.classList.toggle("timer--urgent", gameState.timerRemaining <= 5);
       if (gameState.timerRemaining <= 0) {
         stopTimer();
-        document.getElementById("status").textContent = `Time expired for ${playerName(gameState.currentPlayer)} — continue when ready.`;
+        document.getElementById("status").textContent = t("game.timeExpired", { player: playerName(gameState.currentPlayer) }, `Time expired for ${playerName(gameState.currentPlayer)} — continue when ready.`);
       }
     }, 1000);
   }
 
   function phaseInstruction() {
-    if (gameState.phase === "place-piece") return `${playerName(gameState.currentPlayer)}: place the selected piece on any empty square.`;
-    return `${playerName(gameState.currentPlayer)}: choose any piece for ${playerName(gameState.receivingPlayer)}.`;
+    if (gameState.phase === "place-piece") return t("game.placeInstruction", { player: playerName(gameState.currentPlayer) }, `${playerName(gameState.currentPlayer)}: place the selected piece on any empty square.`);
+    return t("game.chooseInstruction", { player: playerName(gameState.currentPlayer), receiver: playerName(gameState.receivingPlayer) }, `${playerName(gameState.currentPlayer)}: choose any piece for ${playerName(gameState.receivingPlayer)}.`);
   }
   function displayAttribute(attribute) {
     const [colourA, colourB] = window.QuartoPieces.getColourNames();
@@ -350,7 +352,7 @@
       name.textContent = playerName(index);
       card.classList.toggle("player-card--active", active);
       card.classList.toggle("player-card--winner", won);
-      if (won) { state.className = "turn-badge turn-badge--winner"; state.textContent = "Winner"; }
+      if (won) { state.className = "turn-badge turn-badge--winner"; state.textContent = t("game.winner", {}, "Winner"); }
       else { state.className = active ? "turn-badge" : "waiting-label"; state.textContent = active ? (isComputer(index) ? (gameState.aiStage === "preview-place" ? "Placing…" : gameState.aiStage === "preview-choice" ? "Choosing…" : "Thinking…") : gameState.phase === "place-piece" ? "Place the piece" : "Choose a piece") : "Waiting"; }
     }
     document.getElementById("current-piece-for").textContent = gameState.phase === "game-over" ? "Game complete" : gameState.phase === "place-piece" ? `Placed by ${playerName(gameState.currentPlayer)}` : `For ${playerName(gameState.receivingPlayer)}`;
@@ -372,7 +374,7 @@
     window.QuartoPieces.createRemainingPieces(selectPiece, gameState.remainingPieceIds, enabled, null, gameState.aiPreviewPieceId);
     const phoneTray = document.getElementById("phone-piece-tray");
     window.QuartoPieces.createRemainingPieces(selectPiece, gameState.remainingPieceIds, enabled, phoneTray, gameState.aiPreviewPieceId);
-    document.getElementById("piece-count").textContent = `${gameState.remainingPieceIds.length} remaining`;
+    document.getElementById("piece-count").textContent = t("game.remaining", { count: gameState.remainingPieceIds.length }, `${gameState.remainingPieceIds.length} remaining`);
     document.getElementById("open-piece-picker").disabled = !enabled;
   }
   function renderBoard() {
@@ -578,7 +580,7 @@
   }
   function updateDifficultyLabel() {
     const level=Number(document.getElementById("difficulty-input").value);
-    document.getElementById("difficulty-name").textContent=`${level} · ${difficultyName(level)}`;
+    document.getElementById("difficulty-name").textContent=t("difficulty.label", { level, name: difficultyName(level) }, `${level} · ${difficultyName(level)}`);
     document.getElementById("difficulty-description").textContent=difficultyDescription(level);
     updateSetupSummary();
   }
@@ -610,10 +612,10 @@
     const timer=Number(document.querySelector('input[name="timer"]:checked')?.value||30);
     const winningFeatures=Number(document.querySelector('input[name="winningFeatures"]:checked')?.value||4);
     const allow2x2=document.querySelector('input[name="allow2x2"]:checked')?.value === "yes";
-    const player1=document.getElementById("player-1-input")?.value.trim()||"Player 1";
-    const opponent=mode==="computer" ? `Computer · ${difficultyName(level)}` : (document.getElementById("player-2-input")?.value.trim()||"Player 2");
-    const rules = winningFeatures === 4 ? "4. Classic" : `${winningFeatures} winning feature${winningFeatures === 1 ? "" : "s"}`;
-    summary.innerHTML=`<strong>${player1} vs ${opponent}</strong><span>${rules} · ${allow2x2 ? "2×2 wins on" : "2×2 wins off"} · ${timer ? `${timer}-second turns` : "No move timer"}</span>`;
+    const player1=document.getElementById("player-1-input")?.value.trim()||t("player.player1", {}, "Player 1");
+    const opponent=mode==="computer" ? `Computer · ${difficultyName(level)}` : (document.getElementById("player-2-input")?.value.trim()||t("player.player2", {}, "Player 2"));
+    const rules = winningFeatures === 4 ? t("features.classicShort", {}, "4. Classic") : t(winningFeatures === 1 ? "features.count" : "features.countPlural", { count: winningFeatures }, `${winningFeatures} winning feature${winningFeatures === 1 ? "" : "s"}`);
+    summary.innerHTML=`<strong>${t("summary.vs", { player1, opponent }, `${player1} vs ${opponent}`)}</strong><span>${t("summary.rules", { rules, twoByTwo: allow2x2 ? t("summary.twoByTwoOn", {}, "2×2 wins on") : t("summary.twoByTwoOff", {}, "2×2 wins off"), timer: timer ? t("summary.turnSeconds", { seconds: timer }, `${timer}-second turns`) : t("summary.noTimer", {}, "No move timer") }, `${rules} · ${allow2x2 ? "2×2 wins on" : "2×2 wins off"} · ${timer ? `${timer}-second turns` : "No move timer"}`)}</span>`;
   }
   function startNewGameWithCurrentSettings(event) {
     event?.preventDefault();
@@ -624,8 +626,8 @@
   }
 
   function populateSetupDialog() {
-    document.getElementById("player-1-input").value=gameState.settings.playerNames[0]||"Player 1";
-    document.getElementById("player-2-input").value=gameState.settings.playerNames[1]||"Player 2";
+    document.getElementById("player-1-input").value=gameState.settings.playerNames[0]||t("player.player1", {}, "Player 1");
+    document.getElementById("player-2-input").value=gameState.settings.playerNames[1]||t("player.player2", {}, "Player 2");
     document.querySelector(`input[name="gameMode"][value="${gameState.settings.gameMode}"]`)?.click();
     document.querySelector(`input[name="starter"][value="${gameState.settings.starterMode}"]`)?.click();
     document.querySelector(`input[name="timer"][value="${gameState.settings.timerSeconds}"]`)?.click();
@@ -644,7 +646,7 @@
     gameState.settings.difficulty=Number(data.get("difficulty")||2);
     gameState.settings.winningFeatures=Math.max(1,Math.min(4,Number(data.get("winningFeatures"))||4));
     gameState.settings.allow2x2=String(data.get("allow2x2")||"no")==="yes";
-    gameState.settings.playerNames=[document.getElementById("player-1-input").value.trim()||"Player 1",document.getElementById("player-2-input").value.trim()||"Player 2"];
+    gameState.settings.playerNames=[document.getElementById("player-1-input").value.trim()||t("player.player1", {}, "Player 1"),document.getElementById("player-2-input").value.trim()||t("player.player2", {}, "Player 2")];
     gameState.settings.starterMode=String(data.get("starter")||"random"); gameState.settings.timerSeconds=Number(data.get("timer")||30);
     gameState.settings.soundEffects=document.getElementById("sound-effects-input").checked;
     gameState.settings.animations=document.getElementById("animations-input").checked;
@@ -659,10 +661,10 @@
     const showVersion=(version, commit="", builtAt="")=>{
       const cleanVersion=String(version || "0.3.0").replace(/^v/i, "");
       if (element) {
-        element.textContent=`Version ${cleanVersion}${commit}`;
-        element.title=builtAt ? `Published ${new Date(builtAt).toLocaleString()}` : "";
+        element.textContent=t("app.version.label", { version: `${cleanVersion}${commit}` }, `Version ${cleanVersion}${commit}`);
+        element.title=builtAt ? t("app.version.published", { date: new Date(builtAt).toLocaleString(window.QuartoI18n?.language || "en-GB") }, `Published ${new Date(builtAt).toLocaleString()}`) : "";
       }
-      if (helpVersion) helpVersion.textContent=`Quarto · v${cleanVersion}`;
+      if (helpVersion) helpVersion.textContent=t("help.version", { version: cleanVersion }, `Quarto · v${cleanVersion}`);
       if (headerVersion) headerVersion.textContent=`v${cleanVersion}`;
     };
     try {
@@ -710,7 +712,7 @@
     laterButton.onclick = closeDialog;
     updateButton.onclick = () => {
       updateButton.disabled = true;
-      updateButton.textContent = "Updating…";
+      updateButton.textContent = t("action.updating", {}, "Updating…");
       registration.waiting?.postMessage({ type: "SKIP_WAITING" });
     };
     dialog.oncancel = event => {
@@ -844,9 +846,18 @@
     document.getElementById("close-piece-picker")?.addEventListener("click",()=>setPiecePickerOpen(false));
     document.getElementById("install-app-button")?.addEventListener("click",installApplication);
     document.getElementById("install-app-action")?.addEventListener("click",installApplication);
+    const languageSelect = document.getElementById("language-select");
+    if (languageSelect) {
+      languageSelect.value = window.QuartoI18n?.language || "en-GB";
+      languageSelect.addEventListener("change", async () => {
+        await window.QuartoI18n?.load(languageSelect.value);
+        renderGame(); updateDifficultyLabel(); updateSetupSummary(); renderStatistics();
+      });
+    }
   }
 
-  document.addEventListener("DOMContentLoaded",()=>{
+  document.addEventListener("DOMContentLoaded", async ()=>{
+    await window.QuartoI18n?.ready;
     bindControls();
     bindPhoneViewport();
     renderApplicationVersion();

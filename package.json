@@ -1,11 +1,11 @@
 {
     "name":  "quarto",
-    "version":  "0.4.8",
+    "version":  "0.5.0",
     "description":  "A responsive Progressive Web App implementation of Quarto",
     "private":  true,
     "scripts":  {
                     "start":  "http-server -p 8004 -c-1 .",
-                    "test":  "node tools/test-ai.js"
+                    "test":  "node tools/test-ai.js \u0026\u0026 node tools/test-i18n.js"
                 },
     "devDependencies":  {
                             "http-server":  "14.1.1"
