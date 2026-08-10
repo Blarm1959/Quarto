@@ -4,7 +4,14 @@
   const configuration = {
     defaultLanguage: "en-GB",
     masterLanguage: "en-GB",
-    languages: ["en-GB"]
+    languages: [
+    "en-GB",
+    "en-US",
+    "de-DE",
+    "fr-FR",
+    "es-ES",
+    "it-IT"
+  ]
   };
   const STORAGE_KEY = "quarto.language";
   let language = configuration.defaultLanguage;
