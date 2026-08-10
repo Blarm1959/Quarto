@@ -1,8 +1,9 @@
 {
-    "environment":  "replacement-zip",
-    "project":  "Quarto",
-    "version":  "0.5.2",
-    "tag":  "v0.5.2",
-    "commit":  "a4027ae45cc1b95e548e8cde915b07a8c5e3e9fd",
-    "builtAt":  "2026-08-05T11:09:26.8805223Z"
+  "environment": "replacement-zip",
+  "project": "Quarto",
+  "version": "0.5.4",
+  "tag": "v0.5.4",
+  "commit": "",
+  "builtAt": "",
+  "notes": "Build information will be completed after the content commit."
 }

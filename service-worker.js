@@ -1,4 +1,4 @@
-const VERSION = "0.5.2";
+const VERSION = "0.5.4";
 const STATIC_CACHE = `quarto-static-v${VERSION}`;
 const RUNTIME_CACHE = `quarto-runtime-v${VERSION}`;
 const APP_SHELL = [

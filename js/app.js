@@ -3,6 +3,28 @@
 
   const t = (key, values = {}, fallback = key) => window.QuartoI18n?.t(key, values, fallback) ?? fallback;
 
+  function languageName(code) {
+    try {
+      return new Intl.DisplayNames([code], { type: "language" }).of(code) || code;
+    } catch {
+      return code;
+    }
+  }
+
+  function populateLanguageSelect() {
+    const select = document.getElementById("language-select");
+    if (!select) return;
+    const languages = window.QuartoI18n?.configuration?.languages || ["en-GB"];
+    const selected = window.QuartoI18n?.language || "en-GB";
+    select.replaceChildren(...languages.map(code => {
+      const option = document.createElement("option");
+      option.value = code;
+      option.textContent = languageName(code);
+      return option;
+    }));
+    select.value = selected;
+  }
+
   const STATISTICS_KEY = "quarto.statistics.v0.4.7";
   const PREVIOUS_STATISTICS_KEY = "quarto.statistics.v0.4.3";
   const DEFAULT_SETTINGS = {
@@ -847,9 +869,10 @@
     document.getElementById("install-app-action")?.addEventListener("click",installApplication);
     const languageSelect = document.getElementById("language-select");
     if (languageSelect) {
-      languageSelect.value = window.QuartoI18n?.language || "en-GB";
+      populateLanguageSelect();
       languageSelect.addEventListener("change", async () => {
         await window.QuartoI18n?.load(languageSelect.value);
+        populateLanguageSelect();
         renderGame(); updateDifficultyLabel(); updateSetupSummary(); renderStatistics();
       });
     }
