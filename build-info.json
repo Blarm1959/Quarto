@@ -3,7 +3,7 @@
   "project": "Quarto",
   "version": "0.5.4",
   "tag": "v0.5.4",
-  "commit": "",
-  "builtAt": "",
-  "notes": "Build information will be completed after the content commit."
+  "commit": "a50c4ab99cbc9459d1ae253f699869ae2a290288",
+  "builtAt": "2026-08-10T12:43:02.8295416Z",
+  "notes": "Build metadata recorded by ProjectRelease.ps1."
 }
