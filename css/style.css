@@ -46,6 +46,7 @@ h2 { margin-bottom: 0; font-size: 1.05rem; }
 .turn-badge { display:inline-flex; padding:4px 9px; border-radius:999px; color:var(--navy); background:#e7f0fa; font-size:.78rem; font-weight:700; }
 .timer-card { min-width:126px; display:grid; place-content:center; text-align:center; padding:12px 18px; border-radius:18px; }
 .timer-card strong { margin-top:2px; color:var(--navy); font-size:clamp(1.65rem,3vw,2.15rem); font-variant-numeric:tabular-nums; letter-spacing:.04em; }
+.quarto-clock-values{display:flex;gap:10px;justify-content:center}.quarto-clock-values strong{font-size:1.05rem;padding:3px 7px;border-radius:8px}.quarto-clock-values strong.clock--active{background:#e7f0fa;box-shadow:0 0 0 2px #245d96}.quarto-clock-values strong.clock--expired{color:#c62828}
 .game-stage { display:grid; grid-template-columns:minmax(210px,.78fr) minmax(430px,1.7fr) minmax(300px,1fr); gap:18px; align-items:start; }
 .side-panel { padding:18px; border-radius:22px; }
 .panel-heading { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:14px; }
@@ -104,10 +105,13 @@ h2 { margin-bottom: 0; font-size: 1.05rem; }
 .choice-grid label { display:flex; align-items:center; gap:8px; min-height:32px; color:var(--ink); font-size:.92rem; }
 .choice-grid input { accent-color:var(--navy-2); }
 .colour-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.colour-set-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.colour-choice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.colour-choice{position:relative}.colour-choice input{position:absolute;opacity:0}.colour-choice span{display:flex;align-items:center;gap:7px;padding:8px;border:2px solid var(--line);border-radius:11px;font-size:.78rem;font-weight:700}.colour-choice input:checked+span{border-color:var(--navy-2);background:#eaf2fa}.colour-swatch{width:24px;height:24px;border-radius:50%;border:2px solid rgba(0,0,0,.25);flex:none}
 .colour-field { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:48px; padding:7px 9px 7px 12px; border:1px solid var(--line); border-radius:11px; background:var(--surface-soft); font-size:.9rem; font-weight:700; }
 .colour-field input { width:54px; height:34px; border:0; padding:0; background:transparent; cursor:pointer; }
 .dialog-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+#wizard-default{margin-right:auto}
 @media (max-width:560px) { .setup-grid,.colour-grid,.choice-grid { grid-template-columns:1fr; } .dialog-actions .button { flex:1; } }
+@media (max-width:560px){.colour-set-grid{grid-template-columns:1fr}.colour-choice-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.colour-choice span{padding:5px;font-size:.68rem}.colour-swatch{width:20px;height:20px}}
 
 /* v0.0.5 gameplay states */
 .board-cell { appearance:none; padding:0; font:inherit; cursor:default; transition:transform .16s ease, box-shadow .16s ease, background .16s ease; }

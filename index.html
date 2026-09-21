@@ -44,9 +44,9 @@
 <strong data-i18n="player.player1" id="player-name-1">Player 1</strong>
 <span class="turn-badge" data-i18n="game.choosingPiece" id="player-state-1">Choosing a piece</span>
 </article>
-<div aria-label="Move timer" class="timer-card" data-i18n-aria-label="wizard.moveTimer">
-<span data-i18n="wizard.moveTimer">Move timer</span>
-<strong id="timer">00:30</strong>
+<div aria-label="Chess clock" class="timer-card" id="chess-clock-card">
+<span>Chess clock</span>
+<div class="quarto-clock-values"><strong id="clock-player-0">∞</strong><strong id="clock-player-1">∞</strong></div>
 </div>
 <article class="player-card" id="player-card-2">
 <span class="player-label" data-i18n="player.player2">Player 2</span>
@@ -124,11 +124,15 @@
 <div aria-label="Setup progress" class="wizard-progress" data-i18n-aria-label="aria.setupProgress">
 <span class="wizard-progress-step wizard-progress-step--active" data-step-indicator="0">1 <small data-i18n="wizard.step.game">Game</small></span>
 <span class="wizard-progress-line"></span>
-<span class="wizard-progress-step" data-step-indicator="1">2 <small data-i18n="wizard.step.rules">Rules</small></span>
+<span class="wizard-progress-step" data-step-indicator="1">2 <small>Colours</small></span>
 <span class="wizard-progress-line"></span>
-<span class="wizard-progress-step" data-step-indicator="2">3 <small data-i18n="wizard.step.players">Players</small></span>
+<span class="wizard-progress-step" data-step-indicator="2">3 <small data-i18n="wizard.step.rules">Rules</small></span>
 <span class="wizard-progress-line"></span>
-<span class="wizard-progress-step" data-step-indicator="3">4 <small data-i18n="wizard.step.options">Options</small></span>
+<span class="wizard-progress-step" data-step-indicator="3">4 <small data-i18n="wizard.step.players">Players</small></span>
+<span class="wizard-progress-line"></span>
+<span class="wizard-progress-step" data-step-indicator="4">5 <small>Timer</small></span>
+<span class="wizard-progress-line"></span>
+<span class="wizard-progress-step" data-step-indicator="5">6 <small data-i18n="wizard.step.options">Options</small></span>
 </div>
 <section class="wizard-step wizard-step--active" data-wizard-step="0">
 <h3 data-i18n="wizard.howPlay">How would you like to play?</h3>
@@ -155,6 +159,14 @@
 </fieldset>
 </section>
 <section class="wizard-step" data-wizard-step="1" hidden="">
+<h3>Choose colours</h3>
+<p class="setup-help">Choose two different colours for the Quarto pieces.</p>
+<div class="colour-set-grid">
+<fieldset class="setup-fieldset"><legend>Colour 1</legend><div class="colour-choice-grid" id="colour-a-choices"></div></fieldset>
+<fieldset class="setup-fieldset"><legend>Colour 2</legend><div class="colour-choice-grid" id="colour-b-choices"></div></fieldset>
+</div>
+</section>
+<section class="wizard-step" data-wizard-step="2" hidden="">
 <h3 data-i18n="wizard.chooseRules">Choose the rules</h3>
 <fieldset class="setup-fieldset">
 <legend data-i18n="wizard.winningFeatures">Winning Features</legend>
@@ -173,7 +185,7 @@
 </div>
 </fieldset>
 </section>
-<section class="wizard-step" data-wizard-step="2" hidden="">
+<section class="wizard-step" data-wizard-step="3" hidden="">
 <h3 data-i18n="wizard.whoPlaying">Who is playing?</h3>
 <div class="setup-grid setup-grid--players">
 <label class="field-label" for="player-1-input"><span data-i18n="player.player1Name">Player 1 name</span><input autocomplete="off" class="text-input" data-i18n-placeholder="player.player1" id="player-1-input" maxlength="24" placeholder="Player 1" type="text"/>
@@ -191,17 +203,25 @@
 </div>
 </fieldset>
 </section>
-<section class="wizard-step" data-wizard-step="3" hidden="">
-<h3 data-i18n="wizard.finalOptions">Final options</h3>
+<section class="wizard-step" data-wizard-step="4" hidden="">
+<h3>Timer options</h3>
 <fieldset class="setup-fieldset">
-<legend data-i18n="wizard.moveTimer">Move timer</legend>
+<legend>Chess clock</legend><p class="setup-help">Optional total thinking time for each player. Off is the normal game.</p>
 <div class="choice-grid timer-choice-grid">
-<label><input checked="" name="timer" type="radio" value="30"/><span data-i18n="wizard.seconds30">30 seconds</span></label>
-<label><input name="timer" type="radio" value="45"/><span data-i18n="wizard.seconds45">45 seconds</span></label>
-<label><input name="timer" type="radio" value="60"/><span data-i18n="wizard.seconds60">60 seconds</span></label>
-<label><input name="timer" type="radio" value="0"/><span data-i18n="wizard.unlimited">Unlimited</span></label>
+<label><input checked="" name="clockMinutes" type="radio" value="0"/><span>Off</span></label>
+<label><input name="clockMinutes" type="radio" value="5"/><span>5 minutes</span></label>
+<label><input name="clockMinutes" type="radio" value="10"/><span>10 minutes</span></label>
+<label><input name="clockMinutes" type="radio" value="15"/><span>15 minutes</span></label>
+<label><input name="clockMinutes" type="radio" value="30"/><span>30 minutes</span></label>
+<label><input name="clockMinutes" type="radio" value="60"/><span>60 minutes</span></label>
 </div>
 </fieldset>
+<fieldset class="setup-fieldset" id="clock-increment-field" disabled><legend>Clock increment</legend><p class="setup-help">Added after a player chooses the piece for their opponent.</p><div class="choice-grid">
+<label><input checked name="clockIncrement" type="radio" value="0"><span>+0 seconds</span></label><label><input name="clockIncrement" type="radio" value="5"><span>+5 seconds</span></label><label><input name="clockIncrement" type="radio" value="10"><span>+10 seconds</span></label>
+</div></fieldset>
+</section>
+<section class="wizard-step" data-wizard-step="5" hidden="">
+<h3 data-i18n="wizard.finalOptions">Final options</h3>
 <fieldset class="setup-fieldset">
 <legend data-i18n="wizard.gameFeel">Game feel</legend>
 <div class="toggle-list">
@@ -213,10 +233,10 @@
 <div aria-live="polite" class="setup-summary" id="setup-summary"></div>
 </section>
 <div class="dialog-actions wizard-actions">
-<button class="button button--secondary" data-i18n="action.cancel" id="cancel-new-game" type="button" value="cancel">Cancel</button>
+<button class="button button--secondary" id="wizard-default" type="button">Default</button>
 <button class="button button--secondary" data-i18n="action.back" hidden="" id="wizard-back" type="button">Back</button>
 <button class="button button--primary" data-i18n="action.next" id="wizard-next" type="button">Next</button>
-<button class="button button--primary" data-i18n="action.startGame" hidden="" id="wizard-start" type="submit">Start game</button>
+<button class="button button--primary" hidden="" id="wizard-start" type="submit">Save</button>
 </div>
 </form>
 </dialog>

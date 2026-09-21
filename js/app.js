@@ -34,7 +34,8 @@
     winningFeatures: 4,
     allow2x2: false,
     starterMode: "random",
-    timerSeconds: 30,
+    colourA: "blue", colourB: "red",
+    clockMinutes: 0, clockIncrement: 0,
     lastStarter: 1,
     soundEffects: true,
     animations: true,
@@ -45,7 +46,7 @@
     settings: loadSettings(), currentPlayer: 0, receivingPlayer: 1,
     selectedPiece: null, phase: "choose-piece", board: Array(16).fill(null),
     remainingPieceIds: window.QuartoPieces.PIECES.map(piece => piece.id),
-    timerRemaining: 30, timerHandle: null, aiHandle: null,
+    clockRemaining: [0, 0], clockHandle: null, clockLastTick: null, aiHandle: null,
     winner: null, winningCells: [], winningAttributes: [], chooseTurnId: 0,
     aiStage: null, aiPreviewPieceId: null, aiPreviewCell: null,
     undoSnapshot: null, moveCount: 0, statisticsRecorded: false
@@ -149,7 +150,7 @@
       phase: gameState.phase,
       board: [...gameState.board],
       remainingPieceIds: [...gameState.remainingPieceIds],
-      timerRemaining: gameState.timerRemaining,
+      clockRemaining: [...gameState.clockRemaining],
       winner: gameState.winner,
       winningCells: [...gameState.winningCells],
       winningAttributes: [...gameState.winningAttributes],
@@ -185,7 +186,7 @@
       phase: snapshot.phase,
       board: [...snapshot.board],
       remainingPieceIds: [...snapshot.remainingPieceIds],
-      timerRemaining: snapshot.timerRemaining,
+      clockRemaining: [...snapshot.clockRemaining],
       winner: snapshot.winner,
       winningCells: [...snapshot.winningCells],
       winningAttributes: [...snapshot.winningAttributes],
@@ -322,27 +323,18 @@
     const help = document.getElementById("piece-attributes-help");
     if (help) help.textContent = t("game.pieceAttributes", { colourA: appearance.colourAName.toLowerCase(), colourB: appearance.colourBName.toLowerCase() }, `Each piece is tall or short, round or square, ${appearance.colourAName.toLowerCase()} or ${appearance.colourBName.toLowerCase()}, and solid or hollow.`);
   }
-  function formatTimer(seconds) { return gameState.settings.timerSeconds ? `00:${String(Math.max(0, seconds)).padStart(2, "0")}` : "∞"; }
-  function stopTimer() { if (gameState.timerHandle) clearInterval(gameState.timerHandle); gameState.timerHandle = null; }
+  function formatClock(seconds) { const value=Math.max(0,Math.ceil(seconds)); return gameState.settings.clockMinutes ? `${String(Math.floor(value/60)).padStart(2,"0")}:${String(value%60).padStart(2,"0")}` : "∞"; }
+  function stopTimer() { if (gameState.clockHandle) clearInterval(gameState.clockHandle); gameState.clockHandle = null; gameState.clockLastTick=null; }
   function stopAi() { if (gameState.aiHandle) clearTimeout(gameState.aiHandle); gameState.aiHandle = null; }
 
+  function renderClocks() {
+    for(let player=0;player<2;player+=1){const el=document.getElementById(`clock-player-${player}`);if(!el)continue;el.textContent=formatClock(gameState.clockRemaining[player]);el.classList.toggle("clock--active",!!gameState.settings.clockMinutes&&gameState.phase!=="game-over"&&gameState.currentPlayer===player);el.classList.toggle("clock--expired",gameState.clockRemaining[player]<=0&&!!gameState.settings.clockMinutes);}
+  }
   function resetMoveTimer() {
-    stopTimer();
-    gameState.timerRemaining = gameState.settings.timerSeconds;
-    const timer = document.getElementById("timer");
-    timer.textContent = formatTimer(gameState.timerRemaining);
-    timer.classList.remove("timer--warning", "timer--urgent");
-    if (!gameState.settings.timerSeconds || isComputer(gameState.currentPlayer)) return;
-    gameState.timerHandle = setInterval(() => {
-      gameState.timerRemaining -= 1;
-      timer.textContent = formatTimer(gameState.timerRemaining);
-      timer.classList.toggle("timer--warning", gameState.timerRemaining <= 10 && gameState.timerRemaining > 5);
-      timer.classList.toggle("timer--urgent", gameState.timerRemaining <= 5);
-      if (gameState.timerRemaining <= 0) {
-        stopTimer();
-        document.getElementById("status").textContent = t("game.timeExpired", { player: playerName(gameState.currentPlayer) }, `Time expired for ${playerName(gameState.currentPlayer)} — continue when ready.`);
-      }
-    }, 1000);
+    stopTimer(); renderClocks();
+    if (!gameState.settings.clockMinutes || gameState.phase === "game-over") return;
+    gameState.clockLastTick=Date.now();
+    gameState.clockHandle=setInterval(()=>{const now=Date.now(),elapsed=(now-gameState.clockLastTick)/1000;gameState.clockLastTick=now;gameState.clockRemaining[gameState.currentPlayer]=Math.max(0,gameState.clockRemaining[gameState.currentPlayer]-elapsed);renderClocks();if(gameState.clockRemaining[gameState.currentPlayer]<=0){stopTimer();document.getElementById("status").textContent=`Time expired for ${playerName(gameState.currentPlayer)} — continue when ready.`;}},250);
   }
 
   function phaseInstruction() {
@@ -515,10 +507,12 @@
     completePieceSelection(piece, slot);
   }
   function completePieceSelection(piece, slot) {
+    const choosingPlayer=gameState.currentPlayer;
     gameState.aiStage = null; gameState.aiPreviewPieceId = null; gameState.aiPreviewCell = null;
     animatePieceToCurrent(slot); playTone("select"); gameState.selectedPiece = piece;
     gameState.remainingPieceIds = gameState.remainingPieceIds.filter(id => id !== piece.id);
     gameState.currentPlayer = gameState.receivingPlayer; gameState.receivingPlayer = gameState.currentPlayer === 0 ? 1 : 0; gameState.phase = "place-piece";
+    if(gameState.settings.clockMinutes) gameState.clockRemaining[choosingPlayer]+=Number(gameState.settings.clockIncrement||0);
     renderGame(); resetMoveTimer(); document.getElementById("status").textContent = phaseInstruction(); scheduleComputerTurn();
   }
   function placePiece(index) {
@@ -587,12 +581,14 @@
     window.QuartoRules.configure(gameState.settings);
     applyTheme(); applyMotionPreference();
     const starter=chooseStarter(starterMode); gameState.settings.lastStarter=starter; saveSettings();
-    Object.assign(gameState,{currentPlayer:starter,receivingPlayer:starter===0?1:0,selectedPiece:null,phase:"choose-piece",board:Array(16).fill(null),remainingPieceIds:window.QuartoPieces.PIECES.map(piece=>piece.id),winner:null,winningCells:[],winningAttributes:[],chooseTurnId:gameState.chooseTurnId+1,aiStage:null,aiPreviewPieceId:null,aiPreviewCell:null,undoSnapshot:null,moveCount:0,statisticsRecorded:false});
+    const initialClock=Number(gameState.settings.clockMinutes||0)*60;
+    Object.assign(gameState,{currentPlayer:starter,receivingPlayer:starter===0?1:0,selectedPiece:null,phase:"choose-piece",board:Array(16).fill(null),remainingPieceIds:window.QuartoPieces.PIECES.map(piece=>piece.id),clockRemaining:[initialClock,initialClock],winner:null,winningCells:[],winningAttributes:[],chooseTurnId:gameState.chooseTurnId+1,aiStage:null,aiPreviewPieceId:null,aiPreviewCell:null,undoSnapshot:null,moveCount:0,statisticsRecorded:false});
     autoOpenedPickerTurnId = -1;
     renderGame(); resetMoveTimer(); document.getElementById("status").textContent=phaseInstruction(); scheduleComputerTurn();
   }
 
   let wizardStep = 0;
+  function buildColourChoices(){const colours={blue:["Blue","#1769d2"],red:["Red","#e42b32"],green:["Green","#318653"],yellow:["Yellow","#e2ad34"],purple:["Purple","#7955a6"],orange:["Orange","#d97832"],black:["Black","#1d1d1d"],white:["White","#f8f8f4"]};[["colour-a-choices","colourA"],["colour-b-choices","colourB"]].forEach(([id,name])=>{const box=document.getElementById(id);if(!box||box.children.length)return;Object.entries(colours).forEach(([key,[label,hex]])=>{const option=document.createElement("label");option.className="colour-choice";option.innerHTML=`<input type="radio" name="${name}" value="${key}"><span><i class="colour-swatch" style="background:${hex}"></i>${label}</span>`;box.appendChild(option);});});}
   function updateSetupMode() {
     const mode = document.querySelector('input[name="gameMode"]:checked')?.value || "computer";
     document.getElementById("difficulty-field").hidden = mode !== "computer";
@@ -606,7 +602,7 @@
     updateSetupSummary();
   }
   function showWizardStep(step) {
-    wizardStep=Math.max(0,Math.min(3,step));
+    wizardStep=Math.max(0,Math.min(5,step));
     const setupDialog=document.getElementById("new-game-dialog");
     if (setupDialog) setupDialog.dataset.wizardStep=String(wizardStep);
     document.querySelectorAll("[data-wizard-step]").forEach(section=>{
@@ -619,9 +615,10 @@
       indicator.classList.toggle("wizard-progress-step--complete",value<wizardStep);
     });
     document.getElementById("wizard-back").hidden=wizardStep===0;
-    document.getElementById("wizard-next").hidden=wizardStep===3;
-    document.getElementById("wizard-start").hidden=wizardStep!==3;
-    if (wizardStep===3) updateSetupSummary();
+    document.getElementById("wizard-default").hidden=wizardStep!==0;
+    document.getElementById("wizard-next").hidden=wizardStep===5;
+    document.getElementById("wizard-start").hidden=wizardStep!==5;
+    if (wizardStep===5) updateSetupSummary();
     const activeStep=document.querySelector(`[data-wizard-step="${wizardStep}"]`);
     if (activeStep) activeStep.scrollTop=0;
     document.getElementById("new-game-form")?.scrollTo?.({top:0,behavior:"instant"});
@@ -630,14 +627,16 @@
     const summary=document.getElementById("setup-summary"); if(!summary) return;
     const mode=document.querySelector('input[name="gameMode"]:checked')?.value || "computer";
     const level=Number(document.getElementById("difficulty-input")?.value||2);
-    const timer=Number(document.querySelector('input[name="timer"]:checked')?.value||30);
+    const clockMinutes=Number(document.querySelector('input[name="clockMinutes"]:checked')?.value||0),increment=Number(document.querySelector('input[name="clockIncrement"]:checked')?.value||0);
     const winningFeatures=Number(document.querySelector('input[name="winningFeatures"]:checked')?.value||4);
     const allow2x2=document.querySelector('input[name="allow2x2"]:checked')?.value === "yes";
     const player1=document.getElementById("player-1-input")?.value.trim()||t("player.player1", {}, "Player 1");
     const opponent=mode==="computer" ? `Computer · ${difficultyName(level)}` : (document.getElementById("player-2-input")?.value.trim()||t("player.player2", {}, "Player 2"));
     const rules = winningFeatures === 4 ? t("features.classicShort", {}, "4. Classic") : t(winningFeatures === 1 ? "features.count" : "features.countPlural", { count: winningFeatures }, `${winningFeatures} winning feature${winningFeatures === 1 ? "" : "s"}`);
     const allowUndo=document.querySelector('input[name="allowLastMoveUndo"]:checked')?.value === "yes";
-    summary.innerHTML=`<strong>${t("summary.vs", { player1, opponent }, `${player1} vs ${opponent}`)}</strong><span>${t("summary.rules", { rules, twoByTwo: allow2x2 ? t("summary.twoByTwoOn", {}, "2×2 wins on") : t("summary.twoByTwoOff", {}, "2×2 wins off"), timer: timer ? t("summary.turnSeconds", { seconds: timer }, `${timer}-second turns`) : t("summary.noTimer", {}, "No move timer") }, `${rules} · ${allow2x2 ? "2×2 wins on" : "2×2 wins off"} · ${timer ? `${timer}-second turns` : "No move timer"}`)}</span><span>${allowUndo ? t("summary.undoOn", {}, "Last move Undo on") : t("summary.undoOff", {}, "Last move Undo off")}</span>`;
+    const colourLabels={blue:"Blue",red:"Red",green:"Green",yellow:"Yellow",purple:"Purple",orange:"Orange",black:"Black",white:"White"};
+    const colours=[colourLabels[document.querySelector('input[name="colourA"]:checked')?.value]||"Blue",colourLabels[document.querySelector('input[name="colourB"]:checked')?.value]||"Red"];const clock=clockMinutes?`${clockMinutes} min each${increment?` + ${increment}s`:""}`:"Clock off";
+    summary.innerHTML=`<strong>${t("summary.vs", { player1, opponent }, `${player1} vs ${opponent}`)}</strong><span>${colours.join(" / ")} · ${rules} · ${allow2x2 ? "2×2 wins on" : "2×2 wins off"} · ${clock}</span><span>${allowUndo ? t("summary.undoOn", {}, "Last move Undo on") : t("summary.undoOff", {}, "Last move Undo off")}</span>`;
   }
   function startNewGameWithCurrentSettings(event) {
     event?.preventDefault();
@@ -652,7 +651,10 @@
     document.getElementById("player-2-input").value=gameState.settings.playerNames[1]||t("player.player2", {}, "Player 2");
     document.querySelector(`input[name="gameMode"][value="${gameState.settings.gameMode}"]`)?.click();
     document.querySelector(`input[name="starter"][value="${gameState.settings.starterMode}"]`)?.click();
-    document.querySelector(`input[name="timer"][value="${gameState.settings.timerSeconds}"]`)?.click();
+    document.querySelector(`input[name="colourA"][value="${gameState.settings.colourA}"]`)?.click();
+    document.querySelector(`input[name="colourB"][value="${gameState.settings.colourB}"]`)?.click();
+    document.querySelector(`input[name="clockMinutes"][value="${gameState.settings.clockMinutes}"]`)?.click();
+    document.querySelector(`input[name="clockIncrement"][value="${gameState.settings.clockIncrement}"]`)?.click();
     document.getElementById("difficulty-input").value=String(gameState.settings.difficulty);
     document.querySelector(`input[name="winningFeatures"][value="${gameState.settings.winningFeatures || 4}"]`)?.click();
     document.querySelector(`input[name="allow2x2"][value="${gameState.settings.allow2x2 ? "yes" : "no"}"]`)?.click();
@@ -661,6 +663,12 @@
     document.querySelector(`input[name="allowLastMoveUndo"][value="${gameState.settings.allowLastMoveUndo ? "yes" : "no"}"]`)?.click();
     updateSetupMode(); updateDifficultyLabel(); showWizardStep(0);
   }
+
+  function resetSetupDefaults(){document.querySelector('input[name="gameMode"][value="computer"]')?.click();document.getElementById("difficulty-input").value="2";document.querySelector('input[name="allowLastMoveUndo"][value="no"]')?.click();document.querySelector('input[name="colourA"][value="blue"]')?.click();document.querySelector('input[name="colourB"][value="red"]')?.click();document.querySelector('input[name="winningFeatures"][value="4"]')?.click();document.querySelector('input[name="allow2x2"][value="no"]')?.click();document.getElementById("player-1-input").value=t("player.player1",{},"Player 1");document.getElementById("player-2-input").value=t("player.player2",{},"Player 2");document.querySelector('input[name="starter"][value="random"]')?.click();document.querySelector('input[name="clockMinutes"][value="0"]')?.click();document.querySelector('input[name="clockIncrement"][value="0"]')?.click();document.getElementById("sound-effects-input").checked=true;document.getElementById("animations-input").checked=true;updateDifficultyLabel();syncClockOptions();updateSetupSummary();}
+
+  function syncClockOptions(){const enabled=Number(document.querySelector('input[name="clockMinutes"]:checked')?.value||0)>0;const field=document.getElementById("clock-increment-field");if(field)field.disabled=!enabled;if(!enabled)document.querySelector('input[name="clockIncrement"][value="0"]')?.click();updateSetupSummary();}
+
+  function jumpToEndgameTest(){stopTimer();stopAi();const ids=window.QuartoPieces.PIECES.map(piece=>piece.id);let board=null;for(let attempt=0;attempt<5000&&!board;attempt+=1){const shuffled=[...ids].sort(()=>Math.random()-.5),candidate=Array(16).fill(null);shuffled.slice(0,12).forEach((id,index)=>{candidate[index]=id;});if(!window.QuartoRules.checkForQuarto(candidate))board=candidate;}if(!board)return;const used=new Set(board.filter(value=>value!==null));Object.assign(gameState,{board,remainingPieceIds:ids.filter(id=>!used.has(id)),selectedPiece:null,phase:"choose-piece",winner:null,winningCells:[],winningAttributes:[],undoSnapshot:null,moveCount:12,chooseTurnId:gameState.chooseTurnId+1});renderGame();resetMoveTimer();document.getElementById("status").textContent="Endgame test ready — four pieces remain.";}
   function startFromDialog(event) {
     event.preventDefault(); const data=new FormData(event.currentTarget);
     gameState.settings.gameMode=String(data.get("gameMode")||"computer");
@@ -668,7 +676,8 @@
     gameState.settings.winningFeatures=Math.max(1,Math.min(4,Number(data.get("winningFeatures"))||4));
     gameState.settings.allow2x2=String(data.get("allow2x2")||"no")==="yes";
     gameState.settings.playerNames=[document.getElementById("player-1-input").value.trim()||t("player.player1", {}, "Player 1"),document.getElementById("player-2-input").value.trim()||t("player.player2", {}, "Player 2")];
-    gameState.settings.starterMode=String(data.get("starter")||"random"); gameState.settings.timerSeconds=Number(data.get("timer")||30);
+    const colourA=String(data.get("colourA")||"blue"),colourB=String(data.get("colourB")||"red");if(colourA===colourB){showWizardStep(1);document.getElementById("status").textContent="Choose two different piece colours.";return;}
+    gameState.settings.colourA=colourA;gameState.settings.colourB=colourB;gameState.settings.starterMode=String(data.get("starter")||"random"); gameState.settings.clockMinutes=Number(data.get("clockMinutes")||0);gameState.settings.clockIncrement=Number(data.get("clockIncrement")||0);
     gameState.settings.soundEffects=document.getElementById("sound-effects-input").checked;
     gameState.settings.animations=document.getElementById("animations-input").checked;
     gameState.settings.allowLastMoveUndo=String(data.get("allowLastMoveUndo")||"no")==="yes";
@@ -834,6 +843,7 @@
   }
 
   function bindControls() {
+    buildColourChoices();
     const setup=document.getElementById("new-game-dialog");
     const openSetup=(event)=>{
       event?.preventDefault();
@@ -845,7 +855,7 @@
     document.getElementById("undo-button")?.addEventListener("click",undoLastAction);
     document.getElementById("phone-undo-button")?.addEventListener("click",undoLastAction);
     document.getElementById("settings-button")?.addEventListener("click",openSetup);
-    document.getElementById("cancel-new-game")?.addEventListener("click",()=>setup.close()); document.getElementById("new-game-form")?.addEventListener("submit",startFromDialog);
+    document.getElementById("new-game-form")?.addEventListener("submit",startFromDialog);
     document.querySelectorAll('input[name="gameMode"]').forEach(input=>input.addEventListener("change",updateSetupMode));
     document.getElementById("difficulty-input")?.addEventListener("input",updateDifficultyLabel);
     document.getElementById("wizard-next")?.addEventListener("click",event=>{
@@ -855,8 +865,12 @@
       event.preventDefault(); event.stopPropagation();
       if (wizardStep>0) showWizardStep(wizardStep-1);
     });
+    document.getElementById("wizard-default")?.addEventListener("click",resetSetupDefaults);
+    document.querySelectorAll("[data-step-indicator]").forEach((indicator,index)=>{indicator.setAttribute("role","button");indicator.setAttribute("tabindex","0");indicator.style.cursor="pointer";const go=()=>showWizardStep(index);indicator.addEventListener("click",go);indicator.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();go();}});});
+    document.querySelectorAll('input[name="clockMinutes"]').forEach(input=>input.addEventListener("change",syncClockOptions));
     document.querySelectorAll('#new-game-form input').forEach(input=>input.addEventListener("change",updateSetupSummary));
     document.querySelectorAll('#new-game-form input[type="text"]').forEach(input=>input.addEventListener("input",updateSetupSummary));
+    let versionTaps=[];const versionTap=()=>{const now=Date.now();versionTaps=versionTaps.filter(time=>now-time<=3000);versionTaps.push(now);if(versionTaps.length>=5){versionTaps=[];jumpToEndgameTest();}};[document.getElementById("app-version"),document.getElementById("header-version")].filter(Boolean).forEach(element=>element.addEventListener("click",versionTap));
     document.getElementById("how-to-play-button")?.addEventListener("click",()=>document.getElementById("how-to-play-dialog")?.showModal());
     document.getElementById("view-statistics-button")?.addEventListener("click",()=>{ renderStatistics(); document.getElementById("statistics-dialog")?.showModal(); });
     document.getElementById("reset-statistics-button")?.addEventListener("click",()=>{ if (window.confirm("Reset all Quarto statistics? This cannot be undone.")) { statistics=emptyStatistics(); saveStatistics(); renderStatistics(); } });

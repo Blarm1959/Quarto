@@ -14,23 +14,32 @@
     }
   }
 
-  // Quarto's permanent visual identity: eight blue pieces and eight red pieces.
+  // Quarto keeps the same eight colour-A / eight colour-B structure, while
+  // allowing the two colours to be selected in Settings.
   // Hollow centres are deliberately rendered as one solid white shape so they
   // remain unmistakable at phone size and never appear as a white/black ring.
   const COLOURS = {
-    blue: "#1769d2",
-    red: "#e42b32",
+    blue: ["Blue", "#1769d2"], red: ["Red", "#e42b32"],
+    green: ["Green", "#318653"], yellow: ["Yellow", "#e2ad34"],
+    purple: ["Purple", "#7955a6"], orange: ["Orange", "#d97832"],
+    black: ["Black", "#1d1d1d"], white: ["White", "#f8f8f4"],
     hollow: "#ffffff"
   };
 
-  function configureAppearance() {
-    document.documentElement.style.setProperty("--piece-colour-a", COLOURS.blue);
-    document.documentElement.style.setProperty("--piece-colour-b", COLOURS.red);
-    return { colourA: COLOURS.blue, colourB: COLOURS.red, colourAName: "Blue", colourBName: "Red" };
+  let appearance = { colourAKey: "blue", colourBKey: "red" };
+
+  function configureAppearance(settings = {}) {
+    appearance.colourAKey = COLOURS[settings.colourA] ? settings.colourA : "blue";
+    appearance.colourBKey = COLOURS[settings.colourB] ? settings.colourB : "red";
+    if (appearance.colourAKey === appearance.colourBKey) appearance.colourBKey = appearance.colourAKey === "red" ? "blue" : "red";
+    const colourA = COLOURS[appearance.colourAKey], colourB = COLOURS[appearance.colourBKey];
+    document.documentElement.style.setProperty("--piece-colour-a", colourA[1]);
+    document.documentElement.style.setProperty("--piece-colour-b", colourB[1]);
+    return { colourA: colourA[1], colourB: colourB[1], colourAName: colourA[0], colourBName: colourB[0] };
   }
 
-  function getColourName(piece) { return piece.dark ? "Red" : "Blue"; }
-  function getColourNames() { return ["Blue", "Red"]; }
+  function getColourName(piece) { return COLOURS[piece.dark ? appearance.colourBKey : appearance.colourAKey][0]; }
+  function getColourNames() { return [COLOURS[appearance.colourAKey][0], COLOURS[appearance.colourBKey][0]]; }
   function describePiece(piece) {
     return [piece.tall ? "Tall" : "Short", piece.round ? "Round" : "Square", getColourName(piece), piece.hole ? "Hollow" : "Solid"].join(", ");
   }
@@ -131,7 +140,7 @@
       viewBox: "0 0 100 100", class: "quarto-piece", role: "img",
       "aria-label": describePiece(piece)
     });
-    const baseColour = piece.dark ? COLOURS.red : COLOURS.blue;
+    const baseColour = COLOURS[piece.dark ? appearance.colourBKey : appearance.colourAKey][1];
     if (piece.round) createRoundPiece(svg, piece, baseColour);
     else createSquarePiece(svg, piece, baseColour);
     return svg;

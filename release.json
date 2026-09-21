@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "project": "Quarto",
-  "version": "0.5.6",
-  "githubSource": "v0.5.6",
+  "version": "0.6.0",
+  "githubSource": "v0.6.0",
   "zipPrefix": "Quarto-",
   "port": 8004,
   "packageChanges": false,
