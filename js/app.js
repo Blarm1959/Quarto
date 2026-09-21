@@ -617,7 +617,7 @@
     document.getElementById("wizard-back").hidden=wizardStep===0;
     document.getElementById("wizard-default").hidden=wizardStep!==0;
     document.getElementById("wizard-next").hidden=wizardStep===5;
-    document.getElementById("wizard-start").hidden=wizardStep!==5;
+    document.getElementById("wizard-start").hidden=false;
     if (wizardStep===5) updateSetupSummary();
     const activeStep=document.querySelector(`[data-wizard-step="${wizardStep}"]`);
     if (activeStep) activeStep.scrollTop=0;
