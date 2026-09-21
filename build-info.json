@@ -1,9 +1,9 @@
 {
   "environment": "replacement-zip",
   "project": "Quarto",
-  "version": "0.6.1",
-  "tag": "v0.6.1",
-  "commit": "32651050bc6f81acf0dea1a0af3fa5de1be802c4",
-  "builtAt": "2026-09-21T18:55:42.3072572Z",
-  "notes": "Build metadata recorded by ProjectRelease.ps1."
+  "version": "0.6.2",
+  "tag": "v0.6.2",
+  "commit": "",
+  "builtAt": "",
+  "notes": "Build information will be completed after the content commit."
 }
