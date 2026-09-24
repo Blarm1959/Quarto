@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.0.1
+
+- Starter release for the 1.x series, built from v0.6.2 with no functional changes.
+- Confirmed that Save appears beside Next on all six Settings pages on desktop and Samsung S23 layouts.
+- Brought this changelog up to date for v0.6.0 to v0.6.2.
+
+## v0.6.2
+
+- Removed the original hidden marker from the Settings Save button in `index.html`.
+
+## v0.6.1
+
+- Settings Save button is now always shown, on every page.
+
+## v0.6.0
+
+- Added eight selectable piece colours; the two chosen colours must differ.
+- Replaced the per-move timer with an optional chess clock (Off, 5, 10, 15, 30 or 60 minutes per player) with an optional 0, 5 or 10-second increment, added after choosing the opponent's piece.
+- Reorganised Settings into six clickable pages: Game, Colours, Rules, Players, Timer and Options.
+- Added a Default button on the first page; Save starts a new game immediately.
+- Added a five-tap endgame test position on the version display.
+
 ## v0.5.1
 
 - Replaced the previous three-way Undo mode with a simple **Allow last move Undo** Yes/No option on setup page 1.
